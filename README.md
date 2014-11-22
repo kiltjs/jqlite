@@ -1,4 +1,4 @@
 jqlite
 ======
 
-jQuery dom handling implementation
+Tiny JavaScript DOM query library
