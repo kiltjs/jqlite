@@ -1,15 +1,15 @@
 
 (function ($) {
 
-  if( typeof fn !== 'undefined' ) {
-    fn.define('$', $)
-  } else if( typeof window !== 'undefined' ) {
-      if( !window.$ ) {
-        window.$ = $;
-      }
-    }
-  } else if( typeof module !== 'undefined' ) {
+  if ( typeof window === 'undefined' ) {
+    if ( typeof module !== 'undefined' ) {
       module.exports = $;
+    }
+  } else {
+    if ( window.fn ) {
+      fn.define('$', $)
+    } else if( !window.$ ) {
+      window.$ = $;
     }
   }
 
@@ -49,20 +49,20 @@
     return event;
   }
 
-	var RE_HAS_SPACES = /\s/,
+  var RE_HAS_SPACES = /\s/,
       RE_ONLY_LETTERS = /^[a-zA-Z]+$/,
       RE_IS_ID = /^\#.+/,
       RE_IS_CLASS = /^\..+/;
     
   function listDOM(elems){
-      if( isString(elems) ) {
-      	if( RE_HAS_SPACES.test(elems) ) [].push.apply(this,document.querySelectorAll(elems));
-      	else {
-      		if( RE_ONLY_LETTERS.test(elems) ) [].push.apply(this,document.getElementsByTagName(elems));
-      		else if( RE_IS_ID.test(elems) ) [].push.call(this,document.getElementById(elems.substr(1)));
-      		else if( RE_IS_CLASS.test(elems) ) [].push.apply(this,document.getElementsByClassName(elems.substr(1)));
-      		else [].push.apply(this,document.querySelectorAll(elems));
-      	}
+      if( typeof elems === 'string' ) {
+        if( RE_HAS_SPACES.test(elems) ) [].push.apply(this,document.querySelectorAll(elems));
+        else {
+          if( RE_ONLY_LETTERS.test(elems) ) [].push.apply(this,document.getElementsByTagName(elems));
+          else if( RE_IS_ID.test(elems) ) [].push.call(this,document.getElementById(elems.substr(1)));
+          else if( RE_IS_CLASS.test(elems) ) [].push.apply(this,document.getElementsByClassName(elems.substr(1)));
+          else [].push.apply(this,document.querySelectorAll(elems));
+        }
       }
       else if( elems instanceof Array ) [].push.apply(this,elems);
       else if( elems instanceof NodeList ) [].push.apply(this,elems);
@@ -117,12 +117,14 @@
      },
      'each': {
           element: function(each){
-              if( isFunction(each) ) each.class(this,this);
+              if( each instanceof Function ) each.call(this,this);
               return this;
           },
           collection: function(each){
-              if( isFunction(each) ) {
-                  Array.prototype.forEach.call(this,each);
+              if( each instanceof Function ) {
+                for( var i = 0, len = this.length, elem; i < len ; i++ ) {
+                    each.call(this[i], this[i]);
+                }
               }
               return this;
           }
@@ -134,73 +136,75 @@
           collection: function(selector){
               var elems = [];
               
-              if( isFunction(selector) ) {
-                  Array.prototype.forEach.call(this,function(elem){
-                      if( selector.apply(elem,[elem]) ) elems.push(elem);
-                  });
+              if( selector instanceof Function ) {
+                for( var i = 0, len = this.length, elem; i < len ; i++ ) {
+                    elem = this[i];
+                    if( selector.apply(elem,[elem]) ) elems.push(elem);
+                }
                   
-                  return new listDOM(elems);
+                return new listDOM(elems);
                   
               } else if( typeof selector === 'string' ) {
-                  Array.prototype.forEach.call(this,function(elem){
-                      if( Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
-                  });
+                  for( var i = 0, len = this.length, elem; i < len ; i++ ) {
+                    elem = this[i];
+                    if( Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
+                  }
                   
                   return new listDOM(elems);
               }
-              return this;
+              return false;
           }
      },
      'children': {
-     		element: false,
-     		collection: function(selector,args){
-     			var elems = [], elem;
-     			
-     			if( document.body.children ) {
-     				
-     				elems = new listDOM();
-     				
-     				Array.prototype.forEach.call(this,function(elem){
-     					[].push.apply(elems,elem.children);
-     				});
-       				
-       			if( selector ) {
-     					if( isString(selector) ) {
-       					elems = elems.filter(selector);
-       				} else if( isFunction(selector) ) elems.each(selector);
-     				}
-     				
-     				return elems;
-     				
-     			} else if( isString(selector) ) {
-     				Array.prototype.forEach.call(this,function(elem){
-     					elem = elem.firstElementChild || elem.firstChild;
-     					
-     					while(elem) {
-                      	if( elem && Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
-                      	elem = elem.nextElementSibling;
-     					}
+        element: false,
+        collection: function(selector,args){
+          var elems = [], elem;
+          
+          if( document.body.children ) {
+            
+            elems = new listDOM();
+            
+            Array.prototype.forEach.call(this,function(elem){
+              [].push.apply(elems,elem.children);
+            });
+              
+            if( selector ) {
+              if( isString(selector) ) {
+                elems = elems.filter(selector);
+              } else if( isFunction(selector) ) elems.each(selector);
+            }
+            
+            return elems;
+            
+          } else if( isString(selector) ) {
+            Array.prototype.forEach.call(this,function(elem){
+              elem = elem.firstElementChild || elem.firstChild;
+              
+              while(elem) {
+                        if( elem && Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
+                        elem = elem.nextElementSibling;
+              }
                   });
-     			} else if( isFunction(selector) ) {
-     				Array.prototype.forEach.call(this,function(elem){
-     					elem = elem.firstElementChild || elem.firstChild;
-     					while(elem) {
-	       				elems.push(elem);
-	       				selector.apply(elem,args);
-	       				elem = elem.nextElementSibling;
-     					}
-     				});
-     			} else {
-     				Array.prototype.forEach.call(this,function(elem){
-     					elem = elem.firstElementChild || elem.firstChild;
-       				while(elem) {
-       					elems.push(elem);
-       					elem = elem.nextElementSibling;
-       				}
-     				});
-     			}
-     			return new listDOM(elems);
-     		}
+          } else if( isFunction(selector) ) {
+            Array.prototype.forEach.call(this,function(elem){
+              elem = elem.firstElementChild || elem.firstChild;
+              while(elem) {
+                elems.push(elem);
+                selector.apply(elem,args);
+                elem = elem.nextElementSibling;
+              }
+            });
+          } else {
+            Array.prototype.forEach.call(this,function(elem){
+              elem = elem.firstElementChild || elem.firstChild;
+              while(elem) {
+                elems.push(elem);
+                elem = elem.nextElementSibling;
+              }
+            });
+          }
+          return new listDOM(elems);
+        }
      },
      'data': {
           element: function(key,value){
@@ -225,8 +229,10 @@
               
                   if( !isString(value) ) return this[0].data(key);
                   else {
-                      Array.prototype.forEach.call(this,function(elem){ elem.data(key,value); });
-                      return this;
+                    for( var i = 0, len = this.length; i < len ; i++ ) {
+                        this[i].data(key,value);
+                    }
+                    return this;
                   }
               }
               return this;
@@ -249,46 +255,66 @@
               
                   if( !isString(value) ) return this[0].getAttribute(key);
                   else {
-                      Array.prototype.forEach.call(this,function(elem){ elem.setAttribute(key,value); });
-                      return this;
+                    for( var i = 0, len = this.length; i < len ; i++ ) {
+                        this[i].setAttribute(key,value);
+                    }
+                    return this;
                   }
               }
               return this;
           }
      },
      'addClass': {
-         element: function(className){
+         element: document.createElement('div').classList ? function (className) {
+            this.classList.add(className);
+            return this;
+          } : function(className){
               if(!this.className) this.className = '';
               var patt = new RegExp('\\b'+className+'\\b','');
               if(!patt.test(this.className)) this.className += ' '+className;
               return this;
          },
-         collection: function(className){ Array.prototype.forEach.call(this,function(item){ item.addClass(className); }); return this; }
+         collection: function(className){
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+                this[i].addClass(className);
+            }
+            return this;
+        }
      },
      'removeClass': {
-         element: function(className){
-              if(this.className) {
-                  var patt = new RegExp('(\\b|\\s+)'+className+'\\b','g');
-                  this.className = this.className.replace(patt,'');
-              }
-              return this;
-         },
-         collection: function(className){ Array.prototype.forEach.call(this,function(item){ item.addClass(className); }); return this; }
+        element: document.createElement('div').classList ? function (className) {
+            this.classList.remove(className);
+            return this;
+        } : function(className){
+            if(this.className) {
+                var patt = new RegExp('(\\b|\\s+)'+className+'\\b','g');
+                this.className = this.className.replace(patt,'');
+            }
+            return this;
+        },
+        collection: function(className){
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+                this[i].removeClass(className);
+            }
+            return this;
+        }
      },
      'hasClass': {
-          element: function(className){
-              if(!this.className) return false;
-              patt = new RegExp('\\b'+className+'\\b','');
-              return patt.test(this.className);
-          },
-          collection: function(className){
-              var classNames = className.trim().split(' ');
-              className = '';
-              classNames.forEach(function(className_part){ className += '.'+className_part; });
-              
-              var found = this.filter(className);
-              return found.length ? found : false;
-          }
+        element: document.createElement('div').classList ? function (className) {
+            return this.classList.item(className);
+        } : function(className){
+            if(!this.className) return false;
+            patt = new RegExp('\\b'+className+'\\b','');
+            return patt.test(this.className);
+        },
+        collection: function(className){
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+                if( element.hasClass(className) ) {
+                    return true;
+                }
+            }
+            return false;
+        }
      },
      'parent': {
          element: function(){
@@ -296,32 +322,61 @@
               return this.parentElement || this.parentNode;
          },
          collection: function(){
-             var items = new listDOM(), parent;
-             
-             Array.prototype.forEach.call(this,function(item){ parent = item.parent(); if(parent) items.push(parent); });
-             
-             return items;
+            var items = new listDOM(), parent;
+            
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+                parent = this[i].parent();
+                if(parent) items.push(parent);
+            }
+            
+            return items;
          }
      },
      'render': {
          element: function(html){
               this.innerHTML = html;
               this.find('script').each(function(script){
-              	if( script.type == 'text/javascript' ) {
-              		try{ eval('(function(){ \'use strict\';'+script.textContent+'})();'); }catch(err){ console.log(err.message); }
-              	} else if( /^text\/coffee(script)/.test(script.type) && isObject(window.CoffeeScript) ) {
-              		if( CoffeeScript.compile instanceof Function ) {
-              			try{ eval(CoffeeScript.compile(script.textContent)); }catch(err){ console.log(err.message); }
-              		}
-              	}
+                if( script.type == 'text/javascript' ) {
+                  try{ eval('(function(){ \'use strict\';'+script.textContent+'})();'); }catch(err){ console.log(err.message); }
+                } else if( /^text\/coffee(script)/.test(script.type) && isObject(window.CoffeeScript) ) {
+                  if( CoffeeScript.compile instanceof Function ) {
+                    try{ eval(CoffeeScript.compile(script.textContent)); }catch(err){ console.log(err.message); }
+                  }
+                }
               });
               
               return this;
          },
          collection: function(html){
-             Array.prototype.forEach.call(this,function(item){ item.render(html); });
-             return this;
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+              this[i].render(html);
+            }
+            return this;
          }
+      },
+      'text': {
+        element: function (text) {
+          if( text === undefined ) {
+            return this.textContent;
+          } else {
+            this.textContent = text;
+            return this;
+          }
+        },
+        collection: function (text) {
+            if( text === undefined ) {
+                text = '';
+                for( var i = 0, len = this.length; i < len ; i++ ) {
+                  text += this[i].textContent;
+                }
+                return text;
+            } else {
+                for( var i = 0, len = this.length; i < len ; i++ ) {
+                  this[i].textContent = text;
+                }
+            }
+            return this;
+        }
       },
       'on':{
           element: function(event,handler){
@@ -383,12 +438,12 @@
   });
   
   return function $ (selector){
-  	if( /^\<\w+.*\>$/.test(selector) ) {
-  		var el = document.createElement('div');
-  		el.innerHTML = selector;
-  		return new listDOM(el.children);
-  	}
-  	return new listDOM(selector);
+    if( /^\<\w+.*\>$/.test(selector) ) {
+      var el = document.createElement('div');
+      el.innerHTML = selector;
+      return new listDOM(el.children);
+    }
+    return new listDOM(selector);
   };
   
 });
