@@ -20,5 +20,13 @@
   "bugs": {
     "url": "https://github.com/jstools/jqlite/issues"
   },
-  "homepage": "https://github.com/jstools/jqlite"
+  "homepage": "https://github.com/jstools/jqlite",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-uglify": "latest",
+    "grunt-increase-version": "latest",
+    "grunt-shell": "latest",
+    "load-grunt-tasks": "latest",
+    "time-grunt": "latest"
+  }
 }
