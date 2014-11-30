@@ -1,23 +1,23 @@
 {
-  "name": "jstools-jqlite",
-  "main": "jqlite.js",
-  "version": "0.0.3",
-  "homepage": "https://github.com/jstools/jqlite",
-  "authors": [
-    "Jesús Germade <jesus@germade.es>"
-  ],
-  "description": "Tiny JavaScript DOM query library",
-  "keywords": [
-    "javascript",
-    "query",
-    "dom"
-  ],
-  "license": "ICS",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ]
+    "name": "jstools-jqlite",
+    "main": "jqlite.js",
+    "version": "0.0.4",
+    "homepage": "https://github.com/jstools/jqlite",
+    "authors": [
+        "Jesús Germade <jesus@germade.es>"
+    ],
+    "description": "Tiny JavaScript DOM query library",
+    "keywords": [
+        "javascript",
+        "query",
+        "dom"
+    ],
+    "license": "ICS",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
 }
