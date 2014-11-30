@@ -1,6 +1,6 @@
 {
     "name": "jqlite",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Tiny JavaScript DOM query library",
     "main": "jqlite.js",
     "jstool": "jqlite.js",
@@ -23,11 +23,11 @@
     },
     "homepage": "https://github.com/jstools/jqlite",
     "devDependencies": {
-        "grunt": "^0.4.5",
-        "grunt-contrib-uglify": "latest",
-        "grunt-increase-version": "latest",
-        "grunt-shell": "latest",
-        "load-grunt-tasks": "latest",
-        "time-grunt": "latest"
+        "grunt": "*",
+        "grunt-contrib-uglify": "*",
+        "grunt-increase-version": "*",
+        "grunt-shell": "*",
+        "load-grunt-tasks": "*",
+        "time-grunt": "*"
     }
 }
