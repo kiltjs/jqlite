@@ -52,7 +52,44 @@
   var RE_HAS_SPACES = /\s/,
       RE_ONLY_LETTERS = /^[a-zA-Z]+$/,
       RE_IS_ID = /^\#.+/,
-      RE_IS_CLASS = /^\..+/;
+      RE_IS_CLASS = /^\..+/
+      ready = function (arg) {
+        if( callback instanceof Function ) {
+          if( ready.ready ) {
+            callback.call(document);
+          } else {
+            ready.onceListeners.push(callback);
+          }
+        } else if ( callback === undefined ) {
+          return ready.isReady;
+        }
+      };
+
+  ready.isReady = false;
+  ready.ready = function () {
+    ready.isReady = true;
+    for( var i = 0, len = ready.onceListeners.length; i < len; i++) {
+      ready.onceListeners[i].call(document);
+    }
+    ready.onceListeners.splice(0, len);
+  };
+  ready.onceListeners = [];
+
+  if ( document.addEventListener ) {
+      document.addEventListener( "DOMContentLoaded", function(){
+        document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
+        ready.ready();
+      }, false );
+  } else if ( document.attachEvent ) {
+    document.attachEvent("onreadystatechange", function(){
+      if ( document.readyState === "complete" ) {
+        document.detachEvent( "onreadystatechange", arguments.callee );
+        ready.ready();
+      }
+    });
+  }
+
+  // List of elements
     
   function listDOM(elems){
       if( typeof elems === 'string' ) {
@@ -68,6 +105,7 @@
       else if( elems instanceof NodeList ) [].push.apply(this,elems);
       else if( elems instanceof HTMLCollection ) [].push.apply(this,elems);
       else if( elems instanceof Element ) [].push.call(this,elems);
+      else if( elems instanceof Function ) ready(elems);
       else if( elems === document ) [].push.call(this,elems);
   }
   
@@ -184,7 +222,7 @@
                         if( elem && Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
                         elem = elem.nextElementSibling;
               }
-                  });
+            });
           } else if( isFunction(selector) ) {
             Array.prototype.forEach.call(this,function(elem){
               elem = elem.firstElementChild || elem.firstChild;
@@ -207,7 +245,7 @@
         }
      },
      'data': {
-          element: function(key,value){
+          element: function (key,value) {
               if( isString(key) ) {
                   if( isString(value) ) {
                       
@@ -222,7 +260,7 @@
               }
               return this;
           },
-          collection: function(key,value){
+          collection: function (key,value) {
               var elem;
               
               if( isString(key) ) {
@@ -239,7 +277,7 @@
           }
      },
      'attr': {
-          element: function(key,value){
+          element: function (key,value) {
               if( isString(key) ) {
                   if( value !== undefined ) {
                       this.setAttribute(key,value);
@@ -248,7 +286,7 @@
               }
               return this;
           },
-          collection: function(key,value){
+          collection: function (key,value) {
               var elem;
               
               if( isString(key) ) {
@@ -274,7 +312,7 @@
               if(!patt.test(this.className)) this.className += ' '+className;
               return this;
          },
-         collection: function(className){
+         collection: function (className) {
             for( var i = 0, len = this.length; i < len ; i++ ) {
                 this[i].addClass(className);
             }
@@ -292,7 +330,7 @@
             }
             return this;
         },
-        collection: function(className){
+        collection: function (className) {
             for( var i = 0, len = this.length; i < len ; i++ ) {
                 this[i].removeClass(className);
             }
@@ -307,7 +345,7 @@
             patt = new RegExp('\\b'+className+'\\b','');
             return patt.test(this.className);
         },
-        collection: function(className){
+        collection: function (className) {
             for( var i = 0, len = this.length; i < len ; i++ ) {
                 if( element.hasClass(className) ) {
                     return true;
@@ -317,11 +355,11 @@
         }
      },
      'parent': {
-         element: function(){
+         element: function () {
               if( this == document.body ) return false;
               return this.parentElement || this.parentNode;
          },
-         collection: function(){
+         collection: function () {
             var items = new listDOM(), parent;
             
             for( var i = 0, len = this.length; i < len ; i++ ) {
@@ -333,7 +371,7 @@
          }
      },
      'render': {
-         element: function(html){
+         element: function (html) {
               this.innerHTML = html;
               this.find('script').each(function(script){
                 if( script.type == 'text/javascript' ) {
@@ -347,7 +385,7 @@
               
               return this;
          },
-         collection: function(html){
+         collection: function (html) {
             for( var i = 0, len = this.length; i < len ; i++ ) {
               this[i].render(html);
             }
@@ -379,7 +417,7 @@
         }
       },
       'on':{
-          element: function(event,handler){
+          element: function (event,handler) {
               var elem = this;
               if( isString(event) ) {
                   if(isFunction(handler)) {
@@ -413,7 +451,7 @@
               
               return this;
           },
-          collection: function(event,handler){
+          collection: function (event,handler) {
               Array.prototype.forEach.call(this,function(elem){
                   elem.on(event,handler);
               });
@@ -422,18 +460,22 @@
           }
       },
       'off': {
-          element: function(event){ this.on(event,false); },
-          collection: function(event){ this.on(event,false); }
+          element: function (event) { this.on(event,false); },
+          collection: function (event) { this.on(event,false); }
       },
       'trigger': {
-          element: function(event,data){
+          element: function (event,data) {
               triggerEvent(this, event, data);
           },
-          collection: function(event,data){
+          collection: function (event,data){
               Array.prototype.forEach.call(this,function(elem){
                   triggerEvent(elem, event, data);
               });
           }
+      },
+      ready: {
+        element: ready,
+        collection: ready
       }
   });
   
