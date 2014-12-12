@@ -49,11 +49,18 @@ module.exports = function(grunt) {
         ],
         dest: '<%= pkg.main.replace(/\.js$/, \'.min.js\') %>'
       }
+    },
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js'
+      }
     }
   });
 
   grunt.registerTask('git:increase-version', [ 'shell:git-add', 'shell:git-commit-version', 'shell:git-push' ]);
 
   grunt.registerTask('publish', [ 'uglify:min', 'increase-version', 'git:increase-version', 'shell:npm-publish' ]);
+
+  grunt.registerTask('test', [ 'karma' ]);
 
 };
