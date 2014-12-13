@@ -26,17 +26,17 @@
  * 
  */
 
-(function ($) {
+(function (definition) {
 
   if ( typeof window === 'undefined' ) {
     if ( typeof module !== 'undefined' ) {
-      module.exports = $;
+      module.exports = definition();
     }
   } else {
     if ( window.fn ) {
-      fn.define('$', $)
+      fn.define('$', definition );
     } else if( !window.$ ) {
-      window.$ = $;
+      window.$ = definition();
     }
   }
 
@@ -79,7 +79,7 @@
   var RE_HAS_SPACES = /\s/,
       RE_ONLY_LETTERS = /^[a-zA-Z]+$/,
       RE_IS_ID = /^\#.+/,
-      RE_IS_CLASS = /^\..+/
+      RE_IS_CLASS = /^\..+/,
       ready = function (arg) {
         if( callback instanceof Function ) {
           if( ready.ready ) {
@@ -104,13 +104,13 @@
 
   if ( document.addEventListener ) {
       document.addEventListener( "DOMContentLoaded", function(){
-        document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
+        // document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
         ready.ready();
       }, false );
   } else if ( document.attachEvent ) {
     document.attachEvent("onreadystatechange", function(){
       if ( document.readyState === "complete" ) {
-        document.detachEvent( "onreadystatechange", arguments.callee );
+        // document.detachEvent( "onreadystatechange", arguments.callee );
         ready.ready();
       }
     });
@@ -118,7 +118,7 @@
 
   // List of elements
     
-  function listDOM(elems){
+  function ListDOM(elems){
       if( typeof elems === 'string' ) {
         if( RE_HAS_SPACES.test(elems) ) [].push.apply(this,document.querySelectorAll(elems));
         else {
@@ -136,39 +136,39 @@
       else if( elems === document ) [].push.call(this,elems);
   }
   
-  listDOM.prototype = new Array();
+  ListDOM.prototype = [];
   
-  listDOM.fn = function(name,elementDo,collectionDo) {
+  ListDOM.fn = function(name,elementDo,collectionDo) {
       if( typeof name === 'string' ) {
         if( elementDo instanceof Function ) {
             if( !Element.prototype[name] ) Element.prototype[name] = elementDo;
         }
         if( collectionDo instanceof Function ) {
-          listDOM.prototype[name] = collectionDo;
+          ListDOM.prototype[name] = collectionDo;
           NodeList.prototype[name] = collectionDo;
         }
       } else if( name instanceof Object && arguments.length == 1 ) {
         for( var key in name ) {
-          listDOM.fn(key,name[key].element,name[key].collection);
+          ListDOM.fn(key,name[key].element,name[key].collection);
         }
       } else if( name instanceof Array ) {
         for( var i = 0, len = name.length; i < len; i++ ) {
-          listDOM.fn(name[i], elementDo, collectionDo);
+          ListDOM.fn(name[i], elementDo, collectionDo);
         }
       }
   };
   
-  listDOM.fn({
+  ListDOM.fn({
      'get': {
           element: function(){ return this; },
           collection: function(pos){ return pos ? this[pos] : this; }
      },
-     ['find', '$']: {
+     'find': {
           element: function(selector){
-              return new listDOM( Element.prototype.querySelectorAll.apply(this,arguments) );
+              return new ListDOM( Element.prototype.querySelectorAll.apply(this,arguments) );
           },
           collection: function(selector,test){
-              var elems = new listDOM(), found, list_found = {};
+              var elems = new ListDOM(), found, list_found = {};
               
               for( var i = 0, len = this.length; i < len; i++ ) {
                   found = this[i].querySelectorAll(selector);
@@ -179,7 +179,7 @@
                       }
                   }
               }
-              for( var i = 0, len = elems.length; i < len ; i++ ) delete elems[i].___found___;
+              for( i = 0, len = elems.length; i < len ; i++ ) delete elems[i].___found___;
               
               return elems;
           }
@@ -203,23 +203,23 @@
               return Element.prototype.matchesSelector.call(this,selector) ? this : false;
           },
           collection: function(selector){
-              var elems = [];
+              var elems = [], i, len;
               
               if( selector instanceof Function ) {
-                for( var i = 0, len = this.length, elem; i < len ; i++ ) {
+                for( i = 0, len = this.length, elem; i < len ; i++ ) {
                     elem = this[i];
                     if( selector.apply(elem,[elem]) ) elems.push(elem);
                 }
                   
-                return new listDOM(elems);
+                return new ListDOM(elems);
                   
               } else if( typeof selector === 'string' ) {
-                  for( var i = 0, len = this.length, elem; i < len ; i++ ) {
+                  for( i = 0, len = this.length, elem; i < len ; i++ ) {
                     elem = this[i];
                     if( Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
                   }
                   
-                  return new listDOM(elems);
+                  return new ListDOM(elems);
               }
               return false;
           }
@@ -227,7 +227,7 @@
      'children': {
         element: false,
         collection: document.body.children ? function(selector,args){
-          var elems = new listDOM();
+          var elems = new ListDOM();
           
           for( var i = 0, len = this.length; i < len; i++ ) {
             [].push.apply(elems,this[i].children);
@@ -270,7 +270,7 @@
               }
             });
           }
-          return new listDOM(elems);
+          return new ListDOM(elems);
         }
      },
      'data': {
@@ -289,26 +289,28 @@
             }
           },
           collection: document.body.dataset ? function (key,value) {
+            var i, len;
             if( value === undefined ) {
               var values = [];
-              for( var i = 0, len = this.length; i < len ; i++ ) {
+              for( i = 0, len = this.length; i < len ; i++ ) {
                 values.push( key ? this[i].dataset[key] : this[i].dataset );
               }
               return values;
             } else {
-              for( var i = 0, len = this.length; i < len ; i++ ) {
+              for( i = 0, len = this.length; i < len ; i++ ) {
                 this[i].dataset[key] = value;
               }
               return this;
             }
           } : function () {
+            var i, len;
             if( value === undefined ) {
               var values = [];
-              for( var i = 0, len = this.length; i < len ; i++ ) {
+              for( i = 0, len = this.length; i < len ; i++ ) {
                 values.push( this[i].getAttribute('data-' + key) );
               }
             } else {
-              for( var i = 0, len = this.length; i < len ; i++ ) {
+              for( i = 0, len = this.length; i < len ; i++ ) {
                 this[i].setAttribute('data-' + key, value);
               }
             }
@@ -324,12 +326,13 @@
             return this;
           },
           collection: function (key,value) {
+            var i, len;
             if( value !== undefined ) {
-              for( var i = 0, len = this.length; i < len ; i++ ) {
+              for( i = 0, len = this.length; i < len ; i++ ) {
                 this[i].setAttribute(key,value);
               }
             } else if( key ) {
-              for( var i = 0, len = this.length; i < len ; i++ ) {
+              for( i = 0, len = this.length; i < len ; i++ ) {
                 this[i].getAttribute(key);
               }
             }
@@ -394,7 +397,7 @@
               return this.parentElement || this.parentNode;
          },
          collection: function () {
-            var items = new listDOM(), parent;
+            var items = new ListDOM(), parent;
             
             for( var i = 0, len = this.length; i < len ; i++ ) {
                 parent = this[i].parent();
@@ -408,11 +411,12 @@
          element: function (html) {
           this.innerHTML = html;
           this.find('script').each(function(script){
+            var runScripts = eval;
             if( script.type == 'text/javascript' ) {
-              try{ eval('(function(){ \'use strict\';'+script.textContent+'})();'); }catch(err){ throw err.message; }
+              try{ runScripts('(function(){ \'use strict\';'+script.textContent+'})();'); }catch(err){ throw err.message; }
             } else if( /^text\/coffee(script)/.test(script.type) && isObject(window.CoffeeScript) ) {
               if( CoffeeScript.compile instanceof Function ) {
-                try{ eval(CoffeeScript.compile(script.textContent)); }catch(err){ console.log(err.message); }
+                try{ runScripts(CoffeeScript.compile(script.textContent)); }catch(err){ console.log(err.message); }
               }
             }
           });
@@ -436,16 +440,17 @@
           }
         },
         collection: function (text) {
+          var i, len;
             if( text === undefined ) {
-                text = '';
-                for( var i = 0, len = this.length; i < len ; i++ ) {
-                  text += this[i].textContent;
-                }
-                return text;
+              text = '';
+              for( i = 0, len = this.length; i < len ; i++ ) {
+                text += this[i].textContent;
+              }
+              return text;
             } else {
-                for( var i = 0, len = this.length; i < len ; i++ ) {
-                  this[i].textContent = text;
-                }
+              for( i = 0, len = this.length; i < len ; i++ ) {
+                this[i].textContent = text;
+              }
             }
             return this;
         }
@@ -458,7 +463,7 @@
                       var originalHandler = handler;
                       handler = function(e){
                           originalHandler.apply(e.target,[e].concat(e.data));
-                      }
+                      };
                       
                       if (elem.addEventListener)  { // W3C DOM
                           elem.addEventListener(event,handler,false);
@@ -474,9 +479,11 @@
                       if(elem.listeners) {
                           if( elem.listeners[event] ) {
                               var handlers = elem.listeners[event];
-                              while( handler = handlers.pop() ) {
+                              handler = handlers.pop();
+                              while( handler ) {
                                   if (elem.removeEventListener) elem.removeEventListener (event, handler, false);  // all browsers except IE before version 9
                                   else if (elem.detachEvent) elem.detachEvent ('on'+event, handler);   // IE before version 9
+                                  handler = handlers.pop();
                               }
                           }
                       }
@@ -514,12 +521,12 @@
   });
   
   return function $ (selector){
-    if( /^\<\w+.*\>$/.test(selector) ) {
+    if( typeof selector === 'string' && /^<\w+.*>$/.test(selector) ) {
       var el = document.createElement('div');
       el.innerHTML = selector;
-      return new listDOM(el.children);
+      return new ListDOM(el.children);
     }
-    return new listDOM(selector);
+    return new ListDOM(selector);
   };
   
 });
