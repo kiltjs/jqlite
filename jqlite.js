@@ -26,21 +26,23 @@
  * 
  */
 
-(function (definition) {
+(function (root, factory) {
 
   if ( typeof window === 'undefined' ) {
     if ( typeof module !== 'undefined' ) {
-      module.exports = definition();
+      module.exports = factory();
     }
   } else {
-    if ( window.fn ) {
-      fn.define('$', definition );
-    } else if( !window.$ ) {
-      window.$ = definition();
+    if ( typeof fn === 'function' ) {
+      fn.define('$', factory );
+    } if ( typeof define === 'function' && define.amd ) {
+      define(['$'], factory);
+    } else if( !root.$ ) {
+      root.$ = factory();
     }
   }
 
-})(function () {
+})(this, function () {
   'use strict';
 
   if( !Element.prototype.matchesSelector ) {
