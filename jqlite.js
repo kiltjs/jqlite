@@ -37,8 +37,11 @@
       fn.define('$', factory );
     } if ( typeof define === 'function' && define.amd ) {
       define(['$'], factory);
-    } else if( !root.$ ) {
-      root.$ = factory();
+    } else {
+      root.jqlite = factory();
+      if( !root.$ ) {
+        root.$ = root.jqlite;
+      }
     }
   }
 
@@ -80,8 +83,8 @@
 
   var RE_HAS_SPACES = /\s/,
       RE_ONLY_LETTERS = /^[a-zA-Z]+$/,
-      RE_IS_ID = /^\#.+/,
-      RE_IS_CLASS = /^\..+/,
+      RE_IS_ID = /^\#[^\.\[]/,
+      RE_IS_CLASS = /^\.[^#\[]/,
       ready = function (arg) {
         if( callback instanceof Function ) {
           if( ready.ready ) {
@@ -119,24 +122,10 @@
   }
 
   // List of elements
+
+  var auxArray = [];
     
-  function ListDOM(elems){
-      if( typeof elems === 'string' ) {
-        if( RE_HAS_SPACES.test(elems) ) [].push.apply(this,document.querySelectorAll(elems));
-        else {
-          if( RE_ONLY_LETTERS.test(elems) ) [].push.apply(this,document.getElementsByTagName(elems));
-          else if( RE_IS_ID.test(elems) ) [].push.call(this,document.getElementById(elems.substr(1)));
-          else if( RE_IS_CLASS.test(elems) ) [].push.apply(this,document.getElementsByClassName(elems.substr(1)));
-          else [].push.apply(this,document.querySelectorAll(elems));
-        }
-      }
-      else if( elems instanceof Array ) [].push.apply(this,elems);
-      else if( elems instanceof NodeList ) [].push.apply(this,elems);
-      else if( elems instanceof HTMLCollection ) [].push.apply(this,elems);
-      else if( elems instanceof Element ) [].push.call(this,elems);
-      else if( elems instanceof Function ) ready(elems);
-      else if( elems === document ) [].push.call(this,elems);
-  }
+  function ListDOM(elems){}
   
   ListDOM.prototype = [];
   
@@ -169,8 +158,8 @@
           element: function(selector){
               return new ListDOM( Element.prototype.querySelectorAll.apply(this,arguments) );
           },
-          collection: function(selector,test){
-              var elems = new ListDOM(), found, list_found = {};
+          collection: function(selector){
+              var elems = new ListDOM(), found;
               
               for( var i = 0, len = this.length; i < len; i++ ) {
                   found = this[i].querySelectorAll(selector);
@@ -521,14 +510,61 @@
         collection: ready
       }
   });
-  
-  return function $ (selector){
-    if( typeof selector === 'string' && /^<\w+.*>$/.test(selector) ) {
-      var el = document.createElement('div');
-      el.innerHTML = selector;
-      return new ListDOM(el.children);
+
+  var auxDiv = document.createElement('div');
+
+  function pushMatches( list, matches ) {
+    auxArray.push.apply( list, matches ); 
+    return list;
+  }
+
+  function stringMatches (selector) {
+    switch ( selector[0] ) {
+      case '#':
+        var found = document.getElementById(selector.substr(1));
+        if( found ) {
+          var listdom = new ListDOM();
+          listdom.push(found);
+          return listdom;
+        } else return document.querySelectorAll(selector);
+        break;
+      case '<':
+        auxDiv.innerHTML = selector;
+        return pushMatches( new ListDOM(), auxDiv.children );
+      default:
+        return document.querySelectorAll(selector);
     }
-    return new ListDOM(selector);
-  };
+  }
+
+  function initList(selector) {
+
+    switch( (selector || {}).constructor.name ) {
+      case 'Array':
+      case 'NodeList':
+      case 'HTMLCollection':
+        return pushMatches( new ListDOM(), selector );
+      case 'Element':
+      case 'HTMLElement':
+        var list = new ListDOM();
+        list.push(selector);
+        return list;
+    }
+
+    if( selector === document ) {
+      var list2 = new ListDOM();
+      list2.push(selector);
+      return list2;
+    }
+    if( selector instanceof Function ) ready(selector);
+  }
+  
+  function jqlite (selector){
+    if( typeof selector === 'string' ) {
+      return stringMatches(selector);
+    }
+    return initList(selector);
+  }
+
+  return jqlite;
   
 });
