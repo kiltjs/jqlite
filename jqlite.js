@@ -95,7 +95,8 @@
         } else if ( callback === undefined ) {
           return ready.isReady;
         }
-      };
+      },
+      classListEnabled =  document.createElement('div').classList;
 
   ready.isReady = false;
   ready.ready = function () {
@@ -123,33 +124,34 @@
 
   // List of elements
 
-  var auxArray = [];
+  var auxArray = [],
+      auxDiv = document.createElement('div');
     
-  function ListDOM(elems){}
+  function ListDOM(){}
   
   ListDOM.prototype = [];
   
-  ListDOM.fn = function(name,elementDo,collectionDo) {
-      if( typeof name === 'string' ) {
-        if( elementDo instanceof Function ) {
-            if( !Element.prototype[name] ) Element.prototype[name] = elementDo;
-        }
-        if( collectionDo instanceof Function ) {
-          ListDOM.prototype[name] = collectionDo;
-          NodeList.prototype[name] = collectionDo;
-        }
-      } else if( name instanceof Object && arguments.length == 1 ) {
-        for( var key in name ) {
-          ListDOM.fn(key,name[key].element,name[key].collection);
-        }
-      } else if( name instanceof Array ) {
-        for( var i = 0, len = name.length; i < len; i++ ) {
-          ListDOM.fn(name[i], elementDo, collectionDo);
-        }
+  function addFn(name,elementDo,collectionDo) {
+    if( typeof name === 'string' ) {
+      if( elementDo instanceof Function ) {
+          if( !Element.prototype[name] ) Element.prototype[name] = elementDo;
       }
-  };
+      if( collectionDo instanceof Function ) {
+        ListDOM.prototype[name] = collectionDo;
+        NodeList.prototype[name] = collectionDo;
+      }
+    } else if( name instanceof Object && arguments.length == 1 ) {
+      for( var key in name ) {
+        addFn(key,name[key].element,name[key].collection);
+      }
+    } else if( name instanceof Array ) {
+      for( var i = 0, len = name.length; i < len; i++ ) {
+        addFn(name[i], elementDo, collectionDo);
+      }
+    }
+  }
   
-  ListDOM.fn({
+  addFn({
      'get': {
           element: function(){ return this; },
           collection: function(pos){ return pos ? this[pos] : this; }
@@ -331,7 +333,7 @@
           }
      },
      'addClass': {
-         element: document.createElement('div').classList ? function (className) {
+         element: classListEnabled ? function (className) {
             this.classList.add(className);
             return this;
           } : function(className){
@@ -348,7 +350,7 @@
         }
      },
      'removeClass': {
-        element: document.createElement('div').classList ? function (className) {
+        element: classListEnabled ? function (className) {
             this.classList.remove(className);
             return this;
         } : function(className){
@@ -358,7 +360,12 @@
             }
             return this;
         },
-        collection: function (className) {
+        collection: classListEnabled ? function (className) {
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+                this[i].classList.remove(className);
+            }
+            return this;
+        } : function (className) {
             for( var i = 0, len = this.length; i < len ; i++ ) {
                 this[i].removeClass(className);
             }
@@ -366,7 +373,7 @@
         }
      },
      'hasClass': {
-        element: document.createElement('div').classList ? function (className) {
+        element: classListEnabled ? function (className) {
             return this.classList.item(className);
         } : function(className){
             if(!this.className) return false;
@@ -378,6 +385,44 @@
                 if( element.hasClass(className) ) {
                     return true;
                 }
+            }
+            return false;
+        }
+     },
+     'toggleClass': {
+        element: classListEnabled ? function (className, add) {
+          if( add === undefined ) {
+            add = !this.hasClass(className);
+          }
+          if ( add ) {
+            this.classList.add(className);
+          } else {
+            this.classList.remove(className);
+          }
+        } : function () {
+          if( add === undefined ) {
+            add = !this.hasClass(className);
+          }
+          if ( add ) {
+            this.addClass(className);
+          } else {
+            this.removeClass(className);
+          }
+        },
+        collection: classListEnabled ? function (className, add) {
+          if( add === undefined ) {
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+              element.toggleClass(className, add);
+            }
+          } else if(add) {
+            this.addClass(className);
+          } else {
+            this.removeClass(className);
+          }
+          return false;
+        } : function (className, add) {
+            for( var i = 0, len = this.length; i < len ; i++ ) {
+              element.toggleClass(className, add);
             }
             return false;
         }
@@ -511,20 +556,21 @@
       }
   });
 
-  var auxDiv = document.createElement('div');
-
   function pushMatches( list, matches ) {
-    auxArray.push.apply( list, matches ); 
+    for( i = 0, len = matches.length; i < len; i++ ) {
+        list[list.length] = matches[i];
+    }
     return list;
   }
 
   function stringMatches (selector) {
     switch ( selector[0] ) {
       case '#':
-        var found = document.getElementById(selector.substr(1));
+        var found = document.querySelector(selector);
         if( found ) {
           var listdom = new ListDOM();
-          listdom.push(found);
+          listdom[0] = found;
+          listdom.length = 1;
           return listdom;
         } else return document.querySelectorAll(selector);
         break;
@@ -546,13 +592,15 @@
       case 'Element':
       case 'HTMLElement':
         var list = new ListDOM();
-        list.push(selector);
+        list[0] = selector;
+        list.length = 1;
         return list;
     }
 
     if( selector === document ) {
       var list2 = new ListDOM();
-      list2.push(selector);
+      list2[0] = selector;
+      list2.length = 1;
       return list2;
     }
     if( selector instanceof Function ) ready(selector);
@@ -564,6 +612,10 @@
     }
     return initList(selector);
   }
+
+  jqlite.fn = ListDOM.prototype;
+
+  window.ListDOM = ListDOM;
 
   return jqlite;
   
