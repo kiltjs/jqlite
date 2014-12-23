@@ -275,6 +275,17 @@
       return elems;
     };
 
+  ListDOM.prototype.clone = function (cloneEvents) {
+    var list = new ListDOM();
+    if( cloneEvents === undefined ) {
+      cloneEvents = true;
+    }
+
+    for( i = 0, len = this.length; i < len ; i++ ) {
+      list[list.length] = this[i].cloneNode(cloneEvents);
+    }
+  };
+
   ListDOM.prototype.data = document.body.dataset ? function (key, value) {
       var i, len;
       if( value === undefined ) {
