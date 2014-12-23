@@ -96,7 +96,8 @@
           return ready.isReady;
         }
       },
-      classListEnabled =  document.body.classList;
+      classListEnabled =  document.body.classList,
+      runScripts = eval;
 
   ready.isReady = false;
   ready.ready = function () {
@@ -358,6 +359,18 @@
           list[list.length] = this[i];
         }
       }
+    };
+
+  ListDOM.prototype.render = function () {
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        this[i].innerHTML = html;
+      }
+      this.find('script').each(function(script){
+        if( script.type == 'text/javascript' ) {
+          try{ runScripts('(function(){ \'use strict\';' + script.textContent + '})();'); }catch(err){ throw err.message; }
+        }
+      });
+      return this;
     };
 
 
