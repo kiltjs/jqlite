@@ -62,24 +62,19 @@
     if (e &&e.preventDefault) e.preventDefault();
     else if (window.event && window.event.returnValue) window.eventReturnValue = false;
   }
-  
-  function triggerEvent (element,name,data){
-    var event; // The custom event that will be created
-    
-    if (document.createEvent) {
-      event = document.createEvent("HTMLEvents");
+
+  var triggerEvent = document.createEvent ? function (element, eventName, data) {
+      var event = document.createEvent("HTMLEvents");
       event.data = data;
-      event.initEvent(name, true, true);
-    } else {
-      event = document.createEventObject();
+      event.initEvent(eventName, true, true);
+      element.dispatchEvent(event);
+      return event;
+    } : function (element,eventName,data) {
+      var event = document.createEventObject();
       event.data = data;
-    }
-    
-    if(document.createEvent) element.dispatchEvent(event);
-    else element.fireEvent("on" + event.eventType, event);
-    
-    return event;
-  }
+      element.fireEvent("on" + eventName, event);
+      return event;
+    };
 
   var RE_HAS_SPACES = /\s/,
       RE_ONLY_LETTERS = /^[a-zA-Z]+$/,
@@ -123,6 +118,67 @@
     });
   }
 
+  // jqlite function
+
+  function pushMatches( list, matches ) {
+    for( i = 0, len = matches.length; i < len; i++ ) {
+        list[list.length] = matches[i];
+    }
+    return list;
+  }
+
+  function stringMatches (selector) {
+    switch ( selector[0] ) {
+      case '#':
+        var found = document.querySelector(selector);
+        if( found ) {
+          var listdom = new ListDOM();
+          listdom[0] = found;
+          listdom.length = 1;
+          return listdom;
+        } else return document.querySelectorAll(selector);
+        break;
+      case '<':
+        auxDiv.innerHTML = selector;
+        return pushMatches( new ListDOM(), auxDiv.children );
+      default:
+        return document.querySelectorAll(selector);
+    }
+  }
+
+  function initList(selector) {
+
+    switch( (selector || {}).constructor.name ) {
+      case 'Array':
+      case 'NodeList':
+      case 'HTMLCollection':
+        return pushMatches( new ListDOM(), selector );
+      case 'Element':
+      case 'HTMLElement':
+        var list = new ListDOM();
+        list[0] = selector;
+        list.length = 1;
+        return list;
+    }
+
+    if( selector === document ) {
+      var list2 = new ListDOM();
+      list2[0] = selector;
+      list2.length = 1;
+      return list2;
+    }
+    if( selector instanceof Function ) ready(selector);
+  }
+  
+  function jqlite (selector){
+    if( typeof selector === 'string' ) {
+      return stringMatches(selector);
+    }
+    return initList(selector);
+  }
+
+  jqlite.fn = ListDOM.prototype;
+
   // List of elements
 
   var auxArray = [],
@@ -158,7 +214,7 @@
   ListDOM.prototype.each = function(each) {
       if( each instanceof Function ) {
         for( var i = 0, len = this.length, elem; i < len ; i++ ) {
-            each.call(this[i], this[i]);
+            each.call(this[i], i, this[i]);
         }
       }
       return this;
@@ -361,7 +417,34 @@
       }
     };
 
-  ListDOM.prototype.render = function () {
+  jqlite.plugin = function (selector, handler, collection) {
+    if( typeof selector === 'string' && handler instanceof Function ) {
+      jqlite.plugin.cache[selector] = handler;
+      jqlite.plugin.cache[selector]._collection = !!collection;
+    }
+  };
+  jqlite.plugin.cache = {};
+
+  jqlite.plugin.find = function (elements) {
+    var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, matches;
+
+    for( pluginSelector in pluginsCache ) {
+
+      handler = pluginsCache[pluginSelector];
+      matches = elements.find(pluginSelector);
+
+      if( matches.length ) {
+        if( handler._collection ) {
+          handler( elements.find(pluginSelector) );
+        } else {
+          elements.find(pluginSelector).each(handler);
+        }
+      }
+    }
+
+  };
+
+  ListDOM.prototype.html = function () {
       for( var i = 0, len = this.length; i < len; i++ ) {
         this[i].innerHTML = html;
       }
@@ -373,178 +456,65 @@
       return this;
     };
 
+  ListDOM.prototype.text = function (text) {
+      var i, len;
+      if( text === undefined ) {
+        var textContent = '';
+        for( i = 0, len = this.length; i < len; i++ ) {
+          textContent += this[i].textContent;
+        }
+        return this;
+      } else {
+        for( i = 0, len = this.length; i < len; i++ ) {
+          this[i].innerHTML = html;
+        }
+        return this;
+      }
+    };
 
-  
-  // addFn({
-  //    'render': {
-  //        element: function (html) {
-  //         this.innerHTML = html;
-  //         this.find('script').each(function(script){
-  //           var runScripts = eval;
-  //           if( script.type == 'text/javascript' ) {
-  //             try{ runScripts('(function(){ \'use strict\';'+script.textContent+'})();'); }catch(err){ throw err.message; }
-  //           }
-  //         });
-          
-  //         return this;
-  //        },
-  //        collection: function (html) {
-  //           for( var i = 0, len = this.length; i < len ; i++ ) {
-  //             this[i].render(html);
-  //           }
-  //           return this;
-  //        }
-  //     },
-  //     'text': {
-  //       element: function (text) {
-  //         if( text === undefined ) {
-  //           return this.textContent;
-  //         } else {
-  //           this.textContent = text;
-  //           return this;
-  //         }
-  //       },
-  //       collection: function (text) {
-  //         var i, len;
-  //           if( text === undefined ) {
-  //             text = '';
-  //             for( i = 0, len = this.length; i < len ; i++ ) {
-  //               text += this[i].textContent;
-  //             }
-  //             return text;
-  //           } else {
-  //             for( i = 0, len = this.length; i < len ; i++ ) {
-  //               this[i].textContent = text;
-  //             }
-  //           }
-  //           return this;
-  //       }
-  //     },
-  //     'on':{
-  //         element: function (event,handler) {
-  //             var elem = this;
-  //             if( isString(event) ) {
-  //                 if(isFunction(handler)) {
-  //                     var originalHandler = handler;
-  //                     handler = function(e){
-  //                         originalHandler.apply(e.target,[e].concat(e.data));
-  //                     };
-                      
-  //                     if (elem.addEventListener)  { // W3C DOM
-  //                         elem.addEventListener(event,handler,false);
-  //                     } else if (elem.attachEvent) { // IE DOM
-  //                         elem.attachEvent("on"+event, handler);
-  //                     } else throw 'No es posible añadir evento';
-                      
-  //                     if(!elem.listeners) elem.listeners = {};
-  //                     if( !elem.listeners[event] ) elem.listeners[event] = [];
-                      
-  //                     elem.listeners[event].push(handler);
-  //                 } else if( handler === false ) {
-  //                     if(elem.listeners) {
-  //                         if( elem.listeners[event] ) {
-  //                             var handlers = elem.listeners[event];
-  //                             handler = handlers.pop();
-  //                             while( handler ) {
-  //                                 if (elem.removeEventListener) elem.removeEventListener (event, handler, false);  // all browsers except IE before version 9
-  //                                 else if (elem.detachEvent) elem.detachEvent ('on'+event, handler);   // IE before version 9
-  //                                 handler = handlers.pop();
-  //                             }
-  //                         }
-  //                     }
-  //                 }
-  //             }
-              
-  //             return this;
-  //         },
-  //         collection: function (event,handler) {
-  //             Array.prototype.forEach.call(this,function(elem){
-  //                 elem.on(event,handler);
-  //             });
-              
-  //             return this;
-  //         }
-  //     },
-  //     'off': {
-  //         element: function (event) { this.on(event,false); },
-  //         collection: function (event) { this.on(event,false); }
-  //     },
-  //     'trigger': {
-  //         element: function (event,data) {
-  //             triggerEvent(this, event, data);
-  //         },
-  //         collection: function (event,data){
-  //             Array.prototype.forEach.call(this,function(elem){
-  //                 triggerEvent(elem, event, data);
-  //             });
-  //         }
-  //     },
-  //     ready: {
-  //       element: ready,
-  //       collection: ready
-  //     }
-  // });
+  var attachElementListener = function () {};
 
-  function pushMatches( list, matches ) {
-    for( i = 0, len = matches.length; i < len; i++ ) {
-        list[list.length] = matches[i];
-    }
-    return list;
+  if(document.body.addEventListener)  { // W3C DOM
+
+    attachElementListener = function (element, eventName, handler) {
+      element.addEventListener(eventName, function(e){
+          handler.apply(e.target,[e].concat(e.data));
+      },false);
+    };
+
+  } else if(document.body.attachEvent) { // IE DOM
+
+    attachElementListener = function (element, eventName, handler) {
+      element.attachEvent("on" + eventName, function(e){
+            handler.apply(e.target,[e].concat(e.data));
+        },false);
+    };
+
+  } else {
+    throw 'Browser not compatible with element events';
   }
 
-  function stringMatches (selector) {
-    switch ( selector[0] ) {
-      case '#':
-        var found = document.querySelector(selector);
-        if( found ) {
-          var listdom = new ListDOM();
-          listdom[0] = found;
-          listdom.length = 1;
-          return listdom;
-        } else return document.querySelectorAll(selector);
-        break;
-      case '<':
-        auxDiv.innerHTML = selector;
-        return pushMatches( new ListDOM(), auxDiv.children );
-      default:
-        return document.querySelectorAll(selector);
-    }
-  }
-
-  function initList(selector) {
-
-    switch( (selector || {}).constructor.name ) {
-      case 'Array':
-      case 'NodeList':
-      case 'HTMLCollection':
-        return pushMatches( new ListDOM(), selector );
-      case 'Element':
-      case 'HTMLElement':
-        var list = new ListDOM();
-        list[0] = selector;
-        list.length = 1;
-        return list;
+  ListDOM.prototype.on = function (eventName, handler) {
+    if( typeof eventName !== 'string' || !(handler instanceof Function) ) {
+      throw 'bad arguments';
     }
 
-    if( selector === document ) {
-      var list2 = new ListDOM();
-      list2[0] = selector;
-      list2.length = 1;
-      return list2;
+    for( var i = 0, len = this.length; i < len; i++ ) {
+      attachElementListener(this[i], eventName, handler);
     }
-    if( selector instanceof Function ) ready(selector);
-  }
-  
-  function jqlite (selector){
-    if( typeof selector === 'string' ) {
-      return stringMatches(selector);
+  };
+
+  ListDOM.prototype.trigger = function (eventName, data) {
+    if( typeof eventName !== 'string' ) {
+      throw 'bad arguments';
     }
-    return initList(selector);
-  }
 
-  jqlite.fn = ListDOM.prototype;
+    for( var i = 0, len = this.length; i < len; i++ ) {
+      triggerEvent(this[i], eventName, data);
+    }
+  };
 
-  window.ListDOM = ListDOM;
+  ListDOM.prototype.ready = ready;
 
   return jqlite;
   
