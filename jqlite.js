@@ -257,7 +257,7 @@
       return this;
     };
 
-  ListDOM.prototype.addClass = classListEnabled : function (className) {
+  ListDOM.prototype.addClass = classListEnabled ? function (className) {
       for( var i = 0, len = this.length; i < len ; i++ ) {
           this[i].classList.add(className);
       }
@@ -271,7 +271,7 @@
       return this;
     };
 
-  ListDOM.prototype.removeClass = classListEnabled : function (className) {
+  ListDOM.prototype.removeClass = classListEnabled ? function (className) {
       for( var i = 0, len = this.length; i < len ; i++ ) {
           this[i].classList.remove(className);
       }
@@ -333,42 +333,36 @@
       if( className === undefined ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
           if ( RE_HASCLASS.test(this[i].className) ) {
-            this[i].className.replace(RE_REMOVECLASS, '');
+            this[i].className = this[i].className.replace(RE_REMOVECLASS, '');
           } else {
-            this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
+            this[i].className = this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
           }
         }
       } else if( add ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
+          this[i].className = this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
         }
       } else {
         for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].className.replace(RE_REMOVECLASS, '');
+          this[i].className = this[i].className.replace(RE_REMOVECLASS, '');
         }
       }
       return this;
     };
 
+  ListDOM.prototype.parent = function () {
+      var list = new ListDOM(), elem;
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = this.parentElement || this.parentNode;
+        if( elem ) {
+          list[list.length] = this[i];
+        }
+      }
+    };
+
 
   
   // addFn({
-  //    'parent': {
-  //        element: function () {
-  //             if( this == document.body ) return false;
-  //             return this.parentElement || this.parentNode;
-  //        },
-  //        collection: function () {
-  //           var items = new ListDOM(), parent;
-            
-  //           for( var i = 0, len = this.length; i < len ; i++ ) {
-  //               parent = this[i].parent();
-  //               if(parent) items.push(parent);
-  //           }
-            
-  //           return items;
-  //        }
-  //    },
   //    'render': {
   //        element: function (html) {
   //         this.innerHTML = html;
