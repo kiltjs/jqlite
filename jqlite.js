@@ -62,24 +62,19 @@
     if (e &&e.preventDefault) e.preventDefault();
     else if (window.event && window.event.returnValue) window.eventReturnValue = false;
   }
-  
-  function triggerEvent (element,name,data){
-    var event; // The custom event that will be created
-    
-    if (document.createEvent) {
-      event = document.createEvent("HTMLEvents");
+
+  var triggerEvent = document.createEvent ? function (element, eventName, data) {
+      var event = document.createEvent("HTMLEvents");
       event.data = data;
-      event.initEvent(name, true, true);
-    } else {
-      event = document.createEventObject();
+      event.initEvent(eventName, true, true);
+      element.dispatchEvent(event);
+      return event;
+    } : function (element,eventName,data) {
+      var event = document.createEventObject();
       event.data = data;
-    }
-    
-    if(document.createEvent) element.dispatchEvent(event);
-    else element.fireEvent("on" + event.eventType, event);
-    
-    return event;
-  }
+      element.fireEvent("on" + eventName, event);
+      return event;
+    };
 
   var RE_HAS_SPACES = /\s/,
       RE_ONLY_LETTERS = /^[a-zA-Z]+$/,
@@ -96,7 +91,8 @@
           return ready.isReady;
         }
       },
-      classListEnabled =  document.createElement('div').classList;
+      classListEnabled =  document.body.classList,
+      runScripts = eval;
 
   ready.isReady = false;
   ready.ready = function () {
@@ -122,439 +118,7 @@
     });
   }
 
-  // List of elements
-
-  var auxArray = [],
-      auxDiv = document.createElement('div');
-    
-  function ListDOM(){}
-  
-  ListDOM.prototype = [];
-  
-  function addFn(name,elementDo,collectionDo) {
-    if( typeof name === 'string' ) {
-      if( elementDo instanceof Function ) {
-          if( !Element.prototype[name] ) Element.prototype[name] = elementDo;
-      }
-      if( collectionDo instanceof Function ) {
-        ListDOM.prototype[name] = collectionDo;
-        NodeList.prototype[name] = collectionDo;
-      }
-    } else if( name instanceof Object && arguments.length == 1 ) {
-      for( var key in name ) {
-        addFn(key,name[key].element,name[key].collection);
-      }
-    } else if( name instanceof Array ) {
-      for( var i = 0, len = name.length; i < len; i++ ) {
-        addFn(name[i], elementDo, collectionDo);
-      }
-    }
-  }
-  
-  addFn({
-     'get': {
-          element: function(){ return this; },
-          collection: function(pos){ return pos ? this[pos] : this; }
-     },
-     'find': {
-          element: function(selector){
-              return new ListDOM( Element.prototype.querySelectorAll.apply(this,arguments) );
-          },
-          collection: function(selector){
-              var elems = new ListDOM(), found;
-              
-              for( var i = 0, len = this.length; i < len; i++ ) {
-                  found = this[i].querySelectorAll(selector);
-                  for( var j = 0, len2 = found.length; j < len2 ; j++ ) {
-                      if( !found.item(j).___found___ ) {
-                          elems.push(found.item(j));
-                          found.item(j).___found___ = true;
-                      }
-                  }
-              }
-              for( i = 0, len = elems.length; i < len ; i++ ) delete elems[i].___found___;
-              
-              return elems;
-          }
-     },
-     'each': {
-          element: function(each){
-              if( each instanceof Function ) each.call(this,this);
-              return this;
-          },
-          collection: function(each){
-              if( each instanceof Function ) {
-                for( var i = 0, len = this.length, elem; i < len ; i++ ) {
-                    each.call(this[i], this[i]);
-                }
-              }
-              return this;
-          }
-     },
-     'filter': {
-          element: function(selector){
-              return Element.prototype.matchesSelector.call(this,selector) ? this : false;
-          },
-          collection: function(selector){
-              var elems = [], i, len;
-              
-              if( selector instanceof Function ) {
-                for( i = 0, len = this.length, elem; i < len ; i++ ) {
-                    elem = this[i];
-                    if( selector.apply(elem,[elem]) ) elems.push(elem);
-                }
-                  
-                return new ListDOM(elems);
-                  
-              } else if( typeof selector === 'string' ) {
-                  for( i = 0, len = this.length, elem; i < len ; i++ ) {
-                    elem = this[i];
-                    if( Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
-                  }
-                  
-                  return new ListDOM(elems);
-              }
-              return false;
-          }
-     },
-     'children': {
-        element: false,
-        collection: document.body.children ? function(selector,args){
-          var elems = new ListDOM();
-          
-          for( var i = 0, len = this.length; i < len; i++ ) {
-            [].push.apply(elems,this[i].children);
-          }
-            
-          if( selector ) {
-            if( isString(selector) ) {
-              elems = elems.filter(selector);
-            } else if( isFunction(selector) ) elems.each(selector);
-          }
-          return elems;
-
-        } : function (selector, args) {
-          var elems = [], elem;
-
-          if( isString(selector) ) {
-            Array.prototype.forEach.call(this,function(elem){
-              elem = elem.firstElementChild || elem.firstChild;
-              
-              while(elem) {
-                if( elem && Element.prototype.matchesSelector.call(elem,selector) ) elems.push(elem);
-                elem = elem.nextElementSibling;
-              }
-            });
-          } else if( isFunction(selector) ) {
-            Array.prototype.forEach.call(this,function(elem){
-              elem = elem.firstElementChild || elem.firstChild;
-              while(elem) {
-                elems.push(elem);
-                selector.apply(elem,args);
-                elem = elem.nextElementSibling;
-              }
-            });
-          } else {
-            Array.prototype.forEach.call(this,function(elem){
-              elem = elem.firstElementChild || elem.firstChild;
-              while(elem) {
-                elems.push(elem);
-                elem = elem.nextElementSibling;
-              }
-            });
-          }
-          return new ListDOM(elems);
-        }
-     },
-     'data': {
-          element: document.body.dataset ? function (key,value) {
-            if( value === undefined ) {
-              return key ? this.dataset[key] : this.dataset;
-            } else {
-              this.dataset[key] = value;
-            }
-          } : function (key, value) {
-            if( value === undefined ) {
-              return this.getAttribute(key);
-            } else {
-              this.setAttribute(key, value);
-              return this;
-            }
-          },
-          collection: document.body.dataset ? function (key,value) {
-            var i, len;
-            if( value === undefined ) {
-              var values = [];
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                values.push( key ? this[i].dataset[key] : this[i].dataset );
-              }
-              return values;
-            } else {
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                this[i].dataset[key] = value;
-              }
-              return this;
-            }
-          } : function () {
-            var i, len;
-            if( value === undefined ) {
-              var values = [];
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                values.push( this[i].getAttribute('data-' + key) );
-              }
-            } else {
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                this[i].setAttribute('data-' + key, value);
-              }
-            }
-          }
-     },
-     'attr': {
-          element: function (key,value) {
-            if( value !== undefined ) {
-              this.setAttribute(key,value);
-            } else {
-              return this.getAttribute(key);
-            }
-            return this;
-          },
-          collection: function (key,value) {
-            var i, len;
-            if( value !== undefined ) {
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                this[i].setAttribute(key,value);
-              }
-            } else if( key ) {
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                this[i].getAttribute(key);
-              }
-            }
-            return this;
-          }
-     },
-     'addClass': {
-         element: classListEnabled ? function (className) {
-            this.classList.add(className);
-            return this;
-          } : function(className){
-              if(!this.className) this.className = '';
-              var patt = new RegExp('\\b'+className+'\\b','');
-              if(!patt.test(this.className)) this.className += ' '+className;
-              return this;
-         },
-         collection: function (className) {
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-                this[i].addClass(className);
-            }
-            return this;
-        }
-     },
-     'removeClass': {
-        element: classListEnabled ? function (className) {
-            this.classList.remove(className);
-            return this;
-        } : function(className){
-            if(this.className) {
-                var patt = new RegExp('(\\b|\\s+)'+className+'\\b','g');
-                this.className = this.className.replace(patt,'');
-            }
-            return this;
-        },
-        collection: classListEnabled ? function (className) {
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-                this[i].classList.remove(className);
-            }
-            return this;
-        } : function (className) {
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-                this[i].removeClass(className);
-            }
-            return this;
-        }
-     },
-     'hasClass': {
-        element: classListEnabled ? function (className) {
-            return this.classList.item(className);
-        } : function(className){
-            if(!this.className) return false;
-            patt = new RegExp('\\b'+className+'\\b','');
-            return patt.test(this.className);
-        },
-        collection: function (className) {
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-                if( element.hasClass(className) ) {
-                    return true;
-                }
-            }
-            return false;
-        }
-     },
-     'toggleClass': {
-        element: classListEnabled ? function (className, add) {
-          if( add === undefined ) {
-            add = !this.hasClass(className);
-          }
-          if ( add ) {
-            this.classList.add(className);
-          } else {
-            this.classList.remove(className);
-          }
-        } : function () {
-          if( add === undefined ) {
-            add = !this.hasClass(className);
-          }
-          if ( add ) {
-            this.addClass(className);
-          } else {
-            this.removeClass(className);
-          }
-        },
-        collection: classListEnabled ? function (className, add) {
-          if( add === undefined ) {
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-              element.toggleClass(className, add);
-            }
-          } else if(add) {
-            this.addClass(className);
-          } else {
-            this.removeClass(className);
-          }
-          return false;
-        } : function (className, add) {
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-              element.toggleClass(className, add);
-            }
-            return false;
-        }
-     },
-     'parent': {
-         element: function () {
-              if( this == document.body ) return false;
-              return this.parentElement || this.parentNode;
-         },
-         collection: function () {
-            var items = new ListDOM(), parent;
-            
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-                parent = this[i].parent();
-                if(parent) items.push(parent);
-            }
-            
-            return items;
-         }
-     },
-     'render': {
-         element: function (html) {
-          this.innerHTML = html;
-          this.find('script').each(function(script){
-            var runScripts = eval;
-            if( script.type == 'text/javascript' ) {
-              try{ runScripts('(function(){ \'use strict\';'+script.textContent+'})();'); }catch(err){ throw err.message; }
-            } else if( /^text\/coffee(script)/.test(script.type) && isObject(window.CoffeeScript) ) {
-              if( CoffeeScript.compile instanceof Function ) {
-                try{ runScripts(CoffeeScript.compile(script.textContent)); }catch(err){ console.log(err.message); }
-              }
-            }
-          });
-          
-          return this;
-         },
-         collection: function (html) {
-            for( var i = 0, len = this.length; i < len ; i++ ) {
-              this[i].render(html);
-            }
-            return this;
-         }
-      },
-      'text': {
-        element: function (text) {
-          if( text === undefined ) {
-            return this.textContent;
-          } else {
-            this.textContent = text;
-            return this;
-          }
-        },
-        collection: function (text) {
-          var i, len;
-            if( text === undefined ) {
-              text = '';
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                text += this[i].textContent;
-              }
-              return text;
-            } else {
-              for( i = 0, len = this.length; i < len ; i++ ) {
-                this[i].textContent = text;
-              }
-            }
-            return this;
-        }
-      },
-      'on':{
-          element: function (event,handler) {
-              var elem = this;
-              if( isString(event) ) {
-                  if(isFunction(handler)) {
-                      var originalHandler = handler;
-                      handler = function(e){
-                          originalHandler.apply(e.target,[e].concat(e.data));
-                      };
-                      
-                      if (elem.addEventListener)  { // W3C DOM
-                          elem.addEventListener(event,handler,false);
-                      } else if (elem.attachEvent) { // IE DOM
-                          elem.attachEvent("on"+event, handler);
-                      } else throw 'No es posible añadir evento';
-                      
-                      if(!elem.listeners) elem.listeners = {};
-                      if( !elem.listeners[event] ) elem.listeners[event] = [];
-                      
-                      elem.listeners[event].push(handler);
-                  } else if( handler === false ) {
-                      if(elem.listeners) {
-                          if( elem.listeners[event] ) {
-                              var handlers = elem.listeners[event];
-                              handler = handlers.pop();
-                              while( handler ) {
-                                  if (elem.removeEventListener) elem.removeEventListener (event, handler, false);  // all browsers except IE before version 9
-                                  else if (elem.detachEvent) elem.detachEvent ('on'+event, handler);   // IE before version 9
-                                  handler = handlers.pop();
-                              }
-                          }
-                      }
-                  }
-              }
-              
-              return this;
-          },
-          collection: function (event,handler) {
-              Array.prototype.forEach.call(this,function(elem){
-                  elem.on(event,handler);
-              });
-              
-              return this;
-          }
-      },
-      'off': {
-          element: function (event) { this.on(event,false); },
-          collection: function (event) { this.on(event,false); }
-      },
-      'trigger': {
-          element: function (event,data) {
-              triggerEvent(this, event, data);
-          },
-          collection: function (event,data){
-              Array.prototype.forEach.call(this,function(elem){
-                  triggerEvent(elem, event, data);
-              });
-          }
-      },
-      ready: {
-        element: ready,
-        collection: ready
-      }
-  });
+  // jqlite function
 
   function pushMatches( list, matches ) {
     for( i = 0, len = matches.length; i < len; i++ ) {
@@ -615,7 +179,353 @@
 
   jqlite.fn = ListDOM.prototype;
 
-  window.ListDOM = ListDOM;
+  // List of elements
+
+  var auxArray = [],
+      auxDiv = document.createElement('div');
+    
+  function ListDOM(){}
+  
+  ListDOM.prototype = [];
+
+  ListDOM.prototype.get = function(pos) {
+      return pos ? this[pos] : this;
+    };
+
+  ListDOM.prototype.find = function(selector) {
+      var elems = new ListDOM(), found;
+      
+      for( var i = 0, len = this.length; i < len; i++ ) {
+          found = this[i].querySelectorAll(selector);
+          for( var j = 0, len2 = found.length; j < len2 ; j++ ) {
+              if( !found.item(j).___found___ ) {
+                  elems[elems.length] = found.item(j);
+                  found.item(j).___found___ = true;
+              }
+          }
+      }
+      for( i = 0, len = elems.length; i < len ; i++ ) {
+        delete elems[i].___found___;
+      }
+      
+      return elems;
+    };
+
+  ListDOM.prototype.each = function(each) {
+      if( each instanceof Function ) {
+        for( var i = 0, len = this.length, elem; i < len ; i++ ) {
+            each.call(this[i], i, this[i]);
+        }
+      }
+      return this;
+    };
+
+  ListDOM.prototype.filter = function(selector) {
+      var elems = [], i, len;
+      
+      if( selector instanceof Function ) {
+        for( i = 0, len = this.length, elem; i < len ; i++ ) {
+          elem = this[i];
+          if( selector.apply(elem,[elem]) ) {
+            elems.push(elem);
+          }
+        }
+          
+        return new ListDOM(elems);
+          
+      } else if( typeof selector === 'string' ) {
+          for( i = 0, len = this.length, elem; i < len ; i++ ) {
+            elem = this[i];
+            if( Element.prototype.matchesSelector.call(elem,selector) ) {
+              elems[elems.length] = elem;
+            }
+          }
+          
+          return new ListDOM(elems);
+      }
+      return false;
+    };
+
+  ListDOM.prototype.children = document.body.children ? function (selector){
+      var elems = new ListDOM();
+      
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        [].push.apply(elems,this[i].children);
+      }
+        
+      if( selector ) {
+        return elems.filter(selector);
+      }
+      return elems;
+
+    } : function (selector) {
+      var elems = new ListDOM(), elem;
+
+      Array.prototype.forEach.call(this,function(elem){
+        elem = elem.firstElementChild || elem.firstChild;
+        while(elem) {
+          elems[elems.length] = elem;
+          elem = elem.nextElementSibling || elem.nextSibling;
+        }
+      });
+
+      if( selector ) {
+        return elems.filter(selector);
+      }
+      return elems;
+    };
+
+  ListDOM.prototype.clone = function (cloneEvents) {
+    var list = new ListDOM();
+    if( cloneEvents === undefined ) {
+      cloneEvents = true;
+    }
+
+    for( i = 0, len = this.length; i < len ; i++ ) {
+      list[list.length] = this[i].cloneNode(cloneEvents);
+    }
+  };
+
+  ListDOM.prototype.data = document.body.dataset ? function (key, value) {
+      var i, len;
+      if( value === undefined ) {
+        return ( this[0] || {} ).dataset[key];
+      } else {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].dataset[key] = value;
+        }
+        return this;
+      }
+    } : function (key, value) {
+      var i, len;
+      if( value === undefined ) {
+        var values = [];
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          values.push( this[i].getAttribute('data-' + key) );
+        }
+        return ( this[0] || { getAttribute: function() { return false; } } ).getAttribute(key);
+      } else {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].setAttribute('data-' + key, value);
+        }
+      }
+    };
+
+  ListDOM.prototype.attr = function (key,value) {
+      var i, len;
+      if( value !== undefined ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].setAttribute(key,value);
+        }
+      } else if( key ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].getAttribute(key);
+        }
+      }
+      return this;
+    };
+
+  ListDOM.prototype.addClass = classListEnabled ? function (className) {
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+          this[i].classList.add(className);
+      }
+      return this;
+    } : function (className) {
+      var RE_CLEANCLASS = new RegExp('\\b' + (className || '') + '\\b','');
+
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+          this[i].className = this[i].className.replace(RE_CLEANCLASS,'') + ' ' + className;
+      }
+      return this;
+    };
+
+  ListDOM.prototype.removeClass = classListEnabled ? function (className) {
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+          this[i].classList.remove(className);
+      }
+      return this;
+    } : function (className) {
+      var RE_REMOVECLASS = new RegExp('(\\b|\\s+)'+className+'\\b','g');
+
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+          this[i].className = this[i].className.replace(RE_REMOVECLASS,'');
+      }
+      return this;
+    };
+
+  ListDOM.prototype.hasClass = classListEnabled ? function (className) {
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+          if( this[i].classList.item(className) ) {
+              return true;
+          }
+      }
+      return false;
+    } : function (className) {
+      var RE_HASCLASS = new RegExp('\\b' + (className || '') + '\\b','');
+
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+          if( RE_HASCLASS.test(this[i].className) ) {
+              return true;
+          }
+      }
+      return false;
+    };
+
+  ListDOM.prototype.toggleClass = classListEnabled ? function (className, add) {
+      var i, len;
+
+      if( className === undefined ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          if ( this[i].classList.item(className) ) {
+            this[i].classList.remove(className);
+          } else {
+            this[i].classList.add(className);
+          }
+        }
+      } else if( add ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].classList.add(className);
+        }
+      } else {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].classList.remove(className);
+        }
+      }
+      return this;
+    } : function (className, add) {
+      var i, len,
+          RE_HASCLASS = new RegExp('\\b' + (className || '') + '\\b',''),
+          RE_CLEANCLASS = new RegExp('\\b' + (className || '') + '\\b',''),
+          RE_REMOVECLASS = new RegExp('(\\b|\\s+)'+className+'\\b','g');
+
+      if( className === undefined ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          if ( RE_HASCLASS.test(this[i].className) ) {
+            this[i].className = this[i].className.replace(RE_REMOVECLASS, '');
+          } else {
+            this[i].className = this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
+          }
+        }
+      } else if( add ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].className = this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
+        }
+      } else {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].className = this[i].className.replace(RE_REMOVECLASS, '');
+        }
+      }
+      return this;
+    };
+
+  ListDOM.prototype.parent = function () {
+      var list = new ListDOM(), elem;
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = this.parentElement || this.parentNode;
+        if( elem ) {
+          list[list.length] = this[i];
+        }
+      }
+    };
+
+  jqlite.plugin = function (selector, handler, collection) {
+    if( typeof selector === 'string' && handler instanceof Function ) {
+      jqlite.plugin.cache[selector] = handler;
+      jqlite.plugin.cache[selector]._collection = !!collection;
+    }
+  };
+  jqlite.plugin.cache = {};
+
+  jqlite.plugin.find = function (elements) {
+    var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, matches;
+
+    for( pluginSelector in pluginsCache ) {
+
+      handler = pluginsCache[pluginSelector];
+      matches = elements.find(pluginSelector);
+
+      if( matches.length ) {
+        if( handler._collection ) {
+          handler( elements.find(pluginSelector) );
+        } else {
+          elements.find(pluginSelector).each(handler);
+        }
+      }
+    }
+
+  };
+
+  ListDOM.prototype.html = function () {
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        this[i].innerHTML = html;
+      }
+      this.find('script').each(function(script){
+        if( script.type == 'text/javascript' ) {
+          try{ runScripts('(function(){ \'use strict\';' + script.textContent + '})();'); }catch(err){ throw err.message; }
+        }
+      });
+      return this;
+    };
+
+  ListDOM.prototype.text = function (text) {
+      var i, len;
+      if( text === undefined ) {
+        var textContent = '';
+        for( i = 0, len = this.length; i < len; i++ ) {
+          textContent += this[i].textContent;
+        }
+        return this;
+      } else {
+        for( i = 0, len = this.length; i < len; i++ ) {
+          this[i].innerHTML = html;
+        }
+        return this;
+      }
+    };
+
+  var attachElementListener = function () {};
+
+  if(document.body.addEventListener)  { // W3C DOM
+
+    attachElementListener = function (element, eventName, handler) {
+      element.addEventListener(eventName, function(e){
+          handler.apply(e.target,[e].concat(e.data));
+      },false);
+    };
+
+  } else if(document.body.attachEvent) { // IE DOM
+
+    attachElementListener = function (element, eventName, handler) {
+      element.attachEvent("on" + eventName, function(e){
+            handler.apply(e.target,[e].concat(e.data));
+        },false);
+    };
+
+  } else {
+    throw 'Browser not compatible with element events';
+  }
+
+  ListDOM.prototype.on = function (eventName, handler) {
+    if( typeof eventName !== 'string' || !(handler instanceof Function) ) {
+      throw 'bad arguments';
+    }
+
+    for( var i = 0, len = this.length; i < len; i++ ) {
+      attachElementListener(this[i], eventName, handler);
+    }
+  };
+
+  ListDOM.prototype.trigger = function (eventName, data) {
+    if( typeof eventName !== 'string' ) {
+      throw 'bad arguments';
+    }
+
+    for( var i = 0, len = this.length; i < len; i++ ) {
+      triggerEvent(this[i], eventName, data);
+    }
+  };
+
+  ListDOM.prototype.ready = ready;
 
   return jqlite;
   
