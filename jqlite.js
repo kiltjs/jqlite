@@ -192,6 +192,15 @@
       return pos ? this[pos] : this;
     };
 
+  ListDOM.prototype.eq = function(pos) {
+      var item = ( pos < 0 ) this[this.length - pos] : this[pos], list = new ListDOM();
+
+      if(item) {
+        list[0] = item;
+      }
+      return list; 
+    };
+
   ListDOM.prototype.find = function(selector) {
       var elems = new ListDOM(), found;
       
