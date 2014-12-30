@@ -92,7 +92,8 @@
         }
       },
       classListEnabled =  document.body.classList,
-      runScripts = eval;
+      runScripts = eval,
+      noop = function () {};
 
   ready.isReady = false;
   ready.ready = function () {
@@ -179,6 +180,8 @@
 
   jqlite.fn = ListDOM.prototype;
 
+  jqlite.noop = noop;
+
   // List of elements
 
   var auxArray = [],
@@ -190,6 +193,15 @@
 
   ListDOM.prototype.get = function(pos) {
       return pos ? this[pos] : this;
+    };
+
+  ListDOM.prototype.eq = function(pos) {
+      var item = ( pos < 0 ) ? this[this.length - pos] : this[pos], list = new ListDOM();
+
+      if(item) {
+        list[0] = item;
+      }
+      return list; 
     };
 
   ListDOM.prototype.find = function(selector) {
@@ -428,6 +440,29 @@
       }
     };
 
+  ListDOM.prototype.remove = function (selector) {
+      var list = selector ? this.filter(selector) : this, parent;
+      for( var i = 0, len = list.length; i < len; i++ ) {
+        parent = list.parentElement || list.parentNode;
+        if( parent ) {
+          parent.removeChild(list[i]);
+        }
+      }
+    };
+
+  ListDOM.prototype.detach = function (selector) {
+      var list = selector ? this.filter(selector) : this,
+          div = document.createElement('div'),
+          elems = new ListDOM();
+
+      for( var i = 0, len = list.length; i < len; i++ ) {
+        div.appendChild(list[i]);
+        elems[elems.length] = list[i];
+      }
+
+      return elems;
+    }; 
+
   jqlite.plugin = function (selector, handler, collection) {
     if( typeof selector === 'string' && handler instanceof Function ) {
       jqlite.plugin.cache[selector] = handler;
@@ -483,35 +518,65 @@
       }
     };
 
-  var attachElementListener = function () {};
+  var attachElementListener = noop, detachElementListener = noop;
 
   if(document.body.addEventListener)  { // W3C DOM
 
-    attachElementListener = function (element, eventName, handler) {
+    attachElementListener = function (element, eventName, listener) {
       element.addEventListener(eventName, function(e){
-          handler.apply(e.target,[e].concat(e.data));
+          listener.apply(e.target,[e].concat(e.data));
       },false);
     };
 
+    detachElementListener = function (element, eventName, listener) {
+      element.removeEventListener(eventName, listener, false);
+    };
+
+
   } else if(document.body.attachEvent) { // IE DOM
 
-    attachElementListener = function (element, eventName, handler) {
+    attachElementListener = function (element, eventName, listener) {
       element.attachEvent("on" + eventName, function(e){
-            handler.apply(e.target,[e].concat(e.data));
+            listener.apply(e.target,[e].concat(e.data));
         },false);
+    };
+
+    detachElementListener = function (element, eventName, listener) {
+      element.detachEvent('on' + eventName, listener);
     };
 
   } else {
     throw 'Browser not compatible with element events';
   }
 
-  ListDOM.prototype.on = function (eventName, handler) {
-    if( typeof eventName !== 'string' || !(handler instanceof Function) ) {
+  ListDOM.prototype.on = function (eventName, listener) {
+    if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
       throw 'bad arguments';
     }
 
     for( var i = 0, len = this.length; i < len; i++ ) {
-      attachElementListener(this[i], eventName, handler);
+      attachElementListener(this[i], eventName, listener);
+    }
+  };
+
+  function autoDestroyListener(element, eventName, listener) {
+    var _listener = function () {
+      detachElementListener(element, eventName);
+      listener();
+    };
+    return _listener;
+  }
+
+  ListDOM.prototype.one = function (eventName, listener) {
+    if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
+      throw 'bad arguments';
+    }
+
+    var element;
+
+    for( var i = 0, len = this.length; i < len; i++ ) {
+      element = this[i];
+      attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
     }
   };
 
