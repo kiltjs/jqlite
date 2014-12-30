@@ -443,7 +443,20 @@
       return this;
     };
 
-  ListDOM.prototype.parent = function () {
+  ListDOM.prototype.next = function (selector) {
+      var list = new ListDOM(), elem;
+
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = this.nextElementSibling || this.nextSibling;
+        if( elem ) {
+          list[list.length] = this[i];
+        }
+      }
+
+      return ( typeof selector === 'string' ) ? list.filter(selector): list;
+    };
+
+  ListDOM.prototype.parent = function (selector) {
       var list = new ListDOM(), elem;
 
       for( var i = 0, len = this.length; i < len; i++ ) {
@@ -453,7 +466,7 @@
         }
       }
 
-      return list;
+      return ( typeof selector === 'string' ) ? list.filter(selector): list;
     };
 
   ListDOM.prototype.remove = function (selector) {
