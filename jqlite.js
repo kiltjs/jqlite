@@ -430,24 +430,43 @@
       return this;
     };
 
+  ListDOM.prototype.append = function (content) {
+      var jContent = $(content), i, j, len, len2, element;
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        element = this[i];
+        for( j = 0, len2 = jContent.length; j < len2; j++ ) {
+          element.appendChild(jContent[j]);
+        }
+      }
+
+      return this;
+    };
+
   ListDOM.prototype.parent = function () {
       var list = new ListDOM(), elem;
+
       for( var i = 0, len = this.length; i < len; i++ ) {
         elem = this.parentElement || this.parentNode;
         if( elem ) {
           list[list.length] = this[i];
         }
       }
+
+      return list;
     };
 
   ListDOM.prototype.remove = function (selector) {
       var list = selector ? this.filter(selector) : this, parent;
+
       for( var i = 0, len = list.length; i < len; i++ ) {
         parent = list.parentElement || list.parentNode;
         if( parent ) {
           parent.removeChild(list[i]);
         }
       }
+
+      return this;
     };
 
   ListDOM.prototype.detach = function (selector) {
