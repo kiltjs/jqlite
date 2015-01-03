@@ -1,18 +1,30 @@
 
 describe('jstool: jqlite', function () {
 
-	var baseNode = document.createElement('div');
+	var body = document.body;
 
-	baseNode.className = 'base-node';
+	beforeEach(function () {
+		body.innerHTML = '';
+	});
 
-	document.body.appendChild(baseNode);
-
-	it('will run', function () {
-		baseNode.innerHTML = '<article id="item-id" class="parent element" data-some="attribute"><section class="post"><a class="link"></a></section></article>';
-
+	it('find', function () {
+		body.innerHTML = '<article id="item-id" class="parent element" data-some="attribute"><section class="post"><a class="link"></a></section></article>';
 		expect( $('#item-id > section').length ).toBe(1);
 	});
 
-	// console.log('document', document.body.innerHTML, Object.keys(window) );
+	it('find: multiple', function () {
+		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
+		expect( $(body).find('ul > li').length ).toBe(3);
+	});
+
+	it('find: multiple', function () {
+		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar</li></ul><ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
+		expect( $(body).find('ul').find('li').length ).toBe(6);
+	});
+
+	it('find: nested no duplicates', function () {
+		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar<ul><li>foo</li><li>bar</li><li>foobar</li></ul></li></ul><ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
+		expect( $(body).find('ul').find('li').length ).toBe(9);
+	});
 
 });

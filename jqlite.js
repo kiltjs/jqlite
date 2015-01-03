@@ -149,25 +149,17 @@
 
   function initList(selector) {
 
-    switch( (selector || {}).constructor.name ) {
-      case 'Array':
-      case 'NodeList':
-      case 'HTMLCollection':
-        return pushMatches( new ListDOM(), selector );
-      case 'Element':
-      case 'HTMLElement':
-        var list = new ListDOM();
-        list[0] = selector;
-        list.length = 1;
-        return list;
+    if( selector instanceof Array || selector instanceof NodeList || selector instanceof HTMLCollection ) {
+      return pushMatches( new ListDOM(), selector );
     }
 
-    if( selector === document ) {
+    if( selector === document || selector instanceof HTMLElement || selector instanceof Element ) {
       var list2 = new ListDOM();
       list2[0] = selector;
       list2.length = 1;
       return list2;
     }
+
     if( selector instanceof Function ) ready(selector);
   }
   
@@ -205,21 +197,31 @@
     };
 
   ListDOM.prototype.find = function(selector) {
-      var elems = new ListDOM(), found;
-      
-      for( var i = 0, len = this.length; i < len; i++ ) {
-          found = this[i].querySelectorAll(selector);
-          for( var j = 0, len2 = found.length; j < len2 ; j++ ) {
-              if( !found.item(j).___found___ ) {
-                  elems[elems.length] = found.item(j);
-                  found.item(j).___found___ = true;
-              }
-          }
+      var elems = new ListDOM(), found, i, len;
+
+      if( this.length === 1 ) {
+        found = this[0].querySelectorAll(selector);
+        for( i = 0, len = found.length; i < len; i++ ) {
+          elems[i] = found[i];
+        }
+        elems.length = len;
+      } else if( this.length > 1 ) {
+        var j, len2;
+        for( i = 0, len = this.length; i < len; i++ ) {
+            found = this[i].querySelectorAll(selector);
+            for( j = 0, len2 = found.length; j < len2 ; j++ ) {
+                if( !found.item(j).___found___ ) {
+                    elems[elems.length] = found.item(j);
+                    elems.length++;
+                    found.item(j).___found___ = true;
+                }
+            }
+        }
+        for( i = 0, len = elems.length; i < len ; i++ ) {
+          delete elems[i].___found___;
+        }
       }
-      for( i = 0, len = elems.length; i < len ; i++ ) {
-        delete elems[i].___found___;
-      }
-      
+
       return elems;
     };
 
