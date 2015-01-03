@@ -122,9 +122,10 @@
   // jqlite function
 
   function pushMatches( list, matches ) {
-    for( i = 0, len = matches.length; i < len; i++ ) {
-        list[list.length] = matches[i];
+    for( var i = 0, len = matches.length; i < len; i++ ) {
+        list[i] = matches[i];
     }
+    list.length += len;
     return list;
   }
 
@@ -137,37 +138,29 @@
           listdom[0] = found;
           listdom.length = 1;
           return listdom;
-        } else return document.querySelectorAll(selector);
+        } else return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
         break;
       case '<':
         auxDiv.innerHTML = selector;
         return pushMatches( new ListDOM(), auxDiv.children );
       default:
-        return document.querySelectorAll(selector);
+        return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
     }
   }
 
   function initList(selector) {
 
-    switch( (selector || {}).constructor.name ) {
-      case 'Array':
-      case 'NodeList':
-      case 'HTMLCollection':
-        return pushMatches( new ListDOM(), selector );
-      case 'Element':
-      case 'HTMLElement':
-        var list = new ListDOM();
-        list[0] = selector;
-        list.length = 1;
-        return list;
+    if( selector instanceof Array || selector instanceof NodeList || selector instanceof HTMLCollection ) {
+      return pushMatches( new ListDOM(), selector );
     }
 
-    if( selector === document ) {
+    if( selector === document || selector instanceof HTMLElement || selector instanceof Element ) {
       var list2 = new ListDOM();
       list2[0] = selector;
       list2.length = 1;
       return list2;
     }
+
     if( selector instanceof Function ) ready(selector);
   }
   
@@ -205,21 +198,31 @@
     };
 
   ListDOM.prototype.find = function(selector) {
-      var elems = new ListDOM(), found;
-      
-      for( var i = 0, len = this.length; i < len; i++ ) {
-          found = this[i].querySelectorAll(selector);
-          for( var j = 0, len2 = found.length; j < len2 ; j++ ) {
-              if( !found.item(j).___found___ ) {
-                  elems[elems.length] = found.item(j);
-                  found.item(j).___found___ = true;
-              }
-          }
+      var elems = new ListDOM(), found, i, len;
+
+      if( this.length === 1 ) {
+        found = this[0].querySelectorAll(selector);
+        for( i = 0, len = found.length; i < len; i++ ) {
+          elems[i] = found[i];
+        }
+        elems.length = len;
+      } else if( this.length > 1 ) {
+        var j, len2;
+        for( i = 0, len = this.length; i < len; i++ ) {
+            found = this[i].querySelectorAll(selector);
+            for( j = 0, len2 = found.length; j < len2 ; j++ ) {
+                if( !found.item(j).___found___ ) {
+                    elems[elems.length] = found.item(j);
+                    elems.length++;
+                    found.item(j).___found___ = true;
+                }
+            }
+        }
+        for( i = 0, len = elems.length; i < len ; i++ ) {
+          delete elems[i].___found___;
+        }
       }
-      for( i = 0, len = elems.length; i < len ; i++ ) {
-        delete elems[i].___found___;
-      }
-      
+
       return elems;
     };
 
@@ -233,7 +236,7 @@
     };
 
   ListDOM.prototype.filter = function(selector) {
-      var elems = [], i, len;
+      var elems = new ListDOM(), elem, i, len;
       
       if( selector instanceof Function ) {
         for( i = 0, len = this.length, elem; i < len ; i++ ) {
@@ -241,28 +244,23 @@
           if( selector.apply(elem,[elem]) ) {
             elems.push(elem);
           }
-        }
-          
-        return new ListDOM(elems);
-          
+        } 
       } else if( typeof selector === 'string' ) {
           for( i = 0, len = this.length, elem; i < len ; i++ ) {
             elem = this[i];
             if( Element.prototype.matchesSelector.call(elem,selector) ) {
-              elems[elems.length] = elem;
+              elems.push(elem);
             }
           }
-          
-          return new ListDOM(elems);
       }
-      return false;
+      return elems;
     };
 
   ListDOM.prototype.children = document.body.children ? function (selector){
       var elems = new ListDOM();
       
       for( var i = 0, len = this.length; i < len; i++ ) {
-        [].push.apply(elems,this[i].children);
+        pushMatches(elems, this[i].children);
       }
         
       if( selector ) {
@@ -430,24 +428,56 @@
       return this;
     };
 
-  ListDOM.prototype.parent = function () {
+  ListDOM.prototype.append = function (content) {
+      var jContent = $(content), i, j, len, len2, element;
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        element = this[i];
+        for( j = 0, len2 = jContent.length; j < len2; j++ ) {
+          element.appendChild(jContent[j]);
+        }
+      }
+
+      return this;
+    };
+
+  ListDOM.prototype.next = function (selector) {
       var list = new ListDOM(), elem;
+
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = this.nextElementSibling || this.nextSibling;
+        if( elem ) {
+          list[list.length] = this[i];
+        }
+      }
+
+      return ( typeof selector === 'string' ) ? list.filter(selector): list;
+    };
+
+  ListDOM.prototype.parent = function (selector) {
+      var list = new ListDOM(), elem;
+
       for( var i = 0, len = this.length; i < len; i++ ) {
         elem = this.parentElement || this.parentNode;
         if( elem ) {
           list[list.length] = this[i];
         }
       }
+
+      return ( typeof selector === 'string' ) ? list.filter(selector): list;
     };
 
   ListDOM.prototype.remove = function (selector) {
       var list = selector ? this.filter(selector) : this, parent;
+
       for( var i = 0, len = list.length; i < len; i++ ) {
         parent = list.parentElement || list.parentNode;
         if( parent ) {
           parent.removeChild(list[i]);
         }
       }
+
+      return this;
     };
 
   ListDOM.prototype.detach = function (selector) {
