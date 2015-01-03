@@ -24,7 +24,34 @@ describe('jstool: jqlite', function () {
 
 	it('find: nested no duplicates', function () {
 		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar<ul><li>foo</li><li>bar</li><li>foobar</li></ul></li></ul><ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
-		expect( $(body).find('ul').find('li').length ).toBe(9);
+		expect( $('ul').find('li').length ).toBe(9);
+	});
+
+	it('each', function () {
+		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
+		var texts = '';
+
+		$('ul > li').each(function () {
+			texts += this.textContent;
+		});
+
+		expect( texts ).toBe('foobarfoobar');
+	});
+
+	it('filter', function () {
+		body.innerHTML = '<ul><li class="odd">foo</li><li>bar</li><li class="odd">foobar</li><li>barfoo</li><li class="odd">raboof</li></ul>';
+		var texts = '';
+
+		$('ul > li').filter('.odd').each(function () {
+			texts += this.textContent;
+		});
+
+		expect( texts ).toBe('foofoobarraboof');
+	});
+
+	it('children', function () {
+		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar<ul><li>foo</li><li>bar</li><li>foobar</li></ul></li></ul><ul><li>foo<ul><li>foo</li><li>bar</li><li>foobar</li></ul><ul><li>foo</li><li>bar</li><li>foobar</li></ul></li><li>bar</li><li>foobar</li></ul>';
+		expect( $('ul').find('li').children().length ).toBe(3);
 	});
 
 });

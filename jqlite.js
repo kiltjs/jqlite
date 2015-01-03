@@ -122,9 +122,10 @@
   // jqlite function
 
   function pushMatches( list, matches ) {
-    for( i = 0, len = matches.length; i < len; i++ ) {
-        list[list.length] = matches[i];
+    for( var i = 0, len = matches.length; i < len; i++ ) {
+        list[i] = matches[i];
     }
+    list.length += len;
     return list;
   }
 
@@ -137,13 +138,13 @@
           listdom[0] = found;
           listdom.length = 1;
           return listdom;
-        } else return document.querySelectorAll(selector);
+        } else return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
         break;
       case '<':
         auxDiv.innerHTML = selector;
         return pushMatches( new ListDOM(), auxDiv.children );
       default:
-        return document.querySelectorAll(selector);
+        return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
     }
   }
 
@@ -235,7 +236,7 @@
     };
 
   ListDOM.prototype.filter = function(selector) {
-      var elems = [], i, len;
+      var elems = new ListDOM(), elem, i, len;
       
       if( selector instanceof Function ) {
         for( i = 0, len = this.length, elem; i < len ; i++ ) {
@@ -243,28 +244,23 @@
           if( selector.apply(elem,[elem]) ) {
             elems.push(elem);
           }
-        }
-          
-        return new ListDOM(elems);
-          
+        } 
       } else if( typeof selector === 'string' ) {
           for( i = 0, len = this.length, elem; i < len ; i++ ) {
             elem = this[i];
             if( Element.prototype.matchesSelector.call(elem,selector) ) {
-              elems[elems.length] = elem;
+              elems.push(elem);
             }
           }
-          
-          return new ListDOM(elems);
       }
-      return false;
+      return elems;
     };
 
   ListDOM.prototype.children = document.body.children ? function (selector){
       var elems = new ListDOM();
       
       for( var i = 0, len = this.length; i < len; i++ ) {
-        [].push.apply(elems,this[i].children);
+        pushMatches(elems, this[i].children);
       }
         
       if( selector ) {
