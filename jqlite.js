@@ -107,13 +107,15 @@
 
   if ( document.addEventListener ) {
       document.addEventListener( "DOMContentLoaded", function(){
-        // document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
+        var args = arguments;
+        document.removeEventListener( "DOMContentLoaded", args.callee, false );
         ready.ready();
       }, false );
   } else if ( document.attachEvent ) {
     document.attachEvent("onreadystatechange", function(){
       if ( document.readyState === "complete" ) {
-        // document.detachEvent( "onreadystatechange", arguments.callee );
+        var args = arguments;
+        document.detachEvent( "onreadystatechange", args.callee );
         ready.ready();
       }
     });
