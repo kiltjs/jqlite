@@ -93,7 +93,8 @@
       },
       classListEnabled =  document.body.classList,
       runScripts = eval,
-      noop = function () {};
+      noop = function () {},
+      detached = document.createElement('div');
 
   ready.isReady = false;
   ready.ready = function () {
@@ -449,7 +450,7 @@
       for( var i = 0, len = this.length; i < len; i++ ) {
         elem = this.nextElementSibling || this.nextSibling;
         if( elem ) {
-          list[list.length] = this[i];
+          list.push(this[i]);
         }
       }
 
@@ -462,7 +463,7 @@
       for( var i = 0, len = this.length; i < len; i++ ) {
         elem = this.parentElement || this.parentNode;
         if( elem ) {
-          list[list.length] = this[i];
+          list.push(this[i]);
         }
       }
 
@@ -484,12 +485,11 @@
 
   ListDOM.prototype.detach = function (selector) {
       var list = selector ? this.filter(selector) : this,
-          div = document.createElement('div'),
           elems = new ListDOM();
 
       for( var i = 0, len = list.length; i < len; i++ ) {
-        div.appendChild(list[i]);
-        elems[elems.length] = list[i];
+        detached.appendChild(list[i]);
+        elems.push(list[i]);
       }
 
       return elems;
