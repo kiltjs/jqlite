@@ -322,15 +322,19 @@
       }
     };
 
-  ListDOM.prototype.attr = function (key,value) {
+  ListDOM.prototype.attr = function (key, value) {
       var i, len;
       if( value !== undefined ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
           this[i].setAttribute(key,value);
         }
+      } if( value instanceof Function ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i].setAttribute( key, value(i, this[i].getAttribute(key) ) );
+        }
       } else if( key ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].getAttribute(key);
+          this[i].getAttribute( key );
         }
       }
       return this;
