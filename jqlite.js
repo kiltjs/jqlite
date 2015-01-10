@@ -273,6 +273,27 @@
       return elems;
     };
 
+  ListDOM.prototype.closest = function(selector) {
+      var elems = new ListDOM();
+
+      if( !selector ) {
+        return this;
+      }
+
+      for( var i = 0, len = this.length, elem; i < len ; i++ ) {
+        elem = this[i].parentElement;
+        while( elem ) {
+          if( elem.matchesSelector(selector) ) {
+            elems.push(elem);
+            break;
+          }
+          elem = elem.parentElement;
+        }
+      }
+
+      return elems;
+    };
+
   ListDOM.prototype.children = document.body.children ? function (selector){
       var elems = new ListDOM();
       
