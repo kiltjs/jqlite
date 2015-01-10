@@ -7,7 +7,7 @@ module.exports = function(config) {
       'jqlite.js',
       'tests/*.js'
     ],
-    browsers: [ 'Firefox' ],
+    browsers: [ 'Chrome', 'Firefox' ],
     customLaunchers: {
       Chrome_travis_ci: {
         base: 'Chrome',
