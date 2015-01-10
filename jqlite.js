@@ -497,60 +497,87 @@
       return elems;
     }; 
 
-  jqlite.plugin = function (selector, handler, collection) {
-    if( typeof selector === 'string' && handler instanceof Function ) {
-      jqlite.plugin.cache[selector] = handler;
-      jqlite.plugin.cache[selector]._collection = !!collection;
-    }
-  };
-  jqlite.plugin.cache = {};
-
-  jqlite.plugin.init = function (jBase) {
-    var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, matches;
-
-    for( pluginSelector in pluginsCache ) {
-
-      handler = pluginsCache[pluginSelector];
-      elements = jBase.find(pluginSelector);
-
-      if( elements.length ) {
-        if( handler._collection ) {
-          handler( elements );
+  ListDOM.prototype.html = function (html) {
+      var i, len;
+      if( html === undefined ) {
+        html = '';
+        for( i = 0, len = this.length; i < len; i++ ) {
+          text += this[i].innerHTML;
+        }
+        return this;
+      } else if( html === true ) {
+        html = '';
+        for( i = 0, len = this.length; i < len; i++ ) {
+          text += this[i].outerHTML;
+        }
+        return this;
+      } else {
+        if( html instanceof Function ) {
+          for( i = 0, len = this.length; i < len; i++ ) {
+            this[i].innerHTML = html(i, this[i].innerHTML);
+          }
+          return this;
         } else {
-          elements.each(handler);
+          for( i = 0, len = this.length; i < len; i++ ) {
+            this[i].innerHTML = html;
+          }
         }
+        this.find('script').each(function(script){
+          if( script.type == 'text/javascript' ) {
+            try{ runScripts('(function(){ \'use strict\';' + script.textContent + '})();'); }catch(err){ throw err.message; }
+          }
+        });
+        jqlite.plugin.init(this);
       }
-    }
-
-  };
-  jqlite.widget = function (widgetName, handler, collection) {
-    jqlite.plugin('[data-widget="' + widgetName + '"]', handler, collection);
-  };
-
-  ListDOM.prototype.html = function () {
-      for( var i = 0, len = this.length; i < len; i++ ) {
-        this[i].innerHTML = html;
-      }
-      this.find('script').each(function(script){
-        if( script.type == 'text/javascript' ) {
-          try{ runScripts('(function(){ \'use strict\';' + script.textContent + '})();'); }catch(err){ throw err.message; }
-        }
-      });
-      jqlite.plugin.init(this);
       return this;
+    };
+
+    jqlite.plugin = function (selector, handler, collection) {
+      if( typeof selector === 'string' && handler instanceof Function ) {
+        jqlite.plugin.cache[selector] = handler;
+        jqlite.plugin.cache[selector]._collection = !!collection;
+      }
+    };
+    jqlite.plugin.cache = {};
+
+    jqlite.plugin.init = function (jBase) {
+      var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, matches;
+
+      for( pluginSelector in pluginsCache ) {
+
+        handler = pluginsCache[pluginSelector];
+        elements = jBase.find(pluginSelector);
+
+        if( elements.length ) {
+          if( handler._collection ) {
+            handler( elements );
+          } else {
+            elements.each(handler);
+          }
+        }
+      }
+
+    };
+    jqlite.widget = function (widgetName, handler, collection) {
+      jqlite.plugin('[data-widget="' + widgetName + '"]', handler, collection);
     };
 
   ListDOM.prototype.text = function (text) {
       var i, len;
       if( text === undefined ) {
-        var textContent = '';
+        text = '';
         for( i = 0, len = this.length; i < len; i++ ) {
-          textContent += this[i].textContent;
+          text += this[i].textContent;
+        }
+        return this;
+      } else if( text instanceof Function ) {
+        for( i = 0, len = this.length; i < len; i++ ) {
+          this[i].textContent = text(i, this[i].textContent);
         }
         return this;
       } else {
         for( i = 0, len = this.length; i < len; i++ ) {
-          this[i].innerHTML = html;
+          this[i].textContent = text;
         }
         return this;
       }
