@@ -238,6 +238,20 @@
       return this;
     };
 
+  ListDOM.prototype.empty = function(each) {
+      if( each instanceof Function ) {
+        for( var i = 0, len = this.length, elem, child; i < len ; i++ ) {
+            elem = this[i];
+            child = elem.firstChild;
+            while( child ) {
+              elem.removeChild(child);
+              child = elem.firstChild;
+            }
+        }
+      }
+      return this;
+    };
+
   ListDOM.prototype.filter = function(selector) {
       var elems = new ListDOM(), elem, i, len;
       
@@ -503,23 +517,26 @@
   };
   jqlite.plugin.cache = {};
 
-  jqlite.plugin.find = function (elements) {
+  jqlite.plugin.init = function (jBase) {
     var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, matches;
 
     for( pluginSelector in pluginsCache ) {
 
       handler = pluginsCache[pluginSelector];
-      matches = elements.find(pluginSelector);
+      elements = jBase.find(pluginSelector);
 
-      if( matches.length ) {
+      if( elements.length ) {
         if( handler._collection ) {
-          handler( elements.find(pluginSelector) );
+          handler( elements );
         } else {
-          elements.find(pluginSelector).each(handler);
+          elements.each(handler);
         }
       }
     }
 
+  };
+  jqlite.widget = function (widgetName, handler, collection) {
+    jqlite.plugin('[data-widget="' + widgetName + '"]', handler, collection);
   };
 
   ListDOM.prototype.html = function () {
@@ -531,6 +548,7 @@
           try{ runScripts('(function(){ \'use strict\';' + script.textContent + '})();'); }catch(err){ throw err.message; }
         }
       });
+      jqlite.plugin.init(this);
       return this;
     };
 
