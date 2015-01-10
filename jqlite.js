@@ -63,15 +63,17 @@
     else if (window.event && window.event.returnValue) window.eventReturnValue = false;
   }
 
-  var triggerEvent = document.createEvent ? function (element, eventName, data) {
+  var triggerEvent = document.createEvent ? function (element, eventName, args, data) {
       var event = document.createEvent("HTMLEvents");
       event.data = data;
+      event.args = args;
       event.initEvent(eventName, true, true);
       element.dispatchEvent(event);
       return event;
-    } : function (element,eventName,data) {
+    } : function (element, eventName, args, data) {
       var event = document.createEventObject();
       event.data = data;
+      event.args = args;
       element.fireEvent("on" + eventName, event);
       return event;
     };
@@ -589,7 +591,7 @@
 
     attachElementListener = function (element, eventName, listener) {
       element.addEventListener(eventName, function(e){
-          listener.apply(e.target,[e].concat(e.data));
+          listener.apply(e.target,[e].concat(e.args));
       },false);
     };
 
@@ -602,7 +604,7 @@
 
     attachElementListener = function (element, eventName, listener) {
       element.attachEvent("on" + eventName, function(e){
-            listener.apply(e.target,[e].concat(e.data));
+            listener.apply(e.target,[e].concat(e.args));
         },false);
     };
 
@@ -645,13 +647,13 @@
     }
   };
 
-  ListDOM.prototype.trigger = function (eventName, data) {
+  ListDOM.prototype.trigger = function (eventName, args, data) {
     if( typeof eventName !== 'string' ) {
       throw 'bad arguments';
     }
 
     for( var i = 0, len = this.length; i < len; i++ ) {
-      triggerEvent(this[i], eventName, data);
+      triggerEvent(this[i], eventName, args, data);
     }
   };
 
