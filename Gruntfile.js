@@ -26,6 +26,9 @@ module.exports = function(grunt) {
       'git-push': {
         command: 'git push origin master'
       },
+      'git-status': {
+        command: 'git status'
+      },
       'npm-publish': {
         command: 'npm publish'
       }
@@ -65,8 +68,26 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      all: ['Gruntfile.js', '<%= pkg.main %>']
+      gruntfile: ['Gruntfile.js'],
+      main: ['<%= pkg.main %>']
     }
+  });
+
+  grunt.registerTask('commit', function () {
+    console.log(arguments);
+    grunt.task.run([ 'jshint:main' ]);
+
+    var cb = this.async(),
+        exec = require('child_process').exec,
+        cp = exec('git commit -a -m "' + arguments[0] + '" & git push origin master', {}, function (err, stdout, stderr) {
+          if (err && options.failOnError) {
+            grunt.warn(err);
+          }
+          cb();
+        }.bind(this));
+
+    cp.stdout.pipe(process.stdout);
+
   });
 
   grunt.registerTask('git:increase-version', [ 'shell:git-add', 'shell:git-commit-version', 'shell:git-push' ]);
