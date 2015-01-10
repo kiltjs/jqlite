@@ -74,7 +74,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('commit', function () {
-    console.log(arguments);
     grunt.task.run([ 'jshint:main' ]);
 
     var cb = this.async(),
