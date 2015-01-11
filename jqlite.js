@@ -618,26 +618,30 @@
   if( auxDiv.addEventListener )  { // W3C DOM
 
     attachElementListener = function (element, eventName, listener) {
-      element.addEventListener(eventName, function(e){
+      listener.$listener = function(e){
           listener.apply(e.target,[e].concat(e.args));
-      },false);
+      };
+
+      element.addEventListener(eventName, listener.$listener,false);
     };
 
     detachElementListener = function (element, eventName, listener) {
-      element.removeEventListener(eventName, listener, false);
+      element.removeEventListener(eventName, listener.$listener || listener, false);
     };
 
 
   } else if(document.body.attachEvent) { // IE DOM
 
     attachElementListener = function (element, eventName, listener) {
-      element.attachEvent("on" + eventName, function(e){
-            listener.apply(e.target,[e].concat(e.args));
-        },false);
+      listener.$listener = function(e){
+          listener.apply(e.target,[e].concat(e.args));
+      };
+
+      element.attachEvent("on" + eventName, listener.$listener, false);
     };
 
     detachElementListener = function (element, eventName, listener) {
-      element.detachEvent('on' + eventName, listener);
+      element.detachEvent('on' + eventName, listener.$listener || listener );
     };
 
   } else {
@@ -654,11 +658,12 @@
     }
   };
 
-  function autoDestroyListener(element, eventName, listener) {
+  function autoDestroyListener (element, eventName, listener) {
     var _listener = function () {
-      detachElementListener(element, eventName);
+      detachElementListener(element, eventName, _listener);
       listener();
     };
+
     return _listener;
   }
 
@@ -672,6 +677,16 @@
     for( var i = 0, len = this.length; i < len; i++ ) {
       element = this[i];
       attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
+    }
+  };
+
+  ListDOM.prototype.off = function (eventName, listener) {
+    if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
+      throw 'bad arguments';
+    }
+
+    for( var i = 0, len = this.length; i < len; i++ ) {
+      detachElementListener(this[i], eventName, listener);
     }
   };
 
