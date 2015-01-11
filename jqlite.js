@@ -82,10 +82,12 @@
       RE_ONLY_LETTERS = /^[a-zA-Z]+$/,
       RE_IS_ID = /^\#[^\.\[]/,
       RE_IS_CLASS = /^\.[^#\[]/,
-      classListEnabled =  document.body.classList,
       runScripts = eval,
       noop = function () {},
-      detached = document.createElement('div');
+      auxArray = [],
+      auxDiv = document.createElement('div'),
+      detached = document.createElement('div'),
+      classListEnabled = !!auxDiv.classList;
 
   // jqlite function
 
@@ -143,10 +145,7 @@
 
   jqlite.noop = noop;
 
-  // List of elements
-
-  var auxArray = [],
-      auxDiv = document.createElement('div');
+  // ListDOM
     
   function ListDOM(){}
   
@@ -239,14 +238,16 @@
     };
 
   ListDOM.prototype.closest = function(selector) {
-      var elems = new ListDOM();
+      var elems = new ListDOM(), i, len, elem;
 
       if( !selector ) {
         return this;
       }
 
-      for( var i = 0, len = this.length, elem; i < len ; i++ ) {
-        elem = this[i].parentElement;
+      if( this.length === 1 ) {
+        
+        elem = this[0].parentElement;
+
         while( elem ) {
           if( elem.matchesSelector(selector) ) {
             elems.push(elem);
@@ -254,12 +255,34 @@
           }
           elem = elem.parentElement;
         }
+
+      } else if( this.length > 1 ) {
+
+        var j, len2;
+
+        for( i = 0, len = this.length; i < len; i++ ) {
+
+          elem = this[i].parentElement;
+          while( elem ) {
+            if( elem.matchesSelector(selector) ) {
+              if( !elem.___found___ ) {
+                elem.___found___ = true;
+                elems.push(elem);
+              }
+              break;
+            }
+            elem = elem.parentElement;
+          }
+        }
+        for( i = 0, len = elems.length; i < len ; i++ ) {
+          delete elems[i].___found___;
+        }
       }
 
       return elems;
     };
 
-  ListDOM.prototype.children = document.body.children ? function (selector){
+  ListDOM.prototype.children = auxDiv.children ? function (selector){
       var elems = new ListDOM();
       
       for( var i = 0, len = this.length; i < len; i++ ) {
@@ -299,10 +322,15 @@
     }
   };
 
-  ListDOM.prototype.data = document.body.dataset ? function (key, value) {
+  ListDOM.prototype.data = auxDiv.dataset ? function (key, value) {
       var i, len;
+
       if( value === undefined ) {
-        return ( this[0] || {} ).dataset[key];
+        if( key === undefined ) {
+          return this[0] ? this[0].dataset : {};
+        } else {
+          return ( this[0] || {} ).dataset[key];
+        }
       } else {
         for( i = 0, len = this.length; i < len ; i++ ) {
           this[i].dataset[key] = value;
@@ -587,7 +615,7 @@
 
   var attachElementListener = noop, detachElementListener = noop;
 
-  if(document.body.addEventListener)  { // W3C DOM
+  if( auxDiv.addEventListener )  { // W3C DOM
 
     attachElementListener = function (element, eventName, listener) {
       element.addEventListener(eventName, function(e){

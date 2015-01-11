@@ -57,7 +57,10 @@ module.exports = function(grunt) {
     watch: {
       js: {
         files: [ 'Gruntfile.js', '<%= pkg.main %>', 'tests/**/*.js' ],
-        tasks: [ 'jshint', 'karma', 'uglify' ]
+        tasks: [ 'jshint', 'uglify' ]
+      },
+      options: {
+        livereload: 55555
       }
     },
 
@@ -70,11 +73,25 @@ module.exports = function(grunt) {
     jshint: {
       gruntfile: ['Gruntfile.js'],
       main: ['<%= pkg.main %>']
+    },
+
+    fileserver: {
+      dev: {
+        options: {
+          port: 8080,
+          hostname: '0.0.0.0',
+          cwd: '.',
+          root: '/',
+          keepalive: false,
+          openInBrowser: true,   // true (for default browser) or app name (eg: 'chrome', 'firefox')
+          addExtension: 'html'   // add extension to url not ended in '/'
+        }
+      }
     }
   });
 
   grunt.registerTask('commit', function () {
-    grunt.task.run([ 'jshint:main' ]);
+    grunt.task.run([ 'karma' ]);
 
     var cb = this.async(),
         exec = require('child_process').exec,
@@ -93,7 +110,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('publish', [ 'uglify:min', 'increase-version', 'git:increase-version', 'shell:npm-publish' ]);
 
-  grunt.registerTask('dev', ['jshint', 'uglify', 'karma', 'watch']);
+  grunt.registerTask('dev', ['jshint', 'uglify', 'fileserver', 'watch']);
 
   grunt.registerTask('test', [ 'jshint', 'uglify', 'karma' ]);
 
