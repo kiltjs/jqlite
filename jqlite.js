@@ -354,7 +354,8 @@
     };
 
   ListDOM.prototype.clone = function (cloneEvents) {
-    var list = new ListDOM();
+    var list = new ListDOM(), i, len;
+
     if( cloneEvents === undefined ) {
       cloneEvents = true;
     }
@@ -362,6 +363,10 @@
     for( i = 0, len = this.length; i < len ; i++ ) {
       list[list.length] = this[i].cloneNode(cloneEvents);
     }
+
+    list.length = len;
+
+    return list;
   };
 
   ListDOM.prototype.data = auxDiv.dataset ? function (key, value) {
@@ -506,12 +511,15 @@
     };
 
   ListDOM.prototype.append = function (content) {
-      var jContent = $(content), i, j, len, len2, element;
+      var jContent = $(content), jContent2, i, j, len, len2, element;
+
+      jContent.remove();
 
       for( i = 0, len = this.length; i < len; i++ ) {
+        jContent2 = jContent.clone(true);
         element = this[i];
-        for( j = 0, len2 = jContent.length; j < len2; j++ ) {
-          element.appendChild(jContent[j]);
+        for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+          element.appendChild(jContent2[j]);
         }
       }
 
@@ -548,7 +556,7 @@
       var list = selector ? this.filter(selector) : this, parent;
 
       for( var i = 0, len = list.length; i < len; i++ ) {
-        parent = list.parentElement || list.parentNode;
+        parent = list[i].parentElement || list[i].parentNode;
         if( parent ) {
           parent.removeChild(list[i]);
         }
@@ -731,6 +739,7 @@
       attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
     }
   };
+  ListDOM.prototype.once = ListDOM.prototype.one;
 
   ListDOM.prototype.off = function (eventName, listener) {
     if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
