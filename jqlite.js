@@ -145,11 +145,53 @@
 
   jqlite.noop = noop;
 
+  // document ready
+
+  function ready (callback) {
+    if( callback instanceof Function ) {
+      if( ready.ready ) {
+        callback.call(document);
+      } else {
+        ready.onceListeners.push(callback);
+      }
+    } else if ( callback === undefined ) {
+      return ready.isReady;
+    }
+  }
+
+  ready.isReady = false;
+  ready.ready = function () {
+    ready.isReady = true;
+    for( var i = 0, len = ready.onceListeners.length; i < len; i++) {
+      ready.onceListeners[i].call(document);
+    }
+    ready.onceListeners.splice(0, len);
+  };
+  ready.onceListeners = [];
+
+  if ( document.addEventListener ) {
+    ready._listener = function () {
+      document.removeEventListener( "DOMContentLoaded", ready._listener, false );
+      ready.ready();
+    };
+    document.addEventListener( "DOMContentLoaded", ready._listener, false );
+  } else if ( document.attachEvent ) {
+    ready._listener = function () {
+      if ( document.readyState === "complete" ) {
+        var args = arguments;
+        document.detachEvent( "onreadystatechange", ready._listener );
+        ready.ready();
+      }
+    };
+    document.attachEvent("onreadystatechange", ready._listener);
+  }
+
   // ListDOM
     
   function ListDOM(){}
   
   ListDOM.prototype = [];
+  ListDOM.prototype.ready = ready;
 
   ListDOM.prototype.get = function(pos) {
       return pos ? this[pos] : this;
@@ -562,16 +604,26 @@
       return this;
     };
 
+    jqlite.$doc = jqlite(document);
+
     jqlite.plugin = function (selector, handler, collection) {
       if( typeof selector === 'string' && handler instanceof Function ) {
         jqlite.plugin.cache[selector] = handler;
         jqlite.plugin.cache[selector]._collection = !!collection;
       }
+
+      if( ready() ) {
+        jqlite.plugin.init(jqlite.$doc);
+      } else {
+        ready(function () {
+          jqlite.plugin.init(jqlite.$doc);
+        });
+      }
     };
     jqlite.plugin.cache = {};
 
     jqlite.plugin.init = function (jBase) {
-      var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, matches;
+      var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, elements;
 
       for( pluginSelector in pluginsCache ) {
 
@@ -699,50 +751,6 @@
       triggerEvent(this[i], eventName, args, data);
     }
   };
-
-
-  // document ready
-
-  function ready (arg) {
-    if( callback instanceof Function ) {
-      if( ready.ready ) {
-        callback.call(document);
-      } else {
-        ready.onceListeners.push(callback);
-      }
-    } else if ( callback === undefined ) {
-      return ready.isReady;
-    }
-  }
-
-  ready.isReady = false;
-  ready.ready = function () {
-    ready.isReady = true;
-    for( var i = 0, len = ready.onceListeners.length; i < len; i++) {
-      ready.onceListeners[i].call(document);
-    }
-    ready.onceListeners.splice(0, len);
-  };
-  ready.onceListeners = [];
-
-  if ( document.addEventListener ) {
-    ready._listener = function () {
-      document.removeEventListener( "DOMContentLoaded", ready._listener, false );
-      ready.ready();
-    };
-    document.addEventListener( "DOMContentLoaded", ready._listener, false );
-  } else if ( document.attachEvent ) {
-    ready._listener = function () {
-      if ( document.readyState === "complete" ) {
-        var args = arguments;
-        document.detachEvent( "onreadystatechange", ready._listener );
-        ready.ready();
-      }
-    };
-    document.attachEvent("onreadystatechange", ready._listener);
-  }
-
-  ListDOM.prototype.ready = ready;
 
   // finally
 
