@@ -7,40 +7,41 @@ jqlite
 Tiny JavaScript DOM query library
 
 
-jQuery Methods provided by jqlite 
+jQuery Methods provided by jqlite
 
- * - [`addClass()`](http://api.jquery.com/addClass/)
- * - [`after()`](http://api.jquery.com/after/)
- * - [`append()`](http://api.jquery.com/append/)
- * - [`attr()`](http://api.jquery.com/attr/) - Does not support functions as parameters
- * - [`bind()`](http://api.jquery.com/bind/) - Does not support namespaces, selectors or eventData
- * - [`children()`](http://api.jquery.com/children/) - Does not support selectors
- * - [`clone()`](http://api.jquery.com/clone/)
- * - [`contents()`](http://api.jquery.com/contents/)
- * - [`css()`](http://api.jquery.com/css/) - Only retrieves inline-styles, does not call `getComputedStyle()`
- * - [`data()`](http://api.jquery.com/data/)
- * - [`detach()`](http://api.jquery.com/detach/)
- * - [`empty()`](http://api.jquery.com/empty/)
- * - [`eq()`](http://api.jquery.com/eq/)
- * - [`find()`](http://api.jquery.com/find/) - Limited to lookups by tag name
- * - [`hasClass()`](http://api.jquery.com/hasClass/)
- * - [`html()`](http://api.jquery.com/html/)
- * - [`next()`](http://api.jquery.com/next/) - Does not support selectors
- * - [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
- * - [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
- * - [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
- * - [`parent()`](http://api.jquery.com/parent/) - Does not support selectors
- * - [`prepend()`](http://api.jquery.com/prepend/)
- * - [`prop()`](http://api.jquery.com/prop/)
- * - [`ready()`](http://api.jquery.com/ready/)
- * - [`remove()`](http://api.jquery.com/remove/)
- * - [`removeAttr()`](http://api.jquery.com/removeAttr/)
- * - [`removeClass()`](http://api.jquery.com/removeClass/)
- * - [`removeData()`](http://api.jquery.com/removeData/)
- * - [`replaceWith()`](http://api.jquery.com/replaceWith/)
- * - [`text()`](http://api.jquery.com/text/)
- * - [`toggleClass()`](http://api.jquery.com/toggleClass/)
- * - [`triggerHandler()`](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
- * - [`unbind()`](http://api.jquery.com/unbind/) - Does not support namespaces
- * - [`val()`](http://api.jquery.com/val/)
- * - [`wrap()`](http://api.jquery.com/wrap/)
+- [x] [`get()`](http://api.jquery.com/get/)
+- [x] [`eq()`](http://api.jquery.com/eq/)
+- [x] [`addClass()`](http://api.jquery.com/addClass/)
+- [x] [`after()`](http://api.jquery.com/after/)
+- [x] [`append()`](http://api.jquery.com/append/)
+- [x] [`attr()`](http://api.jquery.com/attr/)
+- [x] [`children()`](http://api.jquery.com/children/)
+- [x] [`closest()`](http://api.jquery.com/closest/)
+- [x] [`clone()`](http://api.jquery.com/clone/)
+- [ ] [`contents()`](http://api.jquery.com/contents/)
+- [x] [`css()`](http://api.jquery.com/css/)
+- [x] [`data()`](http://api.jquery.com/data/)
+- [x] [`detach()`](http://api.jquery.com/detach/)
+- [x] [`empty()`](http://api.jquery.com/empty/)
+- [x] [`find()`](http://api.jquery.com/find/)
+- [x] [`hasClass()`](http://api.jquery.com/hasClass/)
+- [x] [`html()`](http://api.jquery.com/html/)
+- [x] [`next()`](http://api.jquery.com/next/) - Does not support selectors
+- [x] [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
+- [x] [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
+- [x] [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
+- [x] [`parent()`](http://api.jquery.com/parent/)
+- [x] [`prepend()`](http://api.jquery.com/prepend/)
+- [x] [`prop()`](http://api.jquery.com/prop/)
+- [x] [`ready()`](http://api.jquery.com/ready/)
+- [x] [`remove()`](http://api.jquery.com/remove/)
+- [ ] [`removeAttr()`](http://api.jquery.com/removeAttr/)
+- [x] [`removeClass()`](http://api.jquery.com/removeClass/)
+- [ ] [`removeData()`](http://api.jquery.com/removeData/)
+- [ ] [`replaceWith()`](http://api.jquery.com/replaceWith/)
+- [x] [`text()`](http://api.jquery.com/text/)
+- [x] [`toggleClass()`](http://api.jquery.com/toggleClass/)
+- [ ] [`triggerHandler()`](http://api.jquery.com/trigger/)
+- [ ] [`trigger()`](http://api.jquery.com/trigger/)
+- [ ] [`val()`](http://api.jquery.com/val/)
+- [ ] [`wrap()`](http://api.jquery.com/wrap/)
