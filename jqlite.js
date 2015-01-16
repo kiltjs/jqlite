@@ -400,6 +400,32 @@
       }
     };
 
+  ListDOM.prototype.removeData = auxDiv.dataset ? function (key) {
+      var i, len;
+      if( typeof key === 'string' ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          delete this[i].dataset[key];
+        }
+      } else if( key instanceof Array ) {
+        for( i = 0, len = key.length; i < len ; i++ ) {
+          this.removeData(key[i]);
+        }
+      }
+      return this;
+    } : function (key) {
+      var i, len;
+      if( typeof key === 'string' ) {
+        for( var i = 0, len = this.length; i < len ; i++ ) {
+          this[i].removeAttribute('data-' + key);
+        }
+      } else if( key instanceof Array ) {
+        for( i = 0, len = key.length; i < len ; i++ ) {
+          this.removeData(key[i]);
+        }
+      }
+      return this;
+    };
+
   ListDOM.prototype.attr = function (key, value) {
       var i, len;
       if( value instanceof Function ) {
@@ -412,6 +438,13 @@
         }
       } else if( this[0] ) {
         return this[0].getAttribute( key );
+      }
+      return this;
+    };
+
+  ListDOM.prototype.removeAttr = function (key) {
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+        this[i].removeAttribute(key);
       }
       return this;
     };
