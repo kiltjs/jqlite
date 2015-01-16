@@ -234,6 +234,7 @@
 
       return elems;
     };
+  ListDOM.prototype.$ = ListDOM.prototype.find;
 
   ListDOM.prototype.each = function(each) {
       if( each instanceof Function ) {
@@ -401,18 +402,33 @@
 
   ListDOM.prototype.attr = function (key, value) {
       var i, len;
-      if( value !== undefined ) {
-        for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].setAttribute(key,value);
-        }
-      } if( value instanceof Function ) {
+      if( value instanceof Function ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
           this[i].setAttribute( key, value(i, this[i].getAttribute(key) ) );
         }
-      } else if( key ) {
+      } else if( value !== undefined ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].getAttribute( key );
+          this[i].setAttribute(key,value);
         }
+      } else if( this[0] ) {
+        return this[0].getAttribute( key );
+      }
+      return this;
+    };
+
+  ListDOM.prototype.prop = function (key, value) {
+      var i, len;
+
+      if( value instanceof Function ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i][key] = value( i, this[i][key] );
+        }
+      } else if( value !== undefined ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
+          this[i][key] = value;
+        }
+      } else if( this[0] ) {
+        return this[0][key];
       }
       return this;
     };
@@ -526,6 +542,61 @@
       return this;
     };
 
+  ListDOM.prototype.prepend = function (content) {
+      var jContent = $(content), jContent2, i, j, len, len2, element, previous;
+
+      jContent.remove();
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        jContent2 = jContent.clone(true);
+        element = this[i];
+        previous = element.firstChild;
+
+        if( element.firstChild ) {
+          element.insertBefore(jContent2[0], previous);
+          previous = jContent2[1];
+
+          if( previous ) {
+            for( j = 1, len2 = jContent2.length; j < len2; j++ ) {
+              element.insertBefore(jContent2[j], previous);
+              element = jContent2[j];
+            }
+          }
+        } else {
+          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+            element.appendChild(jContent2[j]);
+          }
+        }
+
+      }
+
+      return this;
+    };
+
+  ListDOM.prototype.after = function (content) {
+      var jContent = $(content), jContent2, i, j, len, len2, element, parent;
+
+      jContent.remove();
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        jContent2 = jContent.clone(true);
+        parent = this[i].parentElement || this[i].parentNode;
+        element = this[i].nextElementSibling || this[i].nextSibling;
+        if( element ) {
+          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+            parent.insertBefore(jContent2[j], element);
+            element = jContent2[j];
+          }
+        } else {
+          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+            parent.appendChild(jContent2[j]);
+          }
+        }
+      }
+
+      return this;
+    };
+
   ListDOM.prototype.next = function (selector) {
       var list = new ListDOM(), elem;
 
@@ -575,6 +646,20 @@
       }
 
       return elems;
+    };
+
+  ListDOM.prototype.css = function (key, value) {
+
+      if( value ) {
+        for( var i = 0, len = this.length; i < len; i++ ) {
+          this[i].style[key] = value;
+        }
+        return this;
+      } else if( this[0] ) {
+        return this[0].style[key] || window.getComputedStyle(this[0])[key];
+      }
+
+      return '';
     }; 
 
   ListDOM.prototype.html = function (html) {
