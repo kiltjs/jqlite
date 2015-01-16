@@ -35,7 +35,9 @@
   } else {
     if ( typeof fn === 'function' ) {
       fn.define('$', factory );
-    } if ( typeof define === 'function' && define.amd ) {
+    } else if( typeof angular === 'function' ) {
+      angular.module('jqlite', []).constant('jqlite', factory());
+    } else if ( typeof define === 'function' && define.amd ) {
       define(['$'], factory);
     } else {
       root.jqlite = factory();
@@ -415,7 +417,7 @@
     } : function (key) {
       var i, len;
       if( typeof key === 'string' ) {
-        for( var i = 0, len = this.length; i < len ; i++ ) {
+        for( i = 0, len = this.length; i < len ; i++ ) {
           this[i].removeAttribute('data-' + key);
         }
       } else if( key instanceof Array ) {
