@@ -541,7 +541,7 @@
     };
 
   ListDOM.prototype.val = function (value) {
-      var elem;
+      var element;
       if( value === undefined ) {
         element = this[0];
         if( element.nodeName === 'select' ) {
