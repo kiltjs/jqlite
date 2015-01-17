@@ -19,14 +19,14 @@ jQuery Methods provided by jqlite
 - [x] [`closest()`](http://api.jquery.com/closest/)
 - [x] [`clone()`](http://api.jquery.com/clone/)
 - [ ] [`contents()`](http://api.jquery.com/contents/)
-- [x] [`css()`](http://api.jquery.com/css/) - Only retrieves inline-styles, does not call `getComputedStyle()`
+- [x] [`css()`](http://api.jquery.com/css/)
 - [x] [`data()`](http://api.jquery.com/data/)
 - [x] [`detach()`](http://api.jquery.com/detach/)
 - [x] [`empty()`](http://api.jquery.com/empty/)
 - [x] [`find()`](http://api.jquery.com/find/)
 - [x] [`hasClass()`](http://api.jquery.com/hasClass/)
 - [x] [`html()`](http://api.jquery.com/html/)
-- [x] [`next()`](http://api.jquery.com/next/) - Does not support selectors
+- [x] [`next()`](http://api.jquery.com/next/)
 - [x] [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
 - [x] [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
 - [x] [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
