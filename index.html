@@ -4,6 +4,12 @@
 		<script type="text/javascript" src="../jqlite.js"></script>
 
 		<script src="//localhost:55555/livereload.js"></script>
+
+		<style rel="stylesheet">
+			a:focus {
+				color: red;
+			}
+		</style>
 	</head>
 	<body>
 		<ul>
@@ -16,12 +22,19 @@
 			<li><a href="#">Item 7</a></li>
 			<li><a href="#">Item 8</a></li>
 		</ul>
-		<input type="checkbox" name="on"/>
-		<select id="ddlViewBy">
-		  <option value="1">test1</option>
-		  <option value="2" selected="selected">test2</option>
-		  <option value="3">test3</option>
-		</select>
+		<div>
+			<input type="checkbox" name="on"/>
+		</div>
+		<div>
+			<input type="text" />
+		</div>
+		<div>
+			<select id="ddlViewBy">
+			  <option value="1">test1</option>
+			  <option value="2" selected="selected">test2</option>
+			  <option value="3">test3</option>
+			</select>
+		</div>
 		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
 		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo

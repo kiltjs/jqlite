@@ -956,7 +956,7 @@
   };
 
   var eventActions = {
-    list: ['click', 'focus'],
+    list: ['click', 'focus', 'blur', 'submit'],
     define: function (name) {
       ListDOM.prototype[name] = function (listener) {
         if( listener ) {
@@ -1016,6 +1016,14 @@
 
     for( var i = 0, len = this.length; i < len; i++ ) {
       triggerEvent(this[i], eventName, args, data);
+    }
+  };
+
+  ListDOM.prototype.stopPropagation = function () {
+    for( var i = 0, len = arguments.length; i < len; i++ ) {
+      this.on(arguments[i], function (e) {
+        e.stopPropagation();
+      });
     }
   };
 
