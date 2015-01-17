@@ -364,7 +364,7 @@
     }
 
     for( i = 0, len = this.length; i < len ; i++ ) {
-      list[list.length] = this[i].cloneNode(cloneEvents);
+      list[i] = this[i].cloneNode(cloneEvents);
     }
 
     list.length = len;
@@ -587,15 +587,10 @@
         element = this[i];
         previous = element.firstChild;
 
-        if( element.firstChild ) {
-          element.insertBefore(jContent2[0], previous);
-          previous = jContent2[1];
-
-          if( previous ) {
-            for( j = 1, len2 = jContent2.length; j < len2; j++ ) {
-              element.insertBefore(jContent2[j], previous);
-              element = jContent2[j];
-            }
+        if( previous ) {
+          console.log(jContent2);
+          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+            element.insertBefore(jContent2[j], previous);
           }
         } else {
           for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
