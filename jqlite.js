@@ -957,7 +957,7 @@
 
   var eventActions = {
     list: ['click', 'focus'],
-    define: function (name, listener) {
+    define: function (name) {
       ListDOM.prototype[name] = function (listener) {
         if( listener ) {
           this.on(name, listener);
@@ -970,7 +970,7 @@
     },
     init: function () {
       for( var i = 0, len = eventActions.list.length, name; i < len; i++ ) {
-        eventActions.define(eventActions.list[i], listener);
+        eventActions.define(eventActions.list[i]);
       }
     }
   };
