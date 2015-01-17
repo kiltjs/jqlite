@@ -955,6 +955,27 @@
     }
   };
 
+  var eventActions = {
+    list: ['click', 'focus'],
+    define: function (name, listener) {
+      ListDOM.prototype[name] = function (listener) {
+        if( listener ) {
+          this.on(name, listener);
+        } else {
+          for( var i = 0, len = this.length; i < len; i++ ) {
+            this[i][name]();
+          }
+        }
+      };
+    },
+    init: function () {
+      for( var i = 0, len = eventActions.list.length, name; i < len; i++ ) {
+        eventActions.define(eventActions.list[i], listener);
+      }
+    }
+  };
+  eventActions.init();
+
   function autoDestroyListener (element, eventName, listener) {
     var _listener = function () {
       detachElementListener(element, eventName, _listener);
