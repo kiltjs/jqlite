@@ -17,8 +17,8 @@ jQuery Methods provided by jqlite
 - [x] [`attr()`](http://api.jquery.com/attr/)
 - [x] [`children()`](http://api.jquery.com/children/)
 - [x] [`closest()`](http://api.jquery.com/closest/)
-- [x] [`clone()`](http://api.jquery.com/clone/)
-- [ ] [`contents()`](http://api.jquery.com/contents/)
+- [x] [`clone()`](http://api.jquery.com/clone/) - clone events not yet supported
+- [x] [`contents()`](http://api.jquery.com/contents/)
 - [x] [`css()`](http://api.jquery.com/css/)
 - [x] [`data()`](http://api.jquery.com/data/)
 - [x] [`detach()`](http://api.jquery.com/detach/)
@@ -26,7 +26,7 @@ jQuery Methods provided by jqlite
 - [x] [`find()`](http://api.jquery.com/find/)
 - [x] [`hasClass()`](http://api.jquery.com/hasClass/)
 - [x] [`html()`](http://api.jquery.com/html/)
-- [x] [`next()`](http://api.jquery.com/next/)
+- [x] [`next()`](http://api.jquery.com/next/) - Does not support selectors
 - [x] [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
 - [x] [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
 - [x] [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
@@ -41,7 +41,6 @@ jQuery Methods provided by jqlite
 - [x] [`replaceWith()`](http://api.jquery.com/replaceWith/)
 - [x] [`text()`](http://api.jquery.com/text/)
 - [x] [`toggleClass()`](http://api.jquery.com/toggleClass/)
-- [ ] [`triggerHandler()`](http://api.jquery.com/trigger/)
-- [ ] [`trigger()`](http://api.jquery.com/trigger/)
+- [x] [`trigger()`](http://api.jquery.com/trigger/) - Does not support selectors
 - [x] [`val()`](http://api.jquery.com/val/)
-- [ ] [`wrap()`](http://api.jquery.com/wrap/)
+- [x] [`wrap()`](http://api.jquery.com/wrap/)

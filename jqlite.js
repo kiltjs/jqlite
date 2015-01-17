@@ -91,6 +91,43 @@
       detached = document.createElement('div'),
       classListEnabled = !!auxDiv.classList;
 
+  // Events support
+
+  var attachElementListener = noop, detachElementListener = noop;
+
+  if( auxDiv.addEventListener )  { // W3C DOM
+
+    attachElementListener = function (element, eventName, listener) {
+      listener.$listener = function(e){
+          listener.apply(e.target,[e].concat(e.args));
+      };
+
+      element.addEventListener(eventName, listener.$listener,false);
+    };
+
+    detachElementListener = function (element, eventName, listener) {
+      element.removeEventListener(eventName, listener.$listener || listener, false);
+    };
+
+
+  } else if(document.body.attachEvent) { // IE DOM
+
+    attachElementListener = function (element, eventName, listener) {
+      listener.$listener = function(e){
+          listener.apply(e.target,[e].concat(e.args));
+      };
+
+      element.attachEvent("on" + eventName, listener.$listener, false);
+    };
+
+    detachElementListener = function (element, eventName, listener) {
+      element.detachEvent('on' + eventName, listener.$listener || listener );
+    };
+
+  } else {
+    throw 'Browser not compatible with element events';
+  }
+
   // jqlite function
 
   function pushMatches( list, matches ) {
@@ -114,7 +151,9 @@
         break;
       case '<':
         auxDiv.innerHTML = selector;
-        return pushMatches( new ListDOM(), auxDiv.children );
+        var jChildren = pushMatches( new ListDOM(), auxDiv.children );
+        jqlite.plugin.init(jChildren);
+        return jChildren;
       default:
         return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
     }
@@ -356,15 +395,48 @@
       return elems;
     };
 
-  ListDOM.prototype.clone = function (cloneEvents) {
+  ListDOM.prototype.contents = function (selector) {
+      var elems = new ListDOM(), elem;
+
+      Array.prototype.forEach.call(this,function(elem){
+        elem = elem.firstChild;
+        while(elem) {
+          elems[elems.length] = elem;
+          elem = elem.nextSibling;
+        }
+      });
+
+      if( selector ) {
+        return elems.filter(selector);
+      }
+      return elems;
+    };
+
+    // function _cloneEvents(nodeSrc, nodeDest) {
+    //   console.log('getEventListeners', getEventListeners);
+    //   var events = getEventListeners(nodeSrc),
+    //       e, i, len;
+
+    //   for( e in events ) {
+    //     for( i = 0, len = events[e].length; i < len ; i++ ) {
+    //       nodeDest.addEventListener(e, events[e][i].listener, events[e][i].useCapture);
+    //     }
+    //   }
+    // }
+
+  ListDOM.prototype.clone = function (deep, cloneEvents) {
     var list = new ListDOM(), i, len;
 
-    if( cloneEvents === undefined ) {
-      cloneEvents = true;
+    if( deep === undefined ) {
+      deep = true;
     }
 
     for( i = 0, len = this.length; i < len ; i++ ) {
-      list[i] = this[i].cloneNode(cloneEvents);
+      list[i] = this[i].cloneNode(deep);
+
+      // if(cloneEvents) {
+      //   _cloneEvents(this[i], list[i]);
+      // }
     }
 
     list.length = len;
@@ -680,6 +752,38 @@
       return this;
     };
 
+  ListDOM.prototype.wrap = function (content) {
+      var jContent = $(content), jContent2, i, j, len, len2, element, parent;
+
+      jContent.remove();
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        jContent2 = jContent.clone(true);
+        parent = this[i].parentElement || this[i].parentNode;
+        element = this[i].nextElementSibling || this[i].nextSibling;
+        if( element ) {
+          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+            parent.insertBefore(jContent2[j], element);
+            element = jContent2[j];
+          }
+        } else {
+          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+            parent.appendChild(jContent2[j]);
+          }
+        }
+
+        if( jContent2[0] ) {
+          element = jContent2[0];
+          while( element.firstElementChild ) {
+            element = element.firstElementChild;
+          }
+          element.appendChild(this[i]);
+        }
+      }
+
+      return this;
+    };
+
   ListDOM.prototype.next = function (selector) {
       var list = new ListDOM(), elem;
 
@@ -840,41 +944,6 @@
         return this;
       }
     };
-
-  var attachElementListener = noop, detachElementListener = noop;
-
-  if( auxDiv.addEventListener )  { // W3C DOM
-
-    attachElementListener = function (element, eventName, listener) {
-      listener.$listener = function(e){
-          listener.apply(e.target,[e].concat(e.args));
-      };
-
-      element.addEventListener(eventName, listener.$listener,false);
-    };
-
-    detachElementListener = function (element, eventName, listener) {
-      element.removeEventListener(eventName, listener.$listener || listener, false);
-    };
-
-
-  } else if(document.body.attachEvent) { // IE DOM
-
-    attachElementListener = function (element, eventName, listener) {
-      listener.$listener = function(e){
-          listener.apply(e.target,[e].concat(e.args));
-      };
-
-      element.attachEvent("on" + eventName, listener.$listener, false);
-    };
-
-    detachElementListener = function (element, eventName, listener) {
-      element.detachEvent('on' + eventName, listener.$listener || listener );
-    };
-
-  } else {
-    throw 'Browser not compatible with element events';
-  }
 
   ListDOM.prototype.on = function (eventName, listener) {
     if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
