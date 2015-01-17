@@ -468,6 +468,35 @@
       return this;
     };
 
+  ListDOM.prototype.val = function (value) {
+      var elem;
+      if( value === undefined ) {
+        element = this[0];
+        if( element.nodeName === 'select' ) {
+          return element.options[element.selectedIndex].value;
+        } else {
+          return ( this[0].value || this[0].getAttribute('value') );
+        }
+      } else {
+        for( var i = 0, len = this.length; i < len ; i++ ) {
+          if( this[i].nodeName === 'select' ) {
+            element = this[i];
+            for( var j = 0, len2 = element.options.length; j < len2 ; j++ ) {
+              if( element.options[j].value === value ) {
+                element.options[j].selected = true;
+                break;
+              }
+            }
+          } else if (this[i].value !== undefined) {
+            this[i].value = value;
+          } else {
+            this[i].setAttribute('value', value);
+          }
+        }
+      }
+      return this;
+    };
+
   ListDOM.prototype.addClass = classListEnabled ? function (className) {
       for( var i = 0, len = this.length; i < len ; i++ ) {
           this[i].classList.add(className);
@@ -622,6 +651,30 @@
             parent.appendChild(jContent2[j]);
           }
         }
+      }
+
+      return this;
+    };
+
+  ListDOM.prototype.replaceWith = function (content) {
+      var jContent = $(content), jContent2, i, j, len, len2, element, parent, next;
+
+      jContent.remove();
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        jContent2 = jContent.clone(true);
+        element = this[i];
+        parent = element.parentElement || parentNode;
+
+        parent.replaceChild(jContent2[0], element);
+
+        if( jContent2[1] ) {
+          next = jContent2[0];
+          for( j = 1, len2 = jContent2.length; j < len2; j++ ) {
+            parent.insertBefore(jContent2[j], next);
+          }
+        }
+
       }
 
       return this;
