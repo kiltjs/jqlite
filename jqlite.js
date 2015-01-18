@@ -244,6 +244,7 @@
       if(item) {
         list[0] = item;
       }
+      list.length = 1;
       return list; 
     };
 
