@@ -33,17 +33,18 @@
       module.exports = factory();
     }
   } else {
+    var jqlite = factory();
     if ( typeof fn === 'function' ) {
-      fn.define('$', factory );
+      fn.define('jqlite', function () { return jqlite; } );
     } else if( typeof angular === 'function' ) {
-      angular.module('jqlite', []).constant('jqlite', factory());
+      angular.module('jqlite', []).constant('jqlite', jqlite );
     } else if ( typeof define === 'function' && define.amd ) {
-      define(['$'], factory);
+      define(['jqlite'], function () { return jqlite; });
     } else {
-      root.jqlite = factory();
-      if( !root.$ ) {
-        root.$ = root.jqlite;
-      }
+      root.jqlite = jqlite;
+    }
+    if( !root.$ ) {
+      root.$ = jqlite;
     }
   }
 
@@ -921,7 +922,9 @@
       }
 
     };
-    jqlite.widget = function (widgetName, handler, collection) {
+    jqlite.widget = ( typeof fn === 'function' ) ? function (widgetName, handler, collection) {
+      jqlite.plugin('[data-widget="' + widgetName + '"]', fn(handler), collection);
+    } : function (widgetName, handler, collection) {
       jqlite.plugin('[data-widget="' + widgetName + '"]', handler, collection);
     };
 
