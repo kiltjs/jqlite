@@ -922,9 +922,7 @@
       }
 
     };
-    jqlite.widget = ( typeof fn === 'function' ) ? function (widgetName, handler, collection) {
-      jqlite.plugin('[data-widget="' + widgetName + '"]', fn(handler), collection);
-    } : function (widgetName, handler, collection) {
+    jqlite.widget = function (widgetName, handler, collection) {
       jqlite.plugin('[data-widget="' + widgetName + '"]', handler, collection);
     };
 
