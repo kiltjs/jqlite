@@ -924,9 +924,26 @@
       }
 
     };
-    jqlite.widget = function (widgetName, handler, collection) {
+    jqlite.widget = function (widgetName, handler) {
+      var _this = this;
+      jqlite.widget.widgets[widgetName] = handler;
+
+      if( !jqlite.widget.enabled ) {
+        jqlite.widget.enabled = true;
+        
+        jqlite.plugin('[data-widget]', function () {
+          var widgetName = this.getAttribute('data-widget');
+
+          if( jqlite.widget.widgets[widgetName] ) {
+            jqlite.widget.widgets[widgetName].call(_this);
+          }
+        });
+      }
       jqlite.plugin('[data-widget="' + widgetName + '"]', handler, collection);
     };
+    jqlite.widget.enabled = false;
+    jqlite.widget.widgets = {};
+
 
   ListDOM.prototype.text = function (text) {
       var i, len;
