@@ -930,7 +930,7 @@
 
       if( !jqlite.widget.enabled ) {
         jqlite.widget.enabled = true;
-        
+
         jqlite.plugin('[data-widget]', function () {
           var widgetName = this.getAttribute('data-widget');
 
@@ -939,7 +939,6 @@
           }
         });
       }
-      jqlite.plugin('[data-widget="' + widgetName + '"]', handler, collection);
     };
     jqlite.widget.enabled = false;
     jqlite.widget.widgets = {};
