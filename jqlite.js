@@ -889,18 +889,20 @@
     jqlite.$doc = jqlite(document);
 
     jqlite.plugin = function (selector, handler, collection) {
-      if( typeof selector === 'string' && handler instanceof Function ) {
-        jqlite.plugin.cache[selector] = handler;
-        jqlite.plugin.cache[selector]._collection = !!collection;
-      }
+      setTimeout(function () {
+        if( typeof selector === 'string' && handler instanceof Function ) {
+          jqlite.plugin.cache[selector] = handler;
+          jqlite.plugin.cache[selector]._collection = !!collection;
+        }
 
-      if( ready() ) {
-        jqlite.plugin.init(jqlite.$doc);
-      } else {
-        ready(function () {
+        if( ready() ) {
           jqlite.plugin.init(jqlite.$doc);
-        });
-      }
+        } else {
+          ready(function () {
+            jqlite.plugin.init(jqlite.$doc);
+          });
+        }
+      }, 0);
     };
     jqlite.plugin.cache = {};
 
