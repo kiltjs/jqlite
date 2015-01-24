@@ -670,7 +670,7 @@
       jContent.remove();
 
       for( i = 0, len = this.length; i < len; i++ ) {
-        jContent2 = jContent.clone(true);
+        jContent2 = ( i ? jContent.clone(true) : jContent );
         element = this[i];
         for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
           element.appendChild(jContent2[j]);
@@ -686,7 +686,7 @@
       jContent.remove();
 
       for( i = 0, len = this.length; i < len; i++ ) {
-        jContent2 = jContent.clone(true);
+        jContent2 = ( i ? jContent.clone(true) : jContent );
         element = this[i];
         previous = element.firstChild;
 
@@ -712,7 +712,7 @@
       jContent.remove();
 
       for( i = 0, len = this.length; i < len; i++ ) {
-        jContent2 = jContent.clone(true);
+        jContent2 = ( i ? jContent.clone(true) : jContent );
         parent = this[i].parentElement || this[i].parentNode;
         element = this[i].nextElementSibling || this[i].nextSibling;
         if( element ) {
@@ -736,7 +736,7 @@
       jContent.remove();
 
       for( i = 0, len = this.length; i < len; i++ ) {
-        jContent2 = jContent.clone(true);
+        jContent2 = ( i ? jContent.clone(true) : jContent );
         element = this[i];
         parent = element.parentElement || parentNode;
 
@@ -760,7 +760,7 @@
       jContent.remove();
 
       for( i = 0, len = this.length; i < len; i++ ) {
-        jContent2 = jContent.clone(true);
+        jContent2 = ( i ? jContent.clone(true) : jContent );
         parent = this[i].parentElement || this[i].parentNode;
         element = this[i].nextElementSibling || this[i].nextSibling;
         if( element ) {
