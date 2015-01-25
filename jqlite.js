@@ -986,6 +986,7 @@
             this[i][name]();
           }
         }
+        return this;
       };
     },
     init: function () {
