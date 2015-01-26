@@ -253,10 +253,14 @@
       var list = this, elems = new ListDOM(), found, i, len;
 
       if( /^\s*>/.test(selector) ) {
-        selector = selector.replace(/^\s*>\s*([^\S]*)\s*/, function (match, selector2) {
+        selector = selector.replace(/^\s*>\s*([^\s]*)\s*/, function (match, selector2) {
           list = list.children(selector2);
           return '';
         });
+
+        if( !selector ) {
+          return list;
+        }
       }
 
       if( list.length === 1 ) {
