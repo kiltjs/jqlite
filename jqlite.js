@@ -250,18 +250,25 @@
     };
 
   ListDOM.prototype.find = function(selector) {
-      var elems = new ListDOM(), found, i, len;
+      var list = this, elems = new ListDOM(), found, i, len;
 
-      if( this.length === 1 ) {
-        found = this[0].querySelectorAll(selector);
+      if( /^\s*>/.test(selector) ) {
+        selector = selector.replace(/^\s*>\s*([^\S]*)\s*/, function (match, selector2) {
+          list = list.children(selector2);
+          return '';
+        });
+      }
+
+      if( list.length === 1 ) {
+        found = list[0].querySelectorAll(selector);
         for( i = 0, len = found.length; i < len; i++ ) {
           elems[i] = found[i];
         }
         elems.length = len;
-      } else if( this.length > 1 ) {
+      } else if( list.length > 1 ) {
         var j, len2;
-        for( i = 0, len = this.length; i < len; i++ ) {
-            found = this[i].querySelectorAll(selector);
+        for( i = 0, len = list.length; i < len; i++ ) {
+            found = list[i].querySelectorAll(selector);
             for( j = 0, len2 = found.length; j < len2 ; j++ ) {
                 if( !found.item(j).___found___ ) {
                     elems[elems.length] = found.item(j);
