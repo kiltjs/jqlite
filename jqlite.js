@@ -86,7 +86,7 @@
       RE_IS_ID = /^\#[^\.\[]/,
       RE_IS_CLASS = /^\.[^#\[]/,
       runScripts = eval,
-      noop = function () {},
+      noop = function noop () {},
       auxArray = [],
       auxDiv = document.createElement('div'),
       detached = document.createElement('div'),
@@ -164,26 +164,25 @@
 
     if( selector instanceof Array || selector instanceof NodeList || selector instanceof HTMLCollection ) {
       return pushMatches( new ListDOM(), selector );
-    }
-
-    if( selector === document || selector instanceof HTMLElement || selector instanceof Element ) {
+    } else if( selector === document || selector instanceof HTMLElement || selector instanceof Element ) {
       var list2 = new ListDOM();
       list2[0] = selector;
       list2.length = 1;
       return list2;
-    }
 
-    if( selector instanceof Function ) ready(selector);
+    } else if( selector instanceof Function ) {
+      ready(selector);
+    } else if( selector === undefined ) {
+      return new ListDOM();
+    }
   }
-  
+
   function jqlite (selector){
     if( typeof selector === 'string' ) {
       return stringMatches(selector);
     }
     return initList(selector);
   }
-
-  jqlite.fn = ListDOM.prototype;
 
   jqlite.noop = noop;
 
@@ -231,21 +230,26 @@
   // ListDOM
     
   function ListDOM(){}
-  
+
   ListDOM.prototype = [];
   ListDOM.prototype.ready = ready;
+
+  jqlite.fn = ListDOM.prototype;
 
   ListDOM.prototype.get = function(pos) {
       return pos ? this[pos] : this;
     };
 
   ListDOM.prototype.eq = function(pos) {
+      if( !pos instanceof Number ) {
+        throw 'number required';
+      }
       var item = ( pos < 0 ) ? this[this.length - pos] : this[pos], list = new ListDOM();
 
       if(item) {
         list[0] = item;
+        list.length = 1;
       }
-      list.length = 1;
       return list; 
     };
 
@@ -299,16 +303,14 @@
       return this;
     };
 
-  ListDOM.prototype.empty = function(each) {
-      if( each instanceof Function ) {
-        for( var i = 0, len = this.length, elem, child; i < len ; i++ ) {
-            elem = this[i];
+  ListDOM.prototype.empty = function() {
+      for( var i = 0, len = this.length, elem, child; i < len ; i++ ) {
+          elem = this[i];
+          child = elem.firstChild;
+          while( child ) {
+            elem.removeChild(child);
             child = elem.firstChild;
-            while( child ) {
-              elem.removeChild(child);
-              child = elem.firstChild;
-            }
-        }
+          }
       }
       return this;
     };
@@ -583,9 +585,17 @@
     };
 
   ListDOM.prototype.addClass = classListEnabled ? function (className) {
-      for( var i = 0, len = this.length; i < len ; i++ ) {
-          this[i].classList.add(className);
+      if( className.indexOf(' ') >= 0 ) {
+        var jThis = $(this);
+        className.split(' ').forEach(function (cn) {
+          jThis.addClass(cn);
+        });
+      } else {
+        for( var i = 0, len = this.length; i < len ; i++ ) {
+            this[i].classList.add(className);
+        }
       }
+
       return this;
     } : function (className) {
       var RE_CLEANCLASS = new RegExp('\\b' + (className || '') + '\\b','');
@@ -597,8 +607,15 @@
     };
 
   ListDOM.prototype.removeClass = classListEnabled ? function (className) {
-      for( var i = 0, len = this.length; i < len ; i++ ) {
-          this[i].classList.remove(className);
+      if( className.indexOf(' ') >= 0 ) {
+        var jThis = $(this);
+        className.split(' ').forEach(function (cn) {
+          jThis.removeClass(cn);
+        });
+      } else {
+        for( var i = 0, len = this.length; i < len ; i++ ) {
+            this[i].classList.remove(className);
+        }
       }
       return this;
     } : function (className) {
@@ -702,7 +719,6 @@
         previous = element.firstChild;
 
         if( previous ) {
-          console.log(jContent2);
           for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
             element.insertBefore(jContent2[j], previous);
           }
@@ -933,26 +949,26 @@
           }
         }
       }
-
     };
-    jqlite.widget = function (widgetName, handler) {
-      var _this = this;
-      jqlite.widget.widgets[widgetName] = handler;
 
-      if( !jqlite.widget.enabled ) {
-        jqlite.widget.enabled = true;
+    function jqWidget (widgetName, handler) {
+      jqWidget.widgets[widgetName] = handler;
 
+      if( !jqWidget.enabled ) {
         jqlite.plugin('[data-widget]', function () {
           var widgetName = this.getAttribute('data-widget');
 
-          if( jqlite.widget.widgets[widgetName] ) {
-            jqlite.widget.widgets[widgetName].call(_this);
+          if( jqWidget.widgets[widgetName] ) {
+            jqWidget.widgets[widgetName].call(this);
           }
         });
+        jqWidget.enabled = true;
       }
-    };
-    jqlite.widget.enabled = false;
-    jqlite.widget.widgets = {};
+    }
+    jqWidget.enabled = false;
+    jqWidget.widgets = {};
+
+    jqlite.widget = jqWidget;
 
 
   ListDOM.prototype.text = function (text) {
@@ -977,13 +993,25 @@
     };
 
   ListDOM.prototype.on = function (eventName, listener) {
-    if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
-      throw 'bad arguments';
-    }
+    var i, len;
 
-    for( var i = 0, len = this.length; i < len; i++ ) {
-      attachElementListener(this[i], eventName, listener);
+    if( eventName instanceof Array ) {
+
+      for( i = 0, len = eventName.length; i < len; i++ ) {
+        this.on(eventName[i], listener);
+      }
+
+    } else {
+
+      if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
+        throw 'bad arguments';
+      }
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        attachElementListener(this[i], eventName, listener);
+      }
     }
+    return this;
   };
 
   var eventActions = {
@@ -1028,6 +1056,7 @@
       element = this[i];
       attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
     }
+    return this;
   };
   ListDOM.prototype.once = ListDOM.prototype.one;
 
@@ -1039,6 +1068,7 @@
     for( var i = 0, len = this.length; i < len; i++ ) {
       detachElementListener(this[i], eventName, listener);
     }
+    return this;
   };
 
   ListDOM.prototype.trigger = function (eventName, args, data) {
@@ -1049,6 +1079,7 @@
     for( var i = 0, len = this.length; i < len; i++ ) {
       triggerEvent(this[i], eventName, args, data);
     }
+    return this;
   };
 
   ListDOM.prototype.stopPropagation = function () {
