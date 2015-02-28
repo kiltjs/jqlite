@@ -921,63 +921,66 @@
         jqlite.plugin.cache[selector]._collection = !!collection;
       }
 
-      if( !jqlite.plugin.running ) {
+      if( jqlite.plugin.running ) {
+        $.plugin.run(jqlite.$doc, selector);
+      } else {
         jqlite.plugin.running = true;
-        ready(function () {
-          console.log('jqlite.$doc');
-          jqlite.plugin.init(jqlite.$doc);
-        });
+        jqlite.plugin.init(jqlite.$doc);
       }
     };
     jqlite.plugin.running = false;
     jqlite.plugin.cache = {};
-
-    jqlite.plugin.init = function (jBase) {
-
-      ready(function () {
-
-        var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, elements;
-
-        for( pluginSelector in pluginsCache ) {
-
-          handler = pluginsCache[pluginSelector];
+    jqlite.plugin.run = function (jBase, pluginSelector) {
+      var handler = jqlite.plugin.cache[pluginSelector],
           elements = jBase.find(pluginSelector);
 
-          if( elements.length ) {
-            if( handler._collection ) {
-              handler( elements );
-            } else {
-              elements.each(handler);
-            }
-          }
+      if( elements.length ) {
+        if( handler._collection ) {
+          handler( elements );
+        } else {
+          elements.each(handler);
         }
+      }
+    };
 
+    jqlite.plugin.init = function (jBase) {
+      ready(function () {
+        for( var pluginSelector in jqlite.plugin.cache ) {
+          jqlite.plugin.run(jBase, pluginSelector);
+        }
       });
     };
 
     function jqWidget (widgetName, handler) {
-      jqWidget.widgets[widgetName] = handler;
+      if( typeof widgetName === 'string' && handler instanceof Function ) {
 
-      if( jqWidget.enabled ) {
-        $('[data-widget="' + widgetName + '"]').each(handler);
-      } else if( !jqWidget.loading ) {
-        jqWidget.loading = true;
+        jqWidget.widgets[widgetName] = handler;
 
-        ready(function () {
-          jqlite.plugin('[data-widget]', function () {
-            var widgetName = this.getAttribute('data-widget');
-
-            if( jqWidget.widgets[widgetName] ) {
-              jqWidget.widgets[widgetName].call(this);
-            }
-          });
-          jqWidget.enabled = true;
-          jqWidget.loading = false;
-        });
+        if( jqWidget.enabled ) {
+          console.log('running widget directly', widgetName);
+          $('[data-widget="' + widgetName + '"]').each(handler);
+        } else if( !jqWidget.loading ) {
+          jqWidget.init();
+        }
       }
     }
-    jqWidget.loading = false;
-    jqWidget.enabled = false;
+    jqWidget.init = function () {
+      jqWidget.loading = true;
+
+      ready(function () {
+        jqlite.plugin('[data-widget]', function () {
+          var widgetName = this.getAttribute('data-widget');
+
+          console.log('running widget', widgetName);
+
+          if( jqWidget.widgets[widgetName] ) {
+            jqWidget.widgets[widgetName].call(this);
+          }
+        });
+        jqWidget.enabled = true;
+        jqWidget.loading = false;
+      });
+    };
     jqWidget.widgets = {};
 
     jqlite.widget = jqWidget;
