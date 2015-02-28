@@ -1,4 +1,5 @@
 [![npm version](https://badge.fury.io/js/jqlite.svg)](http://badge.fury.io/js/jqlite)
+[![Bower version](https://badge.fury.io/bo/jstool-jqlite.svg)](http://badge.fury.io/bo/jstool-jqlite)
 [![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite) 
 
 jqlite
@@ -44,3 +45,8 @@ jQuery Methods provided by jqlite
 - [x] [`trigger()`](http://api.jquery.com/trigger/) - Does not support selectors
 - [x] [`val()`](http://api.jquery.com/val/)
 - [x] [`wrap()`](http://api.jquery.com/wrap/)
+
+- [x] [`click()`](http://api.jquery.com/click/)
+- [x] [`focus()`](http://api.jquery.com/focus/)
+- [x] [`blur()`](http://api.jquery.com/blur/)
+- [x] [`submit()`](http://api.jquery.com/submit/)
