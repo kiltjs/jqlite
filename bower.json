@@ -1,7 +1,7 @@
 {
     "name": "jstools-jqlite",
     "main": "jqlite.js",
-    "version": "0.0.29",
+    "version": "0.0.30",
     "homepage": "https://github.com/jstools/jqlite",
     "authors": [
         "Jesús Germade <jesus@germade.es>"
