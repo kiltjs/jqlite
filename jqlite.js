@@ -916,55 +916,67 @@
     jqlite.$doc = jqlite(document);
 
     jqlite.plugin = function (selector, handler, collection) {
-      setTimeout(function () {
-        if( typeof selector === 'string' && handler instanceof Function ) {
-          jqlite.plugin.cache[selector] = handler;
-          jqlite.plugin.cache[selector]._collection = !!collection;
-        }
+      if( typeof selector === 'string' && handler instanceof Function ) {
+        jqlite.plugin.cache[selector] = handler;
+        jqlite.plugin.cache[selector]._collection = !!collection;
+      }
 
-        if( ready() ) {
+      if( !jqlite.plugin.running ) {
+        jqlite.plugin.running = true;
+        ready(function () {
+          console.log('jqlite.$doc');
           jqlite.plugin.init(jqlite.$doc);
-        } else {
-          ready(function () {
-            jqlite.plugin.init(jqlite.$doc);
-          });
-        }
-      }, 0);
+        });
+      }
     };
+    jqlite.plugin.running = false;
     jqlite.plugin.cache = {};
 
     jqlite.plugin.init = function (jBase) {
-      var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, elements;
 
-      for( pluginSelector in pluginsCache ) {
+      ready(function () {
 
-        handler = pluginsCache[pluginSelector];
-        elements = jBase.find(pluginSelector);
+        var pluginsCache = jqlite.plugin.cache, pluginSelector, handler, elements;
 
-        if( elements.length ) {
-          if( handler._collection ) {
-            handler( elements );
-          } else {
-            elements.each(handler);
+        for( pluginSelector in pluginsCache ) {
+
+          handler = pluginsCache[pluginSelector];
+          elements = jBase.find(pluginSelector);
+
+          if( elements.length ) {
+            if( handler._collection ) {
+              handler( elements );
+            } else {
+              elements.each(handler);
+            }
           }
         }
-      }
+
+      });
     };
 
     function jqWidget (widgetName, handler) {
       jqWidget.widgets[widgetName] = handler;
 
-      if( !jqWidget.enabled ) {
-        jqlite.plugin('[data-widget]', function () {
-          var widgetName = this.getAttribute('data-widget');
+      if( jqWidget.enabled ) {
+        $('[data-widget="' + widgetName + '"]').each(handler);
+      } else if( !jqWidget.loading ) {
+        jqWidget.loading = true;
 
-          if( jqWidget.widgets[widgetName] ) {
-            jqWidget.widgets[widgetName].call(this);
-          }
+        ready(function () {
+          jqlite.plugin('[data-widget]', function () {
+            var widgetName = this.getAttribute('data-widget');
+
+            if( jqWidget.widgets[widgetName] ) {
+              jqWidget.widgets[widgetName].call(this);
+            }
+          });
+          jqWidget.enabled = true;
+          jqWidget.loading = false;
         });
-        jqWidget.enabled = true;
       }
     }
+    jqWidget.loading = false;
     jqWidget.enabled = false;
     jqWidget.widgets = {};
 
