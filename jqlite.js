@@ -190,7 +190,7 @@
 
   function ready (callback) {
     if( callback instanceof Function ) {
-      if( ready.ready ) {
+      if( ready.isReady ) {
         callback.call(document);
       } else {
         ready.onceListeners.push(callback);
