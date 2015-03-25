@@ -199,7 +199,7 @@
       if (/loaded|complete/.test(document.readyState)) {
         callback();
       } else {
-        fn.load(callback);
+        _onLoad(callback);
       }
     }
   };
