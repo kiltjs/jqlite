@@ -202,7 +202,7 @@
         _onLoad(callback);
       }
     }
-  };
+  }
 
   // ListDOM
     
