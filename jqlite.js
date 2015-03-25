@@ -188,44 +188,21 @@
 
   // document ready
 
+  var _onLoad = window.addEventListener ? function (listener) {
+    window.addEventListener('load', listener, false);
+  } : function (listener) {
+    window.attachEvent('onload', listener );
+  };
+
   function ready (callback) {
     if( callback instanceof Function ) {
-      if( ready.isReady ) {
-        callback.call(document);
+      if (/loaded|complete/.test(document.readyState)) {
+        callback();
       } else {
-        ready.onceListeners.push(callback);
+        fn.load(callback);
       }
-    } else if ( callback === undefined ) {
-      return ready.isReady;
     }
-  }
-
-  ready.isReady = false;
-  ready.ready = function () {
-    ready.isReady = true;
-    for( var i = 0, len = ready.onceListeners.length; i < len; i++) {
-      ready.onceListeners[i].call(document);
-    }
-    ready.onceListeners.splice(0, len);
   };
-  ready.onceListeners = [];
-
-  if ( document.addEventListener ) {
-    ready._listener = function () {
-      document.removeEventListener( "DOMContentLoaded", ready._listener, false );
-      ready.ready();
-    };
-    document.addEventListener( "DOMContentLoaded", ready._listener, false );
-  } else if ( document.attachEvent ) {
-    ready._listener = function () {
-      if ( document.readyState === "complete" ) {
-        var args = arguments;
-        document.detachEvent( "onreadystatechange", ready._listener );
-        ready.ready();
-      }
-    };
-    document.attachEvent("onreadystatechange", ready._listener);
-  }
 
   // ListDOM
     
