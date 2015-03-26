@@ -908,7 +908,6 @@
     jqlite.plugin.running = false;
     jqlite.plugin.cache = {};
     jqlite.plugin.run = function (jBase, pluginSelector) {
-      console.log('jqlite.plugin.run', jBase, pluginSelector);
 
       var handler = jqlite.plugin.cache[pluginSelector],
           elements = jBase.find(pluginSelector);
@@ -948,7 +947,6 @@
 
     jqWidget.init = function () {
       ready(function () {
-        console.log('jqWidget.init ready');
         jqlite.plugin('[data-widget]', function () {
           var widgetName = this.getAttribute('data-widget');
 
