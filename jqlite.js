@@ -1,21 +1,21 @@
 
 /*
- * jqlite - JavaScript library to query and manipulate DOM 
+ * jqlite - JavaScript library to query and manipulate DOM
 
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2014 Jesús Manuel Germade Castiñeiras <jesus@germade.es>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 
 (function (root, factory) {
@@ -205,7 +205,7 @@
   }
 
   // ListDOM
-    
+
   function ListDOM(){}
 
   ListDOM.prototype = [];
@@ -227,7 +227,7 @@
         list[0] = item;
         list.length = 1;
       }
-      return list; 
+      return list;
     };
 
   ListDOM.prototype.find = function(selector) {
@@ -294,14 +294,14 @@
 
   ListDOM.prototype.filter = function(selector) {
       var elems = new ListDOM(), elem, i, len;
-      
+
       if( selector instanceof Function ) {
         for( i = 0, len = this.length, elem; i < len ; i++ ) {
           elem = this[i];
           if( selector.apply(elem,[elem]) ) {
             elems.push(elem);
           }
-        } 
+        }
       } else if( typeof selector === 'string' ) {
           for( i = 0, len = this.length, elem; i < len ; i++ ) {
             elem = this[i];
@@ -321,7 +321,7 @@
       }
 
       if( this.length === 1 ) {
-        
+
         elem = this[0].parentElement;
 
         while( elem ) {
@@ -360,11 +360,11 @@
 
   ListDOM.prototype.children = auxDiv.children ? function (selector){
       var elems = new ListDOM();
-      
+
       for( var i = 0, len = this.length; i < len; i++ ) {
         pushMatches(elems, this[i].children);
       }
-        
+
       if( selector ) {
         return elems.filter(selector);
       }
@@ -853,7 +853,7 @@
       }
 
       return '';
-    }; 
+    };
 
   ListDOM.prototype.html = function (html) {
       var i, len;
@@ -898,9 +898,9 @@
         jqlite.plugin.cache[selector]._collection = !!collection;
       }
 
-      if( jqlite.plugin.running ) {
+      if( !jqlite.plugin.ready ) {
         $.plugin.run(jqlite.$doc, selector);
-      } else {
+      } else if( jqlite.plugin.running ) {
         jqlite.plugin.running = true;
         jqlite.plugin.init(jqlite.$doc);
       }
@@ -908,6 +908,8 @@
     jqlite.plugin.running = false;
     jqlite.plugin.cache = {};
     jqlite.plugin.run = function (jBase, pluginSelector) {
+      console.log('jqlite.plugin.run', jBase, pluginSelector);
+
       var handler = jqlite.plugin.cache[pluginSelector],
           elements = jBase.find(pluginSelector);
 
@@ -925,6 +927,7 @@
         for( var pluginSelector in jqlite.plugin.cache ) {
           jqlite.plugin.run(jBase, pluginSelector);
         }
+        jqlite.plugin.ready = true;
       });
     };
 
@@ -937,14 +940,15 @@
           console.log('running widget directly', widgetName);
           $('[data-widget="' + widgetName + '"]').each(handler);
         } else if( !jqWidget.loading ) {
+          jqWidget.loading = true;
           jqWidget.init();
         }
       }
     }
-    jqWidget.init = function () {
-      jqWidget.loading = true;
 
+    jqWidget.init = function () {
       ready(function () {
+        console.log('jqWidget.init ready');
         jqlite.plugin('[data-widget]', function () {
           var widgetName = this.getAttribute('data-widget');
 
@@ -1085,5 +1089,5 @@
   // finally
 
   return jqlite;
-  
+
 });
