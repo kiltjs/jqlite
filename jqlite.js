@@ -989,22 +989,24 @@
   ListDOM.prototype.on = function (eventName, listener) {
     var i, len;
 
-    if( eventName instanceof Array ) {
-
-      for( i = 0, len = eventName.length; i < len; i++ ) {
-        this.on(eventName[i], listener);
-      }
-
-    } else {
-
-      if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
-        throw 'bad arguments';
+    if( typeof eventName === 'string' ) {
+      if( !(listener instanceof Function) ) {
+        throw 'listener needs to be a function';
       }
 
       for( i = 0, len = this.length; i < len; i++ ) {
         attachElementListener(this[i], eventName, listener);
       }
+    } else if( eventName instanceof Array ) {
+      for( i = 0, len = eventName.length; i < len; i++ ) {
+        this.on(eventName[i], listener);
+      }
+    } else if( eventName instanceof Object ) {
+      for( i in eventName ) {
+        this.on(i, eventName[i]);
+      }
     }
+
     return this;
   };
 
@@ -1033,26 +1035,41 @@
   function autoDestroyListener (element, eventName, listener) {
     var _listener = function () {
       detachElementListener(element, eventName, _listener);
-      listener();
+      listener.apply(null, arguments);
     };
 
     return _listener;
   }
 
-  ListDOM.prototype.one = function (eventName, listener) {
-    if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
-      throw 'bad arguments';
+  ListDOM.prototype.once = function (eventName, listener) {
+
+    var i, len;
+
+    if( typeof eventName === 'string' ) {
+      if( !(listener instanceof Function) ) {
+        throw 'listener needs to be a function';
+      }
+
+      var element;
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        element = this[i];
+        attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
+      }
+    } else if( eventName instanceof Array ) {
+      for( i = 0, len = eventName.length; i < len; i++ ) {
+        this.once(eventName[i], listener);
+      }
+    } else if( eventName instanceof Object ) {
+      for( i in eventName ) {
+        this.once(i, eventName[i]);
+      }
     }
 
-    var element;
-
-    for( var i = 0, len = this.length; i < len; i++ ) {
-      element = this[i];
-      attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
-    }
     return this;
   };
-  ListDOM.prototype.once = ListDOM.prototype.one;
+  // for jQuery compatibility
+  ListDOM.prototype.one = ListDOM.prototype.once;
 
   ListDOM.prototype.off = function (eventName, listener) {
     if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
