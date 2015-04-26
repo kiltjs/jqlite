@@ -1,5 +1,5 @@
 {
-    "name": "jqlite",
+    "name": "jn-jqlite",
     "version": "0.0.37",
     "description": "Tiny JavaScript DOM query library",
     "main": "jqlite.js",
@@ -8,7 +8,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/jstools/jqlite.git"
+        "url": "https://github.com/jstools/jn-jqlite.git"
     },
     "keywords": [
         "javascript",
@@ -18,9 +18,9 @@
     "author": "Jesús Germade <jesus@germade.es>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/jstools/jqlite/issues"
+        "url": "https://github.com/jstools/jn-jqlite/issues"
     },
-    "homepage": "https://github.com/jstools/jqlite",
+    "homepage": "https://github.com/jstools/jn-jqlite",
     "devDependencies": {
         "grunt": "*",
         "grunt-contrib-jshint": "^0.10.0",

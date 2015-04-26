@@ -2,7 +2,7 @@
 describe('jstool: jqlite', function () {
 
 	var body = document.body;
-
+		
 	beforeEach(function () {
 		body.innerHTML = '';
 	});

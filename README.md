@@ -1,14 +1,14 @@
-[![npm version](https://badge.fury.io/js/jqlite.svg)](http://badge.fury.io/js/jqlite)
-[![Bower version](https://badge.fury.io/bo/jstool-jqlite.svg)](http://badge.fury.io/bo/jstool-jqlite)
-[![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite) 
+[![npm version](https://badge.fury.io/js/jn-jqlite.svg)](http://badge.fury.io/js/jn-jqlite)
+[![Bower version](https://badge.fury.io/bo/jn-jqlite.svg)](http://badge.fury.io/bo/jn-jqlite)
+[![Build Status](https://travis-ci.org/jstools/jn-jqlite.svg?branch=master)](https://travis-ci.org/jstools/jn-jqlite)
 
-jqlite
-======
+jn-jqlite
+=========
 
 Tiny JavaScript DOM query library
 
 
-jQuery Methods provided by jqlite
+jQuery Methods provided by jn-jqlite (jEngine jqlite)
 
 - [x] [`get()`](http://api.jquery.com/get/)
 - [x] [`eq()`](http://api.jquery.com/eq/)
