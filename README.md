@@ -7,6 +7,13 @@ jn-jqlite
 
 Tiny JavaScript DOM query library
 
+```.sh
+npm install jn-jqlite --save
+```
+or
+```.sh
+bower install jn-jqlite --save
+```
 
 jQuery Methods provided by jn-jqlite (jEngine jqlite)
 
