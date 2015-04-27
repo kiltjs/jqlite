@@ -153,7 +153,6 @@
       case '<':
         auxDiv.innerHTML = selector;
         var jChildren = pushMatches( new ListDOM(), auxDiv.children );
-        jqlite.plugin.init(jChildren);
         return jChildren;
       default:
         return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
@@ -885,85 +884,9 @@
             try{ runScripts('(function(){ \'use strict\';' + script.textContent + '})();'); }catch(err){ throw err.message; }
           }
         });
-        jqlite.plugin.init(this);
       }
       return this;
     };
-
-    jqlite.$doc = jqlite(document);
-
-    jqlite.plugin = function (selector, handler, collection) {
-      if( typeof selector === 'string' && handler instanceof Function ) {
-        jqlite.plugin.cache[selector] = handler;
-        jqlite.plugin.cache[selector]._collection = !!collection;
-      }
-
-      if( !jqlite.plugin.ready ) {
-        $.plugin.run(jqlite.$doc, selector);
-      } else if( jqlite.plugin.running ) {
-        jqlite.plugin.running = true;
-        jqlite.plugin.init(jqlite.$doc);
-      }
-    };
-    jqlite.plugin.running = false;
-    jqlite.plugin.cache = {};
-    jqlite.plugin.run = function (jBase, pluginSelector) {
-
-      var handler = jqlite.plugin.cache[pluginSelector],
-          elements = jBase.find(pluginSelector);
-
-      if( elements.length ) {
-        if( handler._collection ) {
-          handler( elements );
-        } else {
-          elements.each(handler);
-        }
-      }
-    };
-
-    jqlite.plugin.init = function (jBase) {
-      ready(function () {
-        for( var pluginSelector in jqlite.plugin.cache ) {
-          jqlite.plugin.run(jBase, pluginSelector);
-        }
-        jqlite.plugin.ready = true;
-      });
-    };
-
-    function jqWidget (widgetName, handler) {
-      if( typeof widgetName === 'string' && handler instanceof Function ) {
-
-        jqWidget.widgets[widgetName] = handler;
-
-        if( jqWidget.enabled ) {
-          console.log('running widget directly', widgetName);
-          $('[data-widget="' + widgetName + '"]').each(handler);
-        } else if( !jqWidget.loading ) {
-          jqWidget.loading = true;
-          jqWidget.init();
-        }
-      }
-    }
-
-    jqWidget.init = function () {
-      ready(function () {
-        jqlite.plugin('[data-widget]', function () {
-          var widgetName = this.getAttribute('data-widget');
-
-          console.log('running widget', widgetName);
-
-          if( jqWidget.widgets[widgetName] ) {
-            jqWidget.widgets[widgetName].call(this);
-          }
-        });
-        jqWidget.enabled = true;
-        jqWidget.loading = false;
-      });
-    };
-    jqWidget.widgets = {};
-
-    jqlite.widget = jqWidget;
-
 
   ListDOM.prototype.text = function (text) {
       var i, len;

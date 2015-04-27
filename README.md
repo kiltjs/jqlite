@@ -1,18 +1,18 @@
-[![npm version](https://badge.fury.io/js/jn-jqlite.svg)](http://badge.fury.io/js/jn-jqlite)
-[![Bower version](https://badge.fury.io/bo/jn-jqlite.svg)](http://badge.fury.io/bo/jn-jqlite)
-[![Build Status](https://travis-ci.org/jstools/jn-jqlite.svg?branch=master)](https://travis-ci.org/jstools/jn-jqlite)
+[![npm version](https://badge.fury.io/js/jqlite.svg)](http://badge.fury.io/js/jqlite)
+[![Bower version](https://badge.fury.io/bo/jstools-jqlite.svg)](http://badge.fury.io/bo/jstools-jqlite)
+[![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
 
-jn-jqlite
+jqlite
 =========
 
 Tiny JavaScript DOM query library
 
 ```.sh
-npm install jn-jqlite --save
+npm install jqlite --save
 ```
 or
 ```.sh
-bower install jn-jqlite --save
+bower install jstools-jqlite --save
 ```
 
 jQuery Methods provided by jn-jqlite (jEngine jqlite)
