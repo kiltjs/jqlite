@@ -1,4 +1,4 @@
-box: mthenw/karma@0.2.0
+box: emmenko/wercker-nodejs-karma@0.3.0
 # Build definition
 build:
   # The steps that will be executed on build
