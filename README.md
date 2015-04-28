@@ -1,12 +1,8 @@
+jqlite [![wercker status](https://app.wercker.com/status/f436d6c59cd7ef60ac2aa2ff49ed8f7b/s "wercker status")](https://app.wercker.com/project/bykey/f436d6c59cd7ef60ac2aa2ff49ed8f7b)
+==============================
 [![npm version](https://badge.fury.io/js/jqlite.svg)](http://badge.fury.io/js/jqlite)
 [![Bower version](https://badge.fury.io/bo/jstools-jqlite.svg)](http://badge.fury.io/bo/jstools-jqlite)
-
-[![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite) Travis CI
-
-[![Build Status](https://semaphoreci.com/api/v1/projects/67b8a149-dc34-423b-8522-8c4e911831aa/409998/shields_badge.svg)](https://semaphoreci.com/jstools/jqlite) Semaphore CI
-
-jqlite
-=========
+[![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
 
 Tiny JavaScript DOM query library
 
