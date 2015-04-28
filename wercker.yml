@@ -5,6 +5,13 @@ build:
   steps:
     # A step that executes `npm install` command
     - npm-install
+
+    # A custom script step for install grunt-cli
+    - script:
+        name: install grunt
+        code: |
+          sudo npm install -g grunt-cli
+          
     # A step that executes `npm test` command
     - npm-test
 
