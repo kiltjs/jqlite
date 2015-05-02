@@ -1,20 +1,22 @@
-jqlite [![wercker status](https://app.wercker.com/status/f436d6c59cd7ef60ac2aa2ff49ed8f7b/s "wercker status")](https://app.wercker.com/project/bykey/f436d6c59cd7ef60ac2aa2ff49ed8f7b)
+jEngine: jqlite [![wercker status](https://app.wercker.com/status/f436d6c59cd7ef60ac2aa2ff49ed8f7b/s "wercker status")](https://app.wercker.com/project/bykey/f436d6c59cd7ef60ac2aa2ff49ed8f7b)
 ==============================
 [![npm version](https://badge.fury.io/js/jqlite.svg)](http://badge.fury.io/js/jqlite)
 [![Bower version](https://badge.fury.io/bo/jstools-jqlite.svg)](http://badge.fury.io/bo/jstools-jqlite)
 [![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
+> Tiny JavaScript DOM query library
 
-Tiny JavaScript DOM query library
-
+Installation
+------------
 ```.sh
 npm install jqlite --save
 ```
-or
+  or
 ```.sh
 bower install jstools-jqlite --save
 ```
-
-jQuery Methods provided by jn-jqlite (jEngine jqlite)
+Methods
+-------
+> jQuery Methods provided by jn-jqlite (jEngine jqlite)
 
 - [x] [`get()`](http://api.jquery.com/get/)
 - [x] [`eq()`](http://api.jquery.com/eq/)

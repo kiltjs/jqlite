@@ -1,5 +1,5 @@
 module.exports = function(config) {
-  
+
   var configuration = {
     frameworks: ['jasmine'],
     plugins: [ 'karma-jasmine', 'karma-chrome-launcher', 'karma-firefox-launcher' ],
@@ -20,9 +20,6 @@ module.exports = function(config) {
   if(process.env.TRAVIS){
     configuration.browsers = [ 'Chrome_travis_ci', 'Firefox' ];
   }
-  // else if(process.env.WERCKER){
-  //   configuration.browsers = [ 'Chrome' ];
-  // }
 
   config.set(configuration);
 };
