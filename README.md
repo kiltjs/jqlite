@@ -12,7 +12,7 @@ npm install jqlite --save
 ```
   or
 ```.sh
-bower install jstools-jqlite --save
+bower install jengine-jqlite --save
 ```
 Methods
 -------
