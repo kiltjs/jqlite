@@ -162,24 +162,27 @@ describe('DOM Events', function () {
 
 	});
 
-	it('event stopPropagation', function (done) {
+	it('event stopPropagation', function () {
 
-		var result;
+		var result, stopEvent = function (e) {
+			e.stopPropagation();
+		};
 
 		$(document).on('event3', function (e, value) {
 			result = value;
 		});
 
-		$('ul.foo').on('event3', function (e) {
-			e.stopPropagation();
-		});
+		$('ul.foo').on('event3', stopEvent);
 
 		$('li.bar').trigger('event3', ['bar']);
 
-		setTimeout(function () {
-			expect(result).toBeUndefined();
-			done();
-		}, 0);
+		expect(result).toBeUndefined();
+
+		$('ul.foo').off('event3', stopEvent);
+
+		$('li.bar').trigger('event3', ['bar']);
+
+		expect(result).toBe('bar');
 
 	});
 
