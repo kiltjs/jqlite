@@ -1,5 +1,5 @@
 
-describe('jstool: jqlite', function () {
+describe('DOM Events', function () {
 
 	it('on', function (done) {
 		var jDiv = $('<div>'), result;

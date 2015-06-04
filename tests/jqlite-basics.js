@@ -1,8 +1,8 @@
 
-describe('jstool: jqlite', function () {
+describe('Basics', function () {
 
 	var body = document.body;
-		
+
 	beforeEach(function () {
 		body.innerHTML = '';
 	});
@@ -23,8 +23,9 @@ describe('jstool: jqlite', function () {
 	});
 
 	it('find: nested no duplicates', function () {
-		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar<ul><li>foo</li><li>bar</li><li>foobar</li></ul></li></ul><ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
+		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar<ul><li>foo</li><li>bar</li><li class="foo">foobar</li></ul></li></ul><ul><li>foo</li><li>bar</li><li class="foo">foobar</li></ul>';
 		expect( $('ul').find('li').length ).toBe(9);
+		expect( $('ul').find('li.foo').text() ).toBe('foobarfoobar');
 	});
 
 	it('each', function () {
@@ -40,13 +41,24 @@ describe('jstool: jqlite', function () {
 
 	it('filter', function () {
 		body.innerHTML = '<ul><li class="odd">foo</li><li>bar</li><li class="odd">foobar</li><li>barfoo</li><li class="odd">raboof</li></ul>';
-		var texts = '';
 
-		$('ul > li').filter('.odd').each(function () {
-			texts += this.textContent;
-		});
+		var liList = $('ul > li'),
+				liOdds = liList.filter('.odd'),
+				liOdds2 = liList.filter(':nth-child(odd)'),
+				liOdds3 = $('ul > li:nth-child(odd)');
 
-		expect( texts ).toBe('foofoobarraboof');
+		expect( liOdds.text() ).toBe('foofoobarraboof');
+		expect( liOdds.length ).toBe( liOdds2.length );
+		expect( liOdds.length ).toBe( liOdds3.length );
+
+		expect( liOdds.some(function (item, index) {
+			return item !== liOdds2[index];
+		}) ).toBe(false);
+
+		expect( liOdds.some(function (item, index) {
+			return item !== liOdds3[index];
+		}) ).toBe(false);
+
 	});
 
 	it('children', function () {

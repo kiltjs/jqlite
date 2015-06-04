@@ -918,7 +918,7 @@
         for( i = 0, len = this.length; i < len; i++ ) {
           text += this[i].textContent;
         }
-        return this;
+        return text;
       } else if( _isFunction(text) ) {
         for( i = 0, len = this.length; i < len; i++ ) {
           this[i].textContent = text(i, this[i].textContent);
