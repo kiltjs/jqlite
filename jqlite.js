@@ -160,24 +160,34 @@
     return list;
   }
 
+  var RE_TAG = /^[a-z-_]$/i;
+
   function stringMatches (selector) {
-    switch ( selector[0] ) {
-      case '#':
-        var found = document.querySelector(selector);
-        if( found ) {
-          var listdom = new ListDOM();
-          listdom[0] = found;
-          listdom.length = 1;
-          return listdom;
-        } else return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
-        break;
-      case '<':
-        auxDiv.innerHTML = selector;
-        var jChildren = pushMatches( new ListDOM(), auxDiv.children );
-        return jChildren;
-      default:
+    var char0 = selector[0];
+
+    if( char0 === '<') {
+      auxDiv.innerHTML = selector;
+      var jChildren = pushMatches( new ListDOM(), auxDiv.children );
+      return jChildren;
+    } else if ( selector.indexOf(' ') !== -1 || selector.indexOf(':') !== -1 ) {
+      return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
+    } else if( char0 === '#' ) {
+      var found = document.getElementById(selector.substr(1));
+      if( found ) {
+        var listdom = new ListDOM();
+        listdom[0] = found;
+        listdom.length = 1;
+        return listdom;
+      } else {
         return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
+      }
+    } else if( char0 === '.' ) {
+      return pushMatches( new ListDOM(), document.getElementsByClassName(selector.substr(1)) );
+    } else if( RE_TAG.test(selector) ) {
+      console.log(document.getElementsByTagName(selector), document.getElementsByTagName(selector).length);
+      return pushMatches( new ListDOM(), document.getElementsByTagName(selector) );
     }
+    return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
   }
 
   function initList(selector) {
