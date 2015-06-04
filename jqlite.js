@@ -38,8 +38,6 @@
       define('jqlite', function () { return jqlite; } );
     } else if( typeof angular === 'function' ) {
       angular.module('jqlite', []).constant('jqlite', jqlite );
-    } else if ( typeof define === 'function' && define.amd ) {
-      define(['jqlite'], function () { return jqlite; });
     } else {
       root.jqlite = jqlite;
     }
@@ -71,7 +69,7 @@
 			_isDate = _instanceOf(Date),
 			_isRegExp = _instanceOf(RegExp),
 			_isElement = function(o) {
-		    return o && obj.nodeType === 1;
+		    return o && o.nodeType === 1;
 		  };
 
   if( !Element.prototype.matchesSelector ) {
@@ -184,9 +182,11 @@
 
   function initList(selector) {
 
-    if( _isArray(selector) || selector instanceof NodeList || selector instanceof HTMLCollection ) {
+    if( selector instanceof ListDOM ) {
+      return selector;
+    } else if( _isArray(selector) || selector instanceof NodeList || selector instanceof HTMLCollection ) {
       return pushMatches( new ListDOM(), selector );
-    } else if( selector === document || selector instanceof HTMLElement || selector instanceof Element || _isElement(selector) ) {
+    } else if( selector === window || selector === document || selector instanceof HTMLElement || selector instanceof Element || _isElement(selector) ) {
       var list2 = new ListDOM();
       list2[0] = selector;
       list2.length = 1;
@@ -200,7 +200,7 @@
   }
 
   function jqlite (selector){
-    if( typeof selector === 'string' ) {
+    if( _isString(selector) ) {
       return stringMatches(selector);
     }
     return initList(selector);
@@ -585,9 +585,9 @@
 
   ListDOM.prototype.addClass = classListEnabled ? function (className) {
       if( className.indexOf(' ') >= 0 ) {
-        var jThis = $(this);
+        var _this = this;
         className.split(' ').forEach(function (cn) {
-          jThis.addClass(cn);
+          _this.addClass(cn);
         });
       } else {
         for( var i = 0, len = this.length; i < len ; i++ ) {

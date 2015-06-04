@@ -8,6 +8,26 @@ describe('$ object', function () {
 		body.innerHTML = sampleHTML;
 	});
 
+  it('ListDOM should return same list', function () {
+
+    var jUl = $('ul');
+
+    expect( $(jUl) ).toBe(jUl);
+
+  });
+
+  it('jqlite can use window', function () {
+
+    expect( $(window)[0] ).toBe(window);
+
+  });
+
+  it('jqlite can use document', function () {
+
+    expect( $(document)[0] ).toBe(document);
+
+  });
+
   it('should find as a selector', function () {
 
     expect( $('ul').length ).toBe(2);

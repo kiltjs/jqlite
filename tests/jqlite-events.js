@@ -1,6 +1,13 @@
 
 describe('DOM Events', function () {
 
+	var body = document.body,
+      sampleHTML = '<ul class="foo"><li class="bar">foo</li><li>bar</li><li>foobar</li></ul><ul class="bar"><li>foo</li><li>bar</li><li>foobar</li></ul>';
+
+	beforeEach(function () {
+		body.innerHTML = sampleHTML;
+	});
+
 	it('on', function (done) {
 		var jDiv = $('<div>'), result;
 
@@ -130,6 +137,69 @@ describe('DOM Events', function () {
 		jDiv.trigger('signal1', ['bar']);
 
 		expect( result ).toBe('foo');
+	});
+
+	it('receive event in document', function (done) {
+
+		$(document).on('event1', function (e, value) {
+			expect(value).toBe('bar');
+			done();
+		});
+
+		$('li.bar').trigger('event1', ['bar']);
+
+	});
+
+	it('receive two args in document', function (done) {
+
+		$(document).on('event2', function (e, value, value2) {
+			expect(value).toBe('foo');
+			expect(value2).toBe('bar');
+			done();
+		});
+
+		$('li.bar').trigger('event2', ['foo', 'bar']);
+
+	});
+
+	it('event stopPropagation', function (done) {
+
+		var result;
+
+		$(document).on('event3', function (e, value) {
+			result = value;
+		});
+
+		$('ul.foo').on('event3', function (e) {
+			e.stopPropagation();
+		});
+
+		$('li.bar').trigger('event3', ['bar']);
+
+		setTimeout(function () {
+			expect(result).toBeUndefined();
+			done();
+		}, 0);
+
+	});
+
+	it('event stopPropagation method', function (done) {
+
+		var result;
+
+		$(document).on('event4', function (e, value) {
+			result = value;
+		});
+
+		$('ul.foo').stopPropagation('event4');
+
+		$('li.bar').trigger('event4', ['bar']);
+
+		setTimeout(function () {
+			expect(result).toBeUndefined();
+			done();
+		}, 0);
+
 	});
 
 });
