@@ -2,7 +2,12 @@ module.exports = function(config) {
 
   var configuration = {
     frameworks: ['jasmine'],
-    plugins: [ 'karma-jasmine', 'karma-chrome-launcher', 'karma-firefox-launcher' ],
+    plugins: [
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-firefox-launcher',
+      'karma-story-reporter'
+    ],
     files: [
       'jqlite.js',
       'tests/*.js'
@@ -14,7 +19,8 @@ module.exports = function(config) {
         flags: ['--no-sandbox']
       }
     },
-    singleRun: true
+    singleRun: true,
+    reporters: ['story']
   };
 
   if(process.env.TRAVIS){

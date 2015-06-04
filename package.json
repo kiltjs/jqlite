@@ -1,43 +1,44 @@
 {
-    "name": "jqlite",
-    "version": "0.2.0",
-    "description": "Tiny JavaScript DOM query library",
-    "main": "jqlite.js",
-    "scripts": {
-        "test": "grunt test",
-        "posttest": "grunt uglify:min"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/jstools/jqlite.git"
-    },
-    "keywords": [
-        "javascript",
-        "query",
-        "dom"
-    ],
-    "author": "Jesús Germade <jesus@germade.es>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/jstools/jqlite/issues"
-    },
-    "homepage": "https://github.com/jstools/jqlite",
-    "devDependencies": {
-        "grunt": "*",
-        "grunt-contrib-jshint": "^0.10.0",
-        "grunt-contrib-uglify": "*",
-        "grunt-contrib-watch": "^0.6.1",
-        "grunt-fileserver": "^0.1.27",
-        "grunt-increase-version": "*",
-        "grunt-karma": "^0.9.0",
-        "grunt-shell": "*",
-        "jasmine": "^2.1.1",
-        "jasmine-core": "^2.1.3",
-        "karma": "^0.12.28",
-        "karma-chrome-launcher": "^0.1.4",
-        "karma-firefox-launcher": "^0.1.3",
-        "karma-jasmine": "^0.3.2",
-        "load-grunt-tasks": "*",
-        "time-grunt": "*"
-    }
+  "name": "jqlite",
+  "version": "0.2.0",
+  "description": "Tiny JavaScript DOM query library",
+  "main": "jqlite.js",
+  "scripts": {
+    "test": "grunt test",
+    "posttest": "grunt uglify:min"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jstools/jqlite.git"
+  },
+  "keywords": [
+    "javascript",
+    "query",
+    "dom"
+  ],
+  "author": "Jesús Germade <jesus@germade.es>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jstools/jqlite/issues"
+  },
+  "homepage": "https://github.com/jstools/jqlite",
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-fileserver": "^0.1.27",
+    "grunt-increase-version": "*",
+    "grunt-karma": "^0.9.0",
+    "grunt-shell": "*",
+    "jasmine": "^2.1.1",
+    "jasmine-core": "^2.1.3",
+    "karma": "^0.12.28",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-firefox-launcher": "^0.1.3",
+    "karma-jasmine": "^0.3.2",
+    "karma-story-reporter": "^0.3.1",
+    "load-grunt-tasks": "*",
+    "time-grunt": "*"
+  }
 }

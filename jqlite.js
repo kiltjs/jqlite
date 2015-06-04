@@ -34,8 +34,8 @@
     }
   } else {
     var jqlite = factory();
-    if ( typeof fn === 'function' ) {
-      fn.define('jqlite', function () { return jqlite; } );
+    if ( typeof define === 'function' ) {
+      define('jqlite', function () { return jqlite; } );
     } else if( typeof angular === 'function' ) {
       angular.module('jqlite', []).constant('jqlite', jqlite );
     } else if ( typeof define === 'function' && define.amd ) {
@@ -50,6 +50,29 @@
 
 })(this, function () {
   'use strict';
+
+  function _isType (type) {
+      return function (o) {
+          return (typeof o === type);
+      };
+  }
+
+  function _instanceOf (_constructor) {
+      return function (o) {
+          return ( o instanceof _constructor );
+      };
+  }
+
+	var _isObject = _isType('object'),
+			_isFunction = _isType('function'),
+			_isString = _isType('string'),
+			_isNumber = _isType('number'),
+			_isArray = Array.isArray || _instanceOf(Array),
+			_isDate = _instanceOf(Date),
+			_isRegExp = _instanceOf(RegExp),
+			_isElement = function(o) {
+		    return o && obj.nodeType === 1;
+		  };
 
   if( !Element.prototype.matchesSelector ) {
     Element.prototype.matchesSelector = (
@@ -161,15 +184,15 @@
 
   function initList(selector) {
 
-    if( selector instanceof Array || selector instanceof NodeList || selector instanceof HTMLCollection ) {
+    if( _isArray(selector) || selector instanceof NodeList || selector instanceof HTMLCollection ) {
       return pushMatches( new ListDOM(), selector );
-    } else if( selector === document || selector instanceof HTMLElement || selector instanceof Element ) {
+    } else if( selector === document || selector instanceof HTMLElement || selector instanceof Element || _isElement(selector) ) {
       var list2 = new ListDOM();
       list2[0] = selector;
       list2.length = 1;
       return list2;
 
-    } else if( selector instanceof Function ) {
+    } else if( _isFunction(selector) ) {
       ready(selector);
     } else if( selector === undefined ) {
       return new ListDOM();
@@ -194,7 +217,7 @@
   };
 
   function ready (callback) {
-    if( callback instanceof Function ) {
+    if( _isFunction(callback) ) {
       if (/loaded|complete/.test(document.readyState)) {
         callback();
       } else {
@@ -217,7 +240,7 @@
     };
 
   ListDOM.prototype.eq = function(pos) {
-      if( !pos instanceof Number ) {
+      if( !_isNumber(pos) ) {
         throw 'number required';
       }
       var item = ( pos < 0 ) ? this[this.length - pos] : this[pos], list = new ListDOM();
@@ -271,7 +294,7 @@
   ListDOM.prototype.$ = ListDOM.prototype.find;
 
   ListDOM.prototype.each = function(each) {
-      if( each instanceof Function ) {
+      if( _isFunction(each) ) {
         for( var i = 0, len = this.length, elem; i < len ; i++ ) {
             each.call(this[i], i, this[i]);
         }
@@ -294,14 +317,14 @@
   ListDOM.prototype.filter = function(selector) {
       var elems = new ListDOM(), elem, i, len;
 
-      if( selector instanceof Function ) {
+      if( _isFunction(selector) ) {
         for( i = 0, len = this.length, elem; i < len ; i++ ) {
           elem = this[i];
           if( selector.apply(elem,[elem]) ) {
             elems.push(elem);
           }
         }
-      } else if( typeof selector === 'string' ) {
+      } else if( _isString(selector) ) {
           for( i = 0, len = this.length, elem; i < len ; i++ ) {
             elem = this[i];
             if( Element.prototype.matchesSelector.call(elem,selector) ) {
@@ -471,7 +494,7 @@
         for( i = 0, len = this.length; i < len ; i++ ) {
           delete this[i].dataset[key];
         }
-      } else if( key instanceof Array ) {
+      } else if( _isArray(key) ) {
         for( i = 0, len = key.length; i < len ; i++ ) {
           this.removeData(key[i]);
         }
@@ -483,7 +506,7 @@
         for( i = 0, len = this.length; i < len ; i++ ) {
           this[i].removeAttribute('data-' + key);
         }
-      } else if( key instanceof Array ) {
+      } else if( _isArray(key) ) {
         for( i = 0, len = key.length; i < len ; i++ ) {
           this.removeData(key[i]);
         }
@@ -493,7 +516,7 @@
 
   ListDOM.prototype.attr = function (key, value) {
       var i, len;
-      if( value instanceof Function ) {
+      if( _isFunction(value) ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
           this[i].setAttribute( key, value(i, this[i].getAttribute(key) ) );
         }
@@ -517,7 +540,7 @@
   ListDOM.prototype.prop = function (key, value) {
       var i, len;
 
-      if( value instanceof Function ) {
+      if( _isFunction(value) ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
           this[i][key] = value( i, this[i][key] );
         }
@@ -869,7 +892,7 @@
         }
         return this;
       } else {
-        if( html instanceof Function ) {
+        if( _isFunction(html) ) {
           for( i = 0, len = this.length; i < len; i++ ) {
             this[i].innerHTML = html(i, this[i].innerHTML);
           }
@@ -896,7 +919,7 @@
           text += this[i].textContent;
         }
         return this;
-      } else if( text instanceof Function ) {
+      } else if( _isFunction(text) ) {
         for( i = 0, len = this.length; i < len; i++ ) {
           this[i].textContent = text(i, this[i].textContent);
         }
@@ -913,18 +936,18 @@
     var i, len;
 
     if( typeof eventName === 'string' ) {
-      if( !(listener instanceof Function) ) {
+      if( !_isFunction(listener) ) {
         throw 'listener needs to be a function';
       }
 
       for( i = 0, len = this.length; i < len; i++ ) {
         attachElementListener(this[i], eventName, listener);
       }
-    } else if( eventName instanceof Array ) {
+    } else if( _isArray(eventName) ) {
       for( i = 0, len = eventName.length; i < len; i++ ) {
         this.on(eventName[i], listener);
       }
-    } else if( eventName instanceof Object ) {
+    } else if( _isObject(eventName) ) {
       for( i in eventName ) {
         this.on(i, eventName[i]);
       }
@@ -969,7 +992,7 @@
     var i, len;
 
     if( typeof eventName === 'string' ) {
-      if( !(listener instanceof Function) ) {
+      if( !_isFunction(listener) ) {
         throw 'listener needs to be a function';
       }
 
@@ -979,11 +1002,11 @@
         element = this[i];
         attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
       }
-    } else if( eventName instanceof Array ) {
+    } else if( _isArray(eventName) ) {
       for( i = 0, len = eventName.length; i < len; i++ ) {
         this.once(eventName[i], listener);
       }
-    } else if( eventName instanceof Object ) {
+    } else if( _isObject(eventName) ) {
       for( i in eventName ) {
         this.once(i, eventName[i]);
       }
@@ -995,7 +1018,7 @@
   ListDOM.prototype.one = ListDOM.prototype.once;
 
   ListDOM.prototype.off = function (eventName, listener) {
-    if( typeof eventName !== 'string' || !(listener instanceof Function) ) {
+    if( typeof eventName !== 'string' || !_isFunction(listener) ) {
       throw 'bad arguments';
     }
 
