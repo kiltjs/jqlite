@@ -30,13 +30,12 @@ describe('Basics', function () {
 
 	it('each', function () {
 		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
-		var texts = '';
 
-		$('ul > li').each(function () {
-			texts += this.textContent;
+		var texts = ['foo', 'bar', 'foobar'];
+
+		$('ul > li').each(function (index) {
+			expect( this.textContent ).toBe( texts[index] );
 		});
-
-		expect( texts ).toBe('foobarfoobar');
 	});
 
 	it('filter', function () {

@@ -112,4 +112,24 @@ describe('DOM Events', function () {
 		}, 1);
 	});
 
+	it('off', function () {
+		var jDiv = $('<div>'), result = '';
+
+		function addValue2result (e, value) {
+			result += value;
+		}
+
+		jDiv.on('signal1', addValue2result);
+
+		jDiv.trigger('signal1', ['foo']);
+
+		expect( result ).toBe('foo');
+
+		jDiv.off('signal1', addValue2result);
+
+		jDiv.trigger('signal1', ['bar']);
+
+		expect( result ).toBe('foo');
+	});
+
 });
