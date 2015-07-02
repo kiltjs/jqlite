@@ -20,6 +20,8 @@ Methods
 
 - [x] [`get()`](http://api.jquery.com/get/)
 - [x] [`eq()`](http://api.jquery.com/eq/)
+- [x] [`first()`](http://api.jquery.com/first/)
+- [x] [`last()`](http://api.jquery.com/last/)
 - [x] [`addClass()`](http://api.jquery.com/addClass/)
 - [x] [`after()`](http://api.jquery.com/after/)
 - [x] [`append()`](http://api.jquery.com/append/)
