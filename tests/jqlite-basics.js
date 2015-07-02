@@ -7,6 +7,23 @@ describe('Basics', function () {
 		body.innerHTML = '';
 	});
 
+	it('eq', function () {
+		body.innerHTML = '<div class="foo"></div><div class="bar"></div><div class="foobar"></div>';
+		expect( $('div').eq(0).hasClass('foo') ).toBe(true);
+		expect( $('div').eq(1).hasClass('bar') ).toBe(true);
+		expect( $('div').eq(2).hasClass('foobar') ).toBe(true);
+	});
+
+	it('first', function () {
+		body.innerHTML = '<div class="foo"></div><div class="bar"></div><div class="foobar"></div>';
+		expect( $('div').first().hasClass('foo') ).toBe(true);
+	});
+
+	it('last', function () {
+		body.innerHTML = '<div class="foo"></div><div class="bar"></div><div class="foobar"></div>';
+		expect( $('div').last().hasClass('foobar') ).toBe(true);
+	});
+
 	it('find', function () {
 		body.innerHTML = '<article id="item-id" class="parent element" data-some="attribute"><section class="post"><a class="link"></a></section></article>';
 		expect( $('#item-id > section').length ).toBe(1);
