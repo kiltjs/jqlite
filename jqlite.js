@@ -262,6 +262,26 @@
       return list;
     };
 
+  ListDOM.prototype.first = function() {
+      var list = new ListDOM();
+
+      if( this.length ) {
+        list[0] = this[0];
+        list.length = 1;
+      }
+      return list;
+    };
+
+  ListDOM.prototype.last = function() {
+      var list = new ListDOM();
+
+      if( this.length ) {
+        list[0] = this[this.length - 1];
+        list.length = 1;
+      }
+      return list;
+    };
+
   ListDOM.prototype.find = function(selector) {
       var list = this, elems = new ListDOM(), found, i, len;
 
