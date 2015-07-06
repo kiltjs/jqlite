@@ -900,6 +900,10 @@
           this[i].style[key] = value;
         }
         return this;
+      } else if( key instanceof Object ) {
+        for( var k in key ) {
+          this.css(k, key[k]);
+        }
       } else if( this[0] ) {
         return this[0].style[key] || window.getComputedStyle(this[0])[key];
       }
