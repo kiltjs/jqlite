@@ -658,7 +658,7 @@
 
   ListDOM.prototype.hasClass = classListEnabled ? function (className) {
       for( var i = 0, len = this.length; i < len ; i++ ) {
-          if( this[i].classList.item(className) ) {
+          if( this[i].classList.contains(className) ) {
               return true;
           }
       }

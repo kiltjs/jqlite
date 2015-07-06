@@ -33,11 +33,15 @@ describe('class manipulation', function () {
 
   it('remove class', function () {
 
+    ul1.addClass('ulfoo2');
     ul1.removeClass('ulfoo');
 
     expect( ul1.className ).not.toMatch(/ulfoo/);
     expect( ul1.hasClass('ulfoo') ).toBe(false);
 
+    expect( ul1.hasClass('ulfoo2') ).toBe(true);
+    ul1.removeClass('ulfoo2');
+    expect( ul1.hasClass('ulfoo2') ).toBe(false);
   });
 
   it('add class to several ul', function () {
