@@ -737,6 +737,10 @@
       return this;
     };
 
+  ListDOM.prototype.appendTo = function (target) {
+      $(target).append(this);
+    };
+
   ListDOM.prototype.prepend = function (content) {
       var jContent = $(content), jContent2, i, j, len, len2, element, previous;
 
@@ -1079,6 +1083,19 @@
         e.stopPropagation();
       });
     }
+  };
+
+  // shorthands
+
+  ['mouseenter', 'mouseleave'].forEach(function (eventName) {
+    ListDOM.prototype[eventName] = function (handler) {
+      this.on(eventName, handler);
+      return this;
+    };
+  });
+
+  ListDOM.prototype.hover = function (mouseIn, mouseOut) {
+    return this.mouseenter(mouseIn).mouseleave(mouseOut);
   };
 
   // finally
