@@ -915,6 +915,14 @@
       return '';
     };
 
+  ListDOM.prototype.position = function () {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+    if( this.length ) {
+
+    }
+    return this.length && this[0].getBoundingClientRect();
+  };
+
   ListDOM.prototype.html = function (html) {
       var i, len;
       if( html === undefined ) {
