@@ -899,7 +899,8 @@
 
   ListDOM.prototype.css = function (key, value) {
 
-      if( value ) {
+      if( value !== undefined ) {
+        value = ( value instanceof Function ) ? value() : ( value instanceof Number ? (value + 'px') : value );
         for( var i = 0, len = this.length; i < len; i++ ) {
           this[i].style[key] = value;
         }
@@ -912,8 +913,41 @@
         return this[0].style[key] || window.getComputedStyle(this[0])[key];
       }
 
-      return '';
+      return this;
     };
+
+  ListDOM.prototype.position = function () {
+    if( this.length ) {
+      return {
+        top: this[0].offsetTop,
+        left: this[0].offsetLeft
+      };
+    }
+  };
+
+  ListDOM.prototype.offset = function (coordinates) {
+    if( coordinates === undefined ) {
+      var rect = this[0].getBoundingClientRect();
+      return this.length && { top: rect.top + document.body.scrollTop, left: rect.left };
+    }
+    if( coordinates instanceof Function ) {
+      coordinates = coordinates();
+    }
+    if( typeof coordinates === 'object' ) {
+      if( coordinates.top !== undefined && coordinates.left !== undefined ) {
+        for( var i = 0, len = this.length, position ; i < len ; i++ ) {
+          // position = this[i].style.position || window.getComputedStyle(this[i]).position;
+          this[i].style.position = 'relative';
+
+          var p = this[i].getBoundingClientRect();
+
+          this[i].style.top = coordinates.top - p.top + parseFloat(this[i].style.top || 0) - document.body.scrollTop + 'px';
+          this[i].style.left = coordinates.left - p.left + parseFloat(this[i].style.left || 0) + 'px';
+        }
+        return coordinates;
+      }
+    }
+  };
 
   ListDOM.prototype.html = function (html) {
       var i, len;
