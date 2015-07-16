@@ -949,6 +949,52 @@
     }
   };
 
+  ListDOM.prototype.width = function (value, offset) {
+    var el;
+    if( value === true ) {
+      if( this.length ) {
+        el = this[0];
+        return el.offsetWidth;
+      }
+    } else if( value !== undefined ) {
+
+      for( var i = 0, len = this.length; i< len ; i++ ) {
+        this[i].style.width = value;
+      }
+
+    } else if( this.length ) {
+      el = this[0];
+      return el.offsetWidth -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('border-left-width') ) -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('padding-left') ) -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('padding-right') ) -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('border-right-width') );
+    }
+  };
+
+  ListDOM.prototype.height = function (value, offset) {
+    var el;
+    if( value === true ) {
+      if( this.length ) {
+        el = this[0];
+        return el.offsetHeight;
+      }
+    } else if( value !== undefined ) {
+
+      for( var i = 0, len = this.length; i < len ; i++ ) {
+        this[i].style.height = value;
+      }
+
+    } else if( this.length ) {
+      el = this[0];
+      return el.offsetHeight -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('border-top-width') ) -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('padding-top') ) -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('padding-bottom') ) -
+        parseFloat( window.getComputedStyle(el, null).getPropertyValue('border-bottom-width') );
+    }
+  };
+
   ListDOM.prototype.html = function (html) {
       var i, len;
       if( html === undefined ) {
