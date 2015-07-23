@@ -162,7 +162,7 @@
 
   var RE_TAG = /^[a-z-_]$/i;
 
-  function stringMatches (selector) {
+  function stringMatches (selector, element) {
     var char0 = selector[0];
 
     if( char0 === '<') {
@@ -170,24 +170,24 @@
       var jChildren = pushMatches( new ListDOM(), auxDiv.children );
       return jChildren;
     } else if ( selector.indexOf(' ') !== -1 || selector.indexOf(':') !== -1 ) {
-      return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
+      return pushMatches( new ListDOM(), element.querySelectorAll(selector) );
     } else if( char0 === '#' ) {
-      var found = document.getElementById(selector.substr(1));
+      var found = element.getElementById(selector.substr(1));
       if( found ) {
         var listdom = new ListDOM();
         listdom[0] = found;
         listdom.length = 1;
         return listdom;
       } else {
-        return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
+        return pushMatches( new ListDOM(), element.querySelectorAll(selector) );
       }
     } else if( char0 === '.' ) {
-      return pushMatches( new ListDOM(), document.getElementsByClassName(selector.substr(1)) );
+      return pushMatches( new ListDOM(), element.getElementsByClassName(selector.substr(1)) );
     } else if( RE_TAG.test(selector) ) {
-      console.log(document.getElementsByTagName(selector), document.getElementsByTagName(selector).length);
-      return pushMatches( new ListDOM(), document.getElementsByTagName(selector) );
+      // console.log(document.getElementsByTagName(selector), element.getElementsByTagName(selector).length);
+      return pushMatches( new ListDOM(), element.getElementsByTagName(selector) );
     }
-    return pushMatches( new ListDOM(), document.querySelectorAll(selector) );
+    return pushMatches( new ListDOM(), element.querySelectorAll(selector) );
   }
 
   function initList(selector) {
@@ -209,9 +209,9 @@
     }
   }
 
-  function jqlite (selector){
+  function jqlite (selector, element){
     if( _isString(selector) ) {
-      return stringMatches(selector);
+      return stringMatches(selector, element || document );
     }
     return initList(selector);
   }
@@ -323,10 +323,36 @@
     };
   ListDOM.prototype.$ = ListDOM.prototype.find;
 
+  ListDOM.prototype.add = function (selector, element) {
+    var el2add = jqlite(selector, element), i, j, len,
+        list = new ListDOM(), listLength = this.length;
+
+    for( i = 0, len = this.length; i < len ; i++ ) {
+      list[i] = this[i];
+      list[i].___found___ = true;
+    }
+
+    for( i = 0, len = el2add.length; i < len ; i++ ) {
+      if( !el2add[i].___found___ ) {
+        list[listLength] = el2add[i];
+        listLength++;
+      }
+    }
+
+    list.length = listLength;
+
+    for( i = 0, len = this.length; i < len ; i++ ) {
+      delete list[i].___found___;
+    }
+
+    return list;
+
+  };
+
   ListDOM.prototype.each = function(each) {
       if( _isFunction(each) ) {
         for( var i = 0, len = this.length, elem; i < len ; i++ ) {
-            each.call(this[i], i, this[i]);
+          each.call(this[i], i, this[i]);
         }
       }
       return this;

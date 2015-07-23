@@ -45,6 +45,13 @@ describe('Basics', function () {
 		expect( $('ul').find('li.foo').text() ).toBe('foobarfoobar');
 	});
 
+	it('add', function () {
+		body.innerHTML = '<ul><li class="foo">foo</li><li>bar</li><li>foobar</li></ul><div class="foo"></div>';
+
+		expect( $('li').add('.foo').length ).toBe( 4 );
+		expect( $('li').add('.foo').add('li.foo').add('ul').length ).toBe( 5 );
+	});
+
 	it('each', function () {
 		body.innerHTML = '<ul><li>foo</li><li>bar</li><li>foobar</li></ul>';
 

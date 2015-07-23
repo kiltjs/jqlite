@@ -1,9 +1,10 @@
 {
   "name": "jqlite",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Tiny JavaScript DOM query library",
   "main": "jqlite.js",
   "scripts": {
+    "pretest": "npm install",
     "test": "grunt test",
     "posttest": "grunt uglify:min"
   },
