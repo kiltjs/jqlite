@@ -872,17 +872,72 @@
       return this;
     };
 
+  function filterDuplicated (list) {
+    var filteredList = list.filter(function (node) {
+      if( node.___found___ ) {
+        return false;
+      }
+      node.___found___ = true;
+      return true;
+    });
+    filteredList.forEach(function (node) {
+      delete node.___found___;
+    });
+    return filteredList;
+  }
+
   ListDOM.prototype.next = function (selector) {
       var list = new ListDOM(), elem;
 
       for( var i = 0, len = this.length; i < len; i++ ) {
-        elem = this.nextElementSibling || this.nextSibling;
+        elem = this[i].nextElementSibling;
         if( elem ) {
-          list.push(this[i]);
+          list.push(elem);
         }
       }
 
       return ( typeof selector === 'string' ) ? list.filter(selector): list;
+    };
+
+  ListDOM.prototype.nextAll = function (selector) {
+      var list = new ListDOM(), elem;
+
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = this[i].nextElementSibling;
+        while( elem ) {
+          list.push(elem);
+          elem = elem.nextElementSibling;
+        }
+      }
+
+      return filterDuplicated( ( typeof selector === 'string' ) ? list.filter(selector): list );
+    };
+
+  ListDOM.prototype.prev = function (selector) {
+      var list = new ListDOM(), elem;
+
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = this[i].previousElementSibling;
+        if( elem ) {
+          list.push(elem);
+        }
+      }
+
+      return ( typeof selector === 'string' ) ? list.filter(selector): list;
+    };
+
+  ListDOM.prototype.prevAll = function (selector) {
+      var list = new ListDOM(), elem;
+
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = this[i].previousElementSibling;
+        while( elem ) {
+          list.push(elem);
+          elem = elem.previousElementSibling;
+        }
+      }
+
+      return filterDuplicated( ( typeof selector === 'string' ) ? list.filter(selector): list );
     };
 
   ListDOM.prototype.parent = function (selector) {
@@ -926,9 +981,19 @@
   ListDOM.prototype.css = function (key, value) {
 
       if( value !== undefined ) {
+        var i, len;
         value = ( value instanceof Function ) ? value() : ( value instanceof Number ? (value + 'px') : value );
-        for( var i = 0, len = this.length; i < len; i++ ) {
-          this[i].style[key] = value;
+
+        if( typeof value === 'string' && /^\+=|\-=/.test(value) ) {
+          value = ( value.charAt(0) === '-' ) ? -parseFloat(value.substr(2)) : parseFloat(value.substr(2));
+
+          for( i = 0, len = this.length; i < len; i++ ) {
+            this[i].style[key] = parseFloat(this[i].style[key]) + value + 'px';
+          }
+        } else {
+          for( i = 0, len = this.length; i < len; i++ ) {
+            this[i].style[key] = value;
+          }
         }
         return this;
       } else if( key instanceof Object ) {
