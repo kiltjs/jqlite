@@ -1111,9 +1111,13 @@
             this[i].innerHTML = html;
           }
         }
-        this.find('script').each(function(script){
-          if( script.type == 'text/javascript' ) {
-            try{ runScripts('(function(){ \'use strict\';' + script.textContent + '})();'); }catch(err){ throw err.message; }
+        this.find('script').each(function(){
+          if( (this.type == 'text/javascript' || !this.type) && this.textContent ) {
+            try{
+              runScripts('(function(){ \'use strict\';' + this.textContent + '})();');
+            } catch(err) {
+              throw new Error(err.message);
+            }
           }
         });
       }
