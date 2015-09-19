@@ -5,7 +5,7 @@
     "main": "jqlite.js",
     "scripts": {
         "pretest": "npm install",
-        "test": "node test-node && grunt test",
+        "test": "grunt test",
         "posttest": "grunt uglify:min"
     },
     "repository": {
