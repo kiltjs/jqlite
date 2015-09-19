@@ -1039,6 +1039,22 @@
       return this;
     };
 
+  ListDOM.prototype.show = function () {
+    for( var i = 0, n = this.length; i < n ; i++ ) {
+      if( this.style.display ) {
+        this.style.display = '';
+      }
+    }
+    return this;
+  };
+
+  ListDOM.prototype.hide = function () {
+    for( var i = 0, n = this.length; i < n ; i++ ) {
+      this.style.display = 'none';
+    }
+    return this;
+  };
+
   ListDOM.prototype.position = function () {
     if( this.length ) {
       return {
@@ -1290,11 +1306,24 @@
   ListDOM.prototype.one = ListDOM.prototype.once;
 
   ListDOM.prototype.off = function (eventName, listener) {
+    var i, n;
+
+    if( /\s/.test(eventName) ) {
+      eventName = eventName.split(/\s+/g);
+    }
+
+    if( eventName instanceof Array ) {
+      for( i = 0, n = this.length; i < n; i++ ) {
+        this.off(eventName[i], listener);
+      }
+      return this;
+    }
+
     if( typeof eventName !== 'string' || !_isFunction(listener) ) {
       throw 'bad arguments';
     }
 
-    for( var i = 0, len = this.length; i < len; i++ ) {
+    for( i = 0, n = this.length; i < n; i++ ) {
       detachElementListener(this[i], eventName, listener);
     }
     return this;
