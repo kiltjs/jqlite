@@ -1041,8 +1041,8 @@
 
   ListDOM.prototype.show = function () {
     for( var i = 0, n = this.length; i < n ; i++ ) {
-      if( this.style.display ) {
-        this.style.display = '';
+      if( this[i].style.display ) {
+        this[i].style.display = '';
       }
     }
     return this;
@@ -1050,7 +1050,7 @@
 
   ListDOM.prototype.hide = function () {
     for( var i = 0, n = this.length; i < n ; i++ ) {
-      this.style.display = 'none';
+      this[i].style.display = 'none';
     }
     return this;
   };
