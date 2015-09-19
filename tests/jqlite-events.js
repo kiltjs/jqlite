@@ -139,6 +139,22 @@ describe('DOM Events', function () {
 		expect( result ).toBe('foo');
 	});
 
+	it('off once', function () {
+		var jDiv = $('<div>'), result = '';
+
+		function addValue2result (e, value) {
+			result += value;
+		}
+
+		jDiv.once('signal1', addValue2result);
+		jDiv.off('signal1', addValue2result);
+
+		jDiv.trigger('signal1', ['foo']);
+		jDiv.trigger('signal1', ['foo']);
+
+		expect( result ).toBe('');
+	});
+
 	it('receive event in document', function (done) {
 
 		$(document).on('event1', function (e, value) {

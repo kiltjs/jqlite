@@ -70,7 +70,28 @@
 			_isRegExp = _instanceOf(RegExp),
 			_isElement = function(o) {
 		    return o && o.nodeType === 1;
-		  };
+		  },
+      _find = function (list, iteratee) {
+        if( !( iteratee instanceof Function ) ) {
+          var value = iteratee;
+          iteratee = function (item) {
+            return item === value;
+          };
+        }
+
+        for( var i = 0, n = list.length ; i < n ; i++ ) {
+          if( iteratee(list[i]) ) {
+            return {
+              index: i,
+              found: list[i]
+            };
+          }
+        }
+
+        return {
+          index: -1
+        };
+      };
 
   if( !Element.prototype.matchesSelector ) {
     Element.prototype.matchesSelector = (
@@ -115,7 +136,9 @@
 
   // Events support
 
-  var attachElementListener = noop, detachElementListener = noop;
+  var attachElementListener = noop,
+      detachElementListener = noop,
+      onceListeners = [];
 
   if( auxDiv.addEventListener )  { // W3C DOM
 
@@ -129,6 +152,15 @@
 
     detachElementListener = function (element, eventName, listener) {
       element.removeEventListener(eventName, listener.$listener || listener, false);
+
+      var _listener = _find(onceListeners, function (listenerData) {
+        return listenerData.listener === listener && listenerData.element === element;
+      });
+
+      if( _listener.found ) {
+        onceListeners.splice(_listener.index, 1);
+        detachElementListener(element, eventName, _listener.found._listener);
+      }
     };
 
 
@@ -1192,10 +1224,23 @@
   eventActions.init();
 
   function autoDestroyListener (element, eventName, listener) {
-    var _listener = function () {
-      detachElementListener(element, eventName, _listener);
-      listener.apply(null, arguments);
-    };
+    var listenerData = {
+          listener: listener,
+          element: element
+        },
+        _listener = function () {
+          detachElementListener(element, eventName, _listener);
+          listener.apply(null, arguments);
+
+          var index = onceListeners.indexOf(listenerData);
+          if( index >= 0 ) {
+            onceListeners.splice(index, 1);
+          }
+        };
+
+    listenerData._listener = _listener;
+
+    onceListeners.push(listenerData);
 
     return _listener;
   }
