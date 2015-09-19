@@ -1181,14 +1181,21 @@
     var i, len;
 
     if( typeof eventName === 'string' ) {
-      if( !_isFunction(listener) ) {
-        throw 'listener needs to be a function';
-      }
 
-      for( i = 0, len = this.length; i < len; i++ ) {
-        attachElementListener(this[i], eventName, listener);
+      if( /\s/.test(eventName) ) {
+        eventName = eventName.split(/\s+/g);
+      } else {
+        if( !_isFunction(listener) ) {
+          throw 'listener needs to be a function';
+        }
+
+        for( i = 0, len = this.length; i < len; i++ ) {
+          attachElementListener(this[i], eventName, listener);
+        }
       }
-    } else if( _isArray(eventName) ) {
+    }
+
+    if( _isArray(eventName) ) {
       for( i = 0, len = eventName.length; i < len; i++ ) {
         this.on(eventName[i], listener);
       }
@@ -1250,17 +1257,24 @@
     var i, len;
 
     if( typeof eventName === 'string' ) {
-      if( !_isFunction(listener) ) {
-        throw 'listener needs to be a function';
-      }
 
-      var element;
+      if( /\s/.test(eventName) ) {
+        eventName = eventName.split(/\s+/g);
+      } else {
+        if( !_isFunction(listener) ) {
+          throw 'listener needs to be a function';
+        }
 
-      for( i = 0, len = this.length; i < len; i++ ) {
-        element = this[i];
-        attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
+        var element;
+
+        for( i = 0, len = this.length; i < len; i++ ) {
+          element = this[i];
+          attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
+        }
       }
-    } else if( _isArray(eventName) ) {
+    }
+
+    if( _isArray(eventName) ) {
       for( i = 0, len = eventName.length; i < len; i++ ) {
         this.once(eventName[i], listener);
       }
