@@ -28,12 +28,10 @@
 
 (function (root, factory) {
 
-  if ( typeof window === 'undefined' ) {
-    if ( typeof module !== 'undefined' ) {
-      module.exports = factory();
-    }
+  if( typeof window === 'undefined' && typeof module !== 'undefined' ) {
+    module.exports = factory(root, true);
   } else {
-    var jqlite = factory();
+    var jqlite = factory(root);
     if ( typeof define === 'function' ) {
       define('jqlite', function () { return jqlite; } );
     } else if( typeof angular === 'function' ) {
@@ -46,8 +44,12 @@
     }
   }
 
-})(this, function () {
+})(this, function (root, isNodejs) {
   'use strict';
+
+  if( isNodejs ) {
+    return require('./package');
+  }
 
   function _isType (type) {
       return function (o) {
