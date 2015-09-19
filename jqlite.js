@@ -27,11 +27,11 @@
  */
 
 (function (root, factory) {
+  var jqlite = factory(root);
 
-  if( typeof window === 'undefined' && typeof module !== 'undefined' ) {
-    module.exports = factory(root, true);
+  if( typeof module === 'object' && typeof exports === 'object' ) {
+    module.exports = jqlite;
   } else {
-    var jqlite = factory(root);
     if ( typeof define === 'function' ) {
       define('jqlite', function () { return jqlite; } );
     } else if( typeof angular === 'function' ) {
@@ -46,10 +46,6 @@
 
 })(this, function (root, isNodejs) {
   'use strict';
-
-  if( isNodejs ) {
-    return require('./package');
-  }
 
   function _isType (type) {
       return function (o) {
