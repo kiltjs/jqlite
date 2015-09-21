@@ -12,9 +12,18 @@ describe('data (set)', function () {
     ul1.dataset('fooset', 'barset');
 	});
 
-  it('get data attribute', function () {
+  it('get data value', function () {
 
     expect(ul1.data('foo')).toBe('bar');
+
+  });
+
+  it('check data instance', function () {
+    var crash = { test: 'dummy' };
+
+    ul1.data('crash', crash);
+
+    expect( ul1.data('crash') ).toBe( crash );
 
   });
 
