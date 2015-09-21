@@ -550,7 +550,20 @@
       }
 
       if( value === undefined ) {
-        return this[0].$$jqliteData && this[0].$$jqliteData[key];
+        var data = this[0].$$jqliteData && this[0].$$jqliteData[key];
+        if( data === undefined ) {
+          data = this.dataset(key);
+          if( data === undefined ) {
+            return undefined;
+          } else if( data.charAt(0) === '{' || data.charAt(0) === '[' ) {
+            return JSON.parse(data);
+          } else if( /^\d+$/.test(data) ) {
+            return Number(data);
+          } else {
+            return data;
+          }
+        }
+        return data;
       }
 
       for( var i = 0, n = this.length; i < n ; i++ ) {

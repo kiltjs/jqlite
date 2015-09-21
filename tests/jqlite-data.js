@@ -9,7 +9,7 @@ describe('data (set)', function () {
 		body.innerHTML = sampleHTML;
     ul1 = $('ul').eq(0);
     ul1.data('foo', 'bar');
-    ul1.dataset('foo', 'barset');
+    ul1.dataset('fooset', 'barset');
 	});
 
   it('get data attribute', function () {
@@ -36,23 +36,23 @@ describe('data (set)', function () {
 
   it('get dataset attribute', function () {
 
-    expect(ul1.dataset('foo')).toBe('barset');
+    expect(ul1.dataset('fooset')).toBe('barset');
 
   });
 
   it('set dataset attribute', function () {
 
-    ul1.dataset('foo', 'foobar');
+    ul1.dataset('fooset', 'foobar');
 
-    expect( ul1.dataset('foo') ).toBe('foobar');
+    expect( ul1.dataset('fooset') ).toBe('foobar');
 
   });
 
   it('remove dataset attribute', function () {
 
-    ul1.removeDataset('foo');
+    ul1.removeDataset('fooset');
 
-    expect( ul1.dataset('foo') ).toBeUndefined();
+    expect( ul1.dataset('fooset') ).toBeUndefined();
 
   });
 
@@ -60,12 +60,12 @@ describe('data (set)', function () {
 
     var jUL = $('ul');
 
-    jUL.dataset('foo', 'foobar');
+    jUL.dataset('fooset', 'foobar');
 
     expect( jUL.length ).toBe(2);
 
     jUL.each(function (index) {
-      expect( this.getAttribute('data-foo') ).toBe('foobar');
+      expect( this.getAttribute('data-fooset') ).toBe('foobar');
     });
 
   });
