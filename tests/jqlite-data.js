@@ -9,6 +9,7 @@ describe('data (set)', function () {
 		body.innerHTML = sampleHTML;
     ul1 = $('ul').eq(0);
     ul1.data('foo', 'bar');
+    ul1.dataset('foo', 'barset');
 	});
 
   it('get data attribute', function () {
@@ -33,11 +34,33 @@ describe('data (set)', function () {
 
   });
 
+  it('get dataset attribute', function () {
+
+    expect(ul1.dataset('foo')).toBe('barset');
+
+  });
+
+  it('set dataset attribute', function () {
+
+    ul1.dataset('foo', 'foobar');
+
+    expect( ul1.dataset('foo') ).toBe('foobar');
+
+  });
+
+  it('remove dataset attribute', function () {
+
+    ul1.removeDataset('foo');
+
+    expect( ul1.dataset('foo') ).toBeUndefined();
+
+  });
+
   it('set data attribute several ULs', function () {
 
     var jUL = $('ul');
 
-    jUL.data('foo', 'foobar');
+    jUL.dataset('foo', 'foobar');
 
     expect( jUL.length ).toBe(2);
 

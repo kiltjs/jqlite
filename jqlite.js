@@ -544,7 +544,31 @@
     return list;
   };
 
-  ListDOM.prototype.data = auxDiv.dataset ? function (key, value) {
+  ListDOM.prototype.data = function (key, value) {
+      if( !this.length ) {
+        return value ? this : undefined;
+      }
+
+      if( value === undefined ) {
+        return this[0].$$jqliteData && this[0].$$jqliteData[key];
+      }
+
+      for( var i = 0, n = this.length; i < n ; i++ ) {
+        this[i].$$jqliteData = this[i].$$jqliteData || {};
+        this[i].$$jqliteData[key] = value;
+      }
+    };
+
+  ListDOM.prototype.removeData = function (key) {
+      for( var i = 0, n = this.length ; i < n ; i++ ) {
+        if( this[i].$$jqliteData && this[i].$$jqliteData[key] ) {
+          delete this[i].$$jqliteData[key];
+        }
+      }
+      return this;
+    };
+
+  ListDOM.prototype.dataset = auxDiv.dataset ? function (key, value) {
       var i, len;
 
       if( value === undefined ) {
@@ -574,7 +598,7 @@
       }
     };
 
-  ListDOM.prototype.removeData = auxDiv.dataset ? function (key) {
+  ListDOM.prototype.removeDataset = auxDiv.dataset ? function (key) {
       var i, len;
       if( typeof key === 'string' ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
@@ -1037,7 +1061,56 @@
       return this;
     };
 
-  ListDOM.prototype.show = function () {
+  var transitionKey = document.body.style.webkitTransition !== undefined ? 'webkitTransition' : (
+    document.body.style.mozTransition !== undefined ? 'mozTransition' : (
+      document.body.style.msTransition !== undefined ? 'msTransition' : undefined
+    )
+  );
+
+  function animateFade (list, show, time, timingFunction, callback) {
+    if( typeof time === 'string' ) {
+      time = animateFade.times[time];
+    }
+
+    timingFunction = timingFunction || 'linear';
+    var opacityStart = show ? 0 : 1,
+        opacityEnd = show ? 1 : 0;
+
+    for( var i = 0, n = list.length; i < n ; i++ ) {
+      list[i].style.opacity = opacityStart;
+    }
+    setTimeout(function () {
+      for( var i = 0, n = list.length; i < n ; i++ ) {
+        list[i].$$jqliteTransition = list[i].$$jqliteTransition === undefined ? ( list[i].style[transitionKey] || '' ) : list[i].$$jqliteTransition;
+        list[i].style[transitionKey] = 'opacity ' + time + 'ms ' + timingFunction;
+        list[i].style.opacity = opacityEnd;
+      }
+    }, 20);
+
+    setTimeout(function () {
+      for( var i = 0, n = list.length; i < n ; i++ ) {
+        list[i].style.opacity = '';
+        list[i].style[transitionKey] = list[i].$$jqliteTransition;
+      }
+      callback.call(list);
+    }, time);
+
+    return list;
+  }
+
+  animateFade.times = {
+    slow: 600,
+    normal: 400,
+    fast: 200
+  };
+
+  ListDOM.prototype.show = function (time, easing, callback) {
+    if( time ) {
+      var list = this;
+      this.show();
+      return animateFade(list, true, time, easing, callback || function () {});
+    }
+
     for( var i = 0, n = this.length; i < n ; i++ ) {
       if( this[i].style.display ) {
         this[i].style.display = '';
@@ -1046,7 +1119,16 @@
     return this;
   };
 
-  ListDOM.prototype.hide = function () {
+  ListDOM.prototype.hide = function (time, easing, callback) {
+    if( time ) {
+      return animateFade(this, false, time, easing, function () {
+        this.hide();
+        if( callback ) {
+          callback.call(this);
+        }
+      });
+    }
+
     for( var i = 0, n = this.length; i < n ; i++ ) {
       this[i].style.display = 'none';
     }
