@@ -1074,9 +1074,9 @@
       return this;
     };
 
-  var transitionKey = document.body.style.webkitTransition !== undefined ? 'webkitTransition' : (
-    document.body.style.mozTransition !== undefined ? 'mozTransition' : (
-      document.body.style.msTransition !== undefined ? 'msTransition' : undefined
+  var transitionKey = auxDiv.style.webkitTransition !== undefined ? 'webkitTransition' : (
+    auxDiv.style.mozTransition !== undefined ? 'mozTransition' : (
+      auxDiv.style.msTransition !== undefined ? 'msTransition' : undefined
     )
   );
 
