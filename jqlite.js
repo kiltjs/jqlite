@@ -142,7 +142,7 @@
 
     attachElementListener = function (element, eventName, listener) {
       listener.$listener = function(e){
-          listener.apply(e.target,[e].concat(e.args));
+          listener.apply(element, [e].concat(e.args) );
       };
 
       element.addEventListener(eventName, listener.$listener,false);
