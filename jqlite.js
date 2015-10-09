@@ -351,6 +351,8 @@
 
       return elems;
     };
+
+
   ListDOM.prototype.$ = ListDOM.prototype.find;
 
   ListDOM.prototype.add = function (selector, element) {
@@ -406,7 +408,7 @@
       if( _isFunction(selector) ) {
         for( i = 0, len = this.length, elem; i < len ; i++ ) {
           elem = this[i];
-          if( selector.apply(elem,[elem]) ) {
+          if( selector.call(elem, i, elem) ) {
             elems.push(elem);
           }
         }
