@@ -1234,36 +1234,37 @@
       if( html === undefined ) {
         html = '';
         for( i = 0, len = this.length; i < len; i++ ) {
-          text += this[i].innerHTML;
+          html += this[i].innerHTML;
         }
-        return this;
+        return html;
       } else if( html === true ) {
         html = '';
         for( i = 0, len = this.length; i < len; i++ ) {
-          text += this[i].outerHTML;
+          html += this[i].outerHTML;
+        }
+        return html;
+      }
+      
+      if( _isFunction(html) ) {
+        for( i = 0, len = this.length; i < len; i++ ) {
+          this[i].innerHTML = html(i, this[i].innerHTML);
         }
         return this;
       } else {
-        if( _isFunction(html) ) {
-          for( i = 0, len = this.length; i < len; i++ ) {
-            this[i].innerHTML = html(i, this[i].innerHTML);
-          }
-          return this;
-        } else {
-          for( i = 0, len = this.length; i < len; i++ ) {
-            this[i].innerHTML = html;
+        for( i = 0, len = this.length; i < len; i++ ) {
+          this[i].innerHTML = html;
+        }
+      }
+      this.find('script').each(function(){
+        if( (this.type == 'text/javascript' || !this.type) && this.textContent ) {
+          try{
+            runScripts('(function(){ \'use strict\';' + this.textContent + '})();');
+          } catch(err) {
+            throw new Error(err.message);
           }
         }
-        this.find('script').each(function(){
-          if( (this.type == 'text/javascript' || !this.type) && this.textContent ) {
-            try{
-              runScripts('(function(){ \'use strict\';' + this.textContent + '})();');
-            } catch(err) {
-              throw new Error(err.message);
-            }
-          }
-        });
-      }
+      });
+
       return this;
     };
 
