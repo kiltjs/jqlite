@@ -772,7 +772,7 @@
   ListDOM.prototype.toggleClass = classListEnabled ? function (className, add) {
       var i, len;
 
-      if( className === undefined ) {
+      if( add === undefined ) {
         for( i = 0, len = this.length; i < len ; i++ ) {
           if ( this[i].classList.item(className) ) {
             this[i].classList.remove(className);
@@ -1244,7 +1244,7 @@
         }
         return html;
       }
-      
+
       if( _isFunction(html) ) {
         for( i = 0, len = this.length; i < len; i++ ) {
           this[i].innerHTML = html(i, this[i].innerHTML);
