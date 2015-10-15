@@ -275,6 +275,21 @@
 
   jqlite.fn = ListDOM.prototype;
 
+  function filterDuplicated (list) {
+    var filteredList = list.filter(function () {
+      if( this.___found___ ) {
+        return false;
+      }
+      this.___found___ = true;
+      return true;
+    });
+
+    for( var i = 0, len = filteredList.length; i < len ; i++ ) {
+      delete filteredList[i].___found___;
+    }
+    return filteredList;
+  }
+
   ListDOM.prototype.get = function(pos) {
       return pos ? this[pos] : this;
     };
@@ -413,12 +428,12 @@
           }
         }
       } else if( _isString(selector) ) {
-          for( i = 0, len = this.length, elem; i < len ; i++ ) {
-            elem = this[i];
-            if( Element.prototype.matchesSelector.call(elem,selector) ) {
-              elems.push(elem);
-            }
+        for( i = 0, len = this.length, elem; i < len ; i++ ) {
+          elem = this[i];
+          if( Element.prototype.matchesSelector.call(elem,selector) ) {
+            elems.push(elem);
           }
+        }
       }
       return elems;
     };
@@ -940,20 +955,6 @@
 
       return this;
     };
-
-  function filterDuplicated (list) {
-    var filteredList = list.filter(function (node) {
-      if( node.___found___ ) {
-        return false;
-      }
-      node.___found___ = true;
-      return true;
-    });
-    filteredList.forEach(function (node) {
-      delete node.___found___;
-    });
-    return filteredList;
-  }
 
   ListDOM.prototype.next = function (selector) {
       var list = new ListDOM(), elem;
