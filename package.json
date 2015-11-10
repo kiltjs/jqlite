@@ -1,6 +1,6 @@
 {
     "name": "jqlite",
-    "version": "0.2.26",
+    "version": "0.2.27",
     "description": "Tiny JavaScript DOM query library",
     "main": "jqlite.js",
     "scripts": {
