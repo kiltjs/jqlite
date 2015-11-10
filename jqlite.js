@@ -134,50 +134,62 @@
 
   // Events support
 
-  var attachElementListener = noop,
-      detachElementListener = noop,
-      onceListeners = [];
+  if( !auxDiv.addEventListener && !document.body.attachEvent ) {
+    throw 'Browser not compatible with element events';
+  }
 
-  if( auxDiv.addEventListener )  { // W3C DOM
-
-    attachElementListener = function (element, eventName, listener) {
-      listener.$listener = function(e){
-          listener.apply(element, [e].concat(e.args) );
+  var _attachElementListener = auxDiv.addEventListener ? function(element, eventName, listener) {
+        return element.addEventListener(eventName, listener, false);
+      } : function(element, eventName, listener) {
+        return element.attachEvent('on' + eventName, listener);
+      },
+      _detachElementListener = auxDiv.removeEventListener ? function(element, eventName, listener) {
+        return element.removeEventListener(eventName, listener, false);
+      } : function(element, eventName, listener) {
+        return element.detachEvent('on' + eventName, listener );
       };
 
-      element.addEventListener(eventName, listener.$listener,false);
-    };
+  function detachElementListener (element, eventName, srcListener) {
 
-    detachElementListener = function (element, eventName, listener) {
-      element.removeEventListener(eventName, listener.$listener || listener, false);
+    if( srcListener === undefined ) {
+      if( element.$$jqListeners && element.$$jqListeners[eventName] ) {
+        for( var i = 0, n = element.$$jqListeners[eventName].length ; i < n ; i++ ) {
+          _detachElementListener( element, eventName, element.$$jqListeners[eventName][i] );
+        }
+        element.$$jqListeners[eventName] = [];
+      }
+      return;
+    }
 
-      var _listener = _find(onceListeners, function (listenerData) {
-        return listenerData.listener === listener && listenerData.element === element;
+    if( element.$$jqListeners && element.$$jqListeners[eventName] ) {
+      var _listener = _find(element.$$jqListeners[eventName], function (l) {
+        return l.srcListener === srcListener;
       });
 
       if( _listener.found ) {
-        onceListeners.splice(_listener.index, 1);
-        detachElementListener(element, eventName, _listener.found._listener);
+        element.$$jqListeners[eventName].splice( _listener.index, 1 );
+        _detachElementListener( element, eventName, _listener.found );
       }
+    }
+  }
+
+  function attachElementListener (element, eventName, listener, once) {
+
+    var _listener = once ? function(e) {
+        listener.apply(element, [e].concat(e.args) );
+        detachElementListener(element, eventName, listener);
+    } : function(e){
+        listener.apply(element, [e].concat(e.args) );
     };
 
+    _listener.srcListener = listener;
 
-  } else if(document.body.attachEvent) { // IE DOM
+    element.$$jqListeners = element.$$jqListeners || {};
+    element.$$jqListeners[eventName] = element.$$jqListeners[eventName] || [];
 
-    attachElementListener = function (element, eventName, listener) {
-      listener.$listener = function(e){
-          listener.apply(element,[e].concat(e.args));
-      };
+    element.$$jqListeners[eventName].push(_listener);
 
-      element.attachEvent("on" + eventName, listener.$listener, false);
-    };
-
-    detachElementListener = function (element, eventName, listener) {
-      element.detachEvent('on' + eventName, listener.$listener || listener );
-    };
-
-  } else {
-    throw 'Browser not compatible with element events';
+    _attachElementListener( element, eventName, _listener );
   }
 
   // jqlite function
@@ -1290,7 +1302,7 @@
       }
     };
 
-  ListDOM.prototype.on = function (eventName, listener) {
+  function addListListeners (list, eventName, listener, once) {
     var i, len;
 
     if( typeof eventName === 'string' ) {
@@ -1302,23 +1314,27 @@
           throw 'listener needs to be a function';
         }
 
-        for( i = 0, len = this.length; i < len; i++ ) {
-          attachElementListener(this[i], eventName, listener);
+        for( i = 0, len = list.length; i < len; i++ ) {
+          attachElementListener(list[i], eventName, listener, once);
         }
       }
     }
 
     if( _isArray(eventName) ) {
       for( i = 0, len = eventName.length; i < len; i++ ) {
-        this.on(eventName[i], listener);
+        addListListeners(list, eventName[i], listener, once);
       }
     } else if( _isObject(eventName) ) {
       for( i in eventName ) {
-        this.on(i, eventName[i]);
+        addListListeners(list, i, eventName[i], once);
       }
     }
 
-    return this;
+    return list;
+  }
+
+  ListDOM.prototype.on = function (eventName, listener) {
+    return addListListeners(this, eventName, listener);
   };
 
   var eventActions = {
@@ -1343,61 +1359,8 @@
   };
   eventActions.init();
 
-  function autoDestroyListener (element, eventName, listener) {
-    var listenerData = {
-          listener: listener,
-          element: element
-        },
-        _listener = function () {
-          detachElementListener(element, eventName, _listener);
-          listener.apply(null, arguments);
-
-          var index = onceListeners.indexOf(listenerData);
-          if( index >= 0 ) {
-            onceListeners.splice(index, 1);
-          }
-        };
-
-    listenerData._listener = _listener;
-
-    onceListeners.push(listenerData);
-
-    return _listener;
-  }
-
   ListDOM.prototype.once = function (eventName, listener) {
-
-    var i, len;
-
-    if( typeof eventName === 'string' ) {
-
-      if( /\s/.test(eventName) ) {
-        eventName = eventName.split(/\s+/g);
-      } else {
-        if( !_isFunction(listener) ) {
-          throw 'listener needs to be a function';
-        }
-
-        var element;
-
-        for( i = 0, len = this.length; i < len; i++ ) {
-          element = this[i];
-          attachElementListener(element, eventName, autoDestroyListener(element, eventName, listener) );
-        }
-      }
-    }
-
-    if( _isArray(eventName) ) {
-      for( i = 0, len = eventName.length; i < len; i++ ) {
-        this.once(eventName[i], listener);
-      }
-    } else if( _isObject(eventName) ) {
-      for( i in eventName ) {
-        this.once(i, eventName[i]);
-      }
-    }
-
-    return this;
+    return addListListeners(this, eventName, listener, true);
   };
   // for jQuery compatibility
   ListDOM.prototype.one = ListDOM.prototype.once;
@@ -1416,7 +1379,7 @@
       return this;
     }
 
-    if( typeof eventName !== 'string' || !_isFunction(listener) ) {
+    if( typeof eventName !== 'string' || ( !_isFunction(listener) && listener !== undefined ) ) {
       throw 'bad arguments';
     }
 
