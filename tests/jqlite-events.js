@@ -265,4 +265,37 @@ describe('DOM Events', function () {
 
 	});
 
+	it('event off all listeners (2)', function (done) {
+
+		var count = 0;
+
+		for( var i = 0 ; i < 10 ; i++ ) {
+			$(document).on('event-all-off', function (e, value) {
+				count++;
+			});
+		}
+
+		$(document).trigger('event-all-off');
+
+		$(document).off('event-all-off');
+
+		$(document).trigger('event-all-off');
+
+		$(document).on('event-all-off', function (e, value) {
+			count++;
+		});
+
+		$(document).trigger('event-all-off');
+
+		$(document).off('event-all-off');
+
+		$(document).trigger('event-all-off');
+
+		setTimeout(function () {
+			expect(count).toBe(11);
+			done();
+		}, 0);
+
+	});
+
 });

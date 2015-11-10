@@ -1423,6 +1423,12 @@
 
   // finally
 
+  jqlite.noConflict = function () {
+    if( root.$ === jqlite ) {
+      delete root.$;
+    }
+  };
+
   return jqlite;
 
 });
