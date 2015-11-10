@@ -1427,6 +1427,7 @@
     if( root.$ === jqlite ) {
       delete root.$;
     }
+    return jqlite;
   };
 
   return jqlite;
