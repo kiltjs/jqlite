@@ -8,6 +8,21 @@ describe('DOM Events', function () {
 		body.innerHTML = sampleHTML;
 	});
 
+	it('on triggered', function (done) {
+		var jDiv = $('<div>'), triggered = false;
+
+		jDiv.on('signal', function (e, value) {
+			triggered = true;
+		});
+
+		jDiv.trigger('signal', ['gogogo!']);
+
+		setTimeout(function () {
+			expect( triggered ).toBe(true);
+			done();
+		}, 1);
+	});
+
 	it('on', function (done) {
 		var jDiv = $('<div>'), result;
 
@@ -216,6 +231,68 @@ describe('DOM Events', function () {
 
 		setTimeout(function () {
 			expect(result).toBeUndefined();
+			done();
+		}, 0);
+
+	});
+
+	it('event off all listeners', function (done) {
+
+		var count = 0;
+
+		for( var i = 0 ; i < 10 ; i++ ) {
+			$(document).on('event-all-off', function (e, value) {
+				count++;
+			});
+		}
+
+		$(document).trigger('event-all-off');
+
+		$(document).off('event-all-off');
+
+		$(document).trigger('event-all-off');
+		$(document).trigger('event-all-off');
+		$(document).trigger('event-all-off');
+		$(document).trigger('event-all-off');
+		$(document).trigger('event-all-off');
+		$(document).trigger('event-all-off');
+		$(document).trigger('event-all-off');
+
+		setTimeout(function () {
+			expect(count).toBe(10);
+			done();
+		}, 0);
+
+	});
+
+	it('event off all listeners (2)', function (done) {
+
+		var count = 0;
+
+		for( var i = 0 ; i < 10 ; i++ ) {
+			$(document).on('event-all-off', function (e, value) {
+				count++;
+			});
+		}
+
+		$(document).trigger('event-all-off');
+
+		$(document).off('event-all-off');
+
+		$(document).trigger('event-all-off');
+
+		$(document).on('event-all-off', function (e, value) {
+			count++;
+		});
+
+		$(document).trigger('event-all-off');
+
+		$(document).off('event-all-off');
+
+		$(document).trigger('event-all-off');
+
+		setTimeout(function () {
+			expect(count).toBe(11);
 			done();
 		}, 0);
 
