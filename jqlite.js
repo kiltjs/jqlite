@@ -433,7 +433,7 @@
   var _getClosest = auxDiv.closest ? function (element, selector) {
     return element.closest(selector);
   } : function (element, selector) {
-    var elem = this[0].parentElement;
+    var elem = element.parentElement;
 
     while( elem ) {
       if( elem.matchesSelector(selector) ) {
