@@ -288,6 +288,10 @@
   jqlite.fn = ListDOM.prototype;
 
   function filterDuplicated (list) {
+    if( list.length <= 1 ) {
+      return list;
+    }
+
     var filteredList = list.filter(function () {
       if( this.___found___ ) {
         return false;
@@ -340,72 +344,48 @@
     };
 
   ListDOM.prototype.find = function(selector) {
-      var list = this, elems = new ListDOM(), found, i, len;
+      var list = this, elems = new ListDOM(), n = 0, i, j, len, len2, found;
+
+      if( !selector ) {
+        return list;
+      }
 
       if( /^\s*>/.test(selector) ) {
         selector = selector.replace(/^\s*>\s*([^\s]*)\s*/, function (match, selector2) {
           list = list.children(selector2);
           return '';
         });
-
-        if( !selector ) {
-          return list;
-        }
       }
 
-      if( list.length === 1 ) {
-        found = list[0].querySelectorAll(selector);
-        for( i = 0, len = found.length; i < len; i++ ) {
-          elems[i] = found[i];
-        }
-        elems.length = len;
-      } else if( list.length > 1 ) {
-        var j, len2;
-        for( i = 0, len = list.length; i < len; i++ ) {
-            found = list[i].querySelectorAll(selector);
-            for( j = 0, len2 = found.length; j < len2 ; j++ ) {
-                if( !found.item(j).___found___ ) {
-                    elems[elems.length] = found.item(j);
-                    elems.length++;
-                    found.item(j).___found___ = true;
-                }
-            }
-        }
-        for( i = 0, len = elems.length; i < len ; i++ ) {
-          delete elems[i].___found___;
+      for( i = 0, len = list.length; i < len; i++ ) {
+        found = list[i].querySelectorAll(selector);
+        for( j = 0, len2 = found.length; j < len2 ; j++ ) {
+          elems[n++] = found[j];
         }
       }
+      elems.length = n;
 
-      return elems;
+      return filterDuplicated(elems);
     };
 
 
   ListDOM.prototype.$ = ListDOM.prototype.find;
 
   ListDOM.prototype.add = function (selector, element) {
-    var el2add = jqlite(selector, element), i, j, len,
-        list = new ListDOM(), listLength = this.length;
+    var el2add = jqlite(selector, element),
+        i, len, n = this.length,
+        elems = new ListDOM();
 
-    for( i = 0, len = this.length; i < len ; i++ ) {
-      list[i] = this[i];
-      list[i].___found___ = true;
+    for( i = 0, len = this.length ; i < len; i++ ) {
+      elems[i] = this[i];
     }
 
-    for( i = 0, len = el2add.length; i < len ; i++ ) {
-      if( !el2add[i].___found___ ) {
-        list[listLength] = el2add[i];
-        listLength++;
-      }
+    for( i = 0, len = el2add.length ; i < len; i++ ) {
+      elems[n++] = el2add[i];
     }
+    elems.length = n;
 
-    list.length = listLength;
-
-    for( i = 0, len = this.length; i < len ; i++ ) {
-      delete list[i].___found___;
-    }
-
-    return list;
-
+    return filterDuplicated(elems);
   };
 
   ListDOM.prototype.each = function(each) {
@@ -450,49 +430,36 @@
       return elems;
     };
 
+  var _getClosest = auxDiv.closest ? function (element, selector) {
+    return element.closest(selector);
+  } : function (element, selector) {
+    var elem = this[0].parentElement;
+
+    while( elem ) {
+      if( elem.matchesSelector(selector) ) {
+        return elem;
+      }
+      elem = elem.parentElement;
+    }
+    return null;
+  };
+
   ListDOM.prototype.closest = function(selector) {
-      var elems = new ListDOM(), i, len, elem;
+      var elems = new ListDOM(), n = 0, elem;
 
       if( !selector ) {
         return this;
       }
 
-      if( this.length === 1 ) {
-
-        elem = this[0].parentElement;
-
-        while( elem ) {
-          if( elem.matchesSelector(selector) ) {
-            elems.push(elem);
-            break;
-          }
-          elem = elem.parentElement;
-        }
-
-      } else if( this.length > 1 ) {
-
-        var j, len2;
-
-        for( i = 0, len = this.length; i < len; i++ ) {
-
-          elem = this[i].parentElement;
-          while( elem ) {
-            if( elem.matchesSelector(selector) ) {
-              if( !elem.___found___ ) {
-                elem.___found___ = true;
-                elems.push(elem);
-              }
-              break;
-            }
-            elem = elem.parentElement;
-          }
-        }
-        for( i = 0, len = elems.length; i < len ; i++ ) {
-          delete elems[i].___found___;
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        elem = _getClosest(this[i], selector);
+        if( elem ) {
+          elems[n++] = elem;
         }
       }
+      elems.length = n;
 
-      return elems;
+      return filterDuplicated(elems);
     };
 
   ListDOM.prototype.children = auxDiv.children ? function (selector){
@@ -502,15 +469,12 @@
         pushMatches(elems, this[i].children);
       }
 
-      if( selector ) {
-        return elems.filter(selector);
-      }
-      return elems;
+      return selector ? elems.filter(selector) : elems;
 
     } : function (selector) {
       var elems = new ListDOM(), elem;
 
-      Array.prototype.forEach.call(this,function(elem){
+      Array.prototype.forEach.call(this, function(elem){
         elem = elem.firstElementChild || elem.firstChild;
         while(elem) {
           elems[elems.length] = elem;
@@ -518,10 +482,7 @@
         }
       });
 
-      if( selector ) {
-        return elems.filter(selector);
-      }
-      return elems;
+      return selector ? elems.filter(selector) : elems;
     };
 
   ListDOM.prototype.contents = function (selector) {
@@ -535,10 +496,7 @@
         }
       });
 
-      if( selector ) {
-        return elems.filter(selector);
-      }
-      return elems;
+      return selector ? elems.filter(selector) : elems;
     };
 
     // function _cloneEvents(nodeSrc, nodeDest) {
@@ -554,23 +512,19 @@
     // }
 
   ListDOM.prototype.clone = function (deep, cloneEvents) {
-    var list = new ListDOM(), i, len;
-
-    if( deep === undefined ) {
-      deep = true;
-    }
+    var elems = new ListDOM(), i, len;
+    deep = deep === undefined || deep;
 
     for( i = 0, len = this.length; i < len ; i++ ) {
-      list[i] = this[i].cloneNode(deep);
+      elems[i] = this[i].cloneNode(deep);
 
       // if(cloneEvents) {
       //   _cloneEvents(this[i], list[i]);
       // }
     }
 
-    list.length = len;
-
-    return list;
+    elems.length = len;
+    return elems;
   };
 
   ListDOM.prototype.data = function (key, value) {
@@ -992,7 +946,7 @@
         }
       }
 
-      return filterDuplicated( ( typeof selector === 'string' ) ? list.filter(selector): list );
+      return filterDuplicated( selector ? list.filter(selector): list );
     };
 
   ListDOM.prototype.prev = function (selector) {
@@ -1005,7 +959,7 @@
         }
       }
 
-      return ( typeof selector === 'string' ) ? list.filter(selector): list;
+      return selector ? list.filter(selector): list;
     };
 
   ListDOM.prototype.prevAll = function (selector) {
@@ -1019,7 +973,7 @@
         }
       }
 
-      return filterDuplicated( ( typeof selector === 'string' ) ? list.filter(selector): list );
+      return filterDuplicated( selector ? list.filter(selector): list );
     };
 
   ListDOM.prototype.parent = function (selector) {
@@ -1032,7 +986,7 @@
         }
       }
 
-      return ( typeof selector === 'string' ) ? list.filter(selector): list;
+      return selector ? list.filter(selector): list;
     };
 
   ListDOM.prototype.remove = function (selector) {

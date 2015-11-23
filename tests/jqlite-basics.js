@@ -48,8 +48,11 @@ describe('Basics', function () {
 	it('add', function () {
 		body.innerHTML = '<ul><li class="foo">foo</li><li>bar</li><li>foobar</li></ul><div class="foo"></div>';
 
-		expect( $('li').add('.foo').length ).toBe( 4 );
-		expect( $('li').add('.foo').add('li.foo').add('ul').length ).toBe( 5 );
+		var jLi1 = $('li'), jLi2 = jLi1.add('.foo');
+
+		expect( jLi1.length ).toBe( 3 );
+		expect( jLi2.length ).toBe( 4 );
+		expect( jLi2.add('li.foo').add('ul').length ).toBe( 5 );
 	});
 
 	it('each', function () {
