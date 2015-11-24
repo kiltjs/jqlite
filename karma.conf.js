@@ -9,7 +9,7 @@ module.exports = function(config) {
       'karma-story-reporter'
     ],
     files: [
-      'jqlite.js',
+      'jqlite.min.js',
       'tests/*.js'
     ],
     browsers: [ 'Chrome', 'Firefox' ],

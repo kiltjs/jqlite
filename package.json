@@ -4,9 +4,8 @@
   "description": "Tiny JavaScript DOM query library",
   "main": "jqlite.js",
   "scripts": {
-    "pretest": "npm install",
-    "test": "grunt test",
-    "posttest": "grunt uglify:min"
+    "pretest": "npm install && node make jqlite.min.js",
+    "test": "node make test && $(npm bin)/karma start karma.conf.js"
   },
   "repository": {
     "type": "git",
@@ -24,23 +23,12 @@
   },
   "homepage": "https://github.com/jstools/jqlite",
   "devDependencies": {
-    "grunt": "*",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-fileserver": "^0.1.27",
-    "grunt-increase-version": "*",
-    "grunt-karma": "^0.9.0",
-    "grunt-shell": "*",
-    "jasmine": "^2.1.1",
     "jasmine-core": "^2.1.3",
-    "karma": "^0.12.28",
-    "karma-chrome-launcher": "^0.1.4",
-    "karma-firefox-launcher": "^0.1.3",
+    "karma": "^0.13.15",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-firefox-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.2",
     "karma-story-reporter": "^0.3.1",
-    "load-grunt-tasks": "*",
-    "nitro": "^1.5.31",
-    "time-grunt": "*"
+    "nitro": "^1.5.31"
   }
 }
