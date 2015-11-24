@@ -1,8 +1,10 @@
-jEngine: jqlite [![wercker status](https://app.wercker.com/status/f436d6c59cd7ef60ac2aa2ff49ed8f7b/s "wercker status")](https://app.wercker.com/project/bykey/f436d6c59cd7ef60ac2aa2ff49ed8f7b)
+jEngine: jqlite ![](https://img.shields.io/npm/dm/jqlite.svg)
 ==============================
-[![npm version](https://badge.fury.io/js/jqlite.svg)](http://badge.fury.io/js/jqlite)
-[![Bower version](https://badge.fury.io/bo/jstools-jqlite.svg)](http://badge.fury.io/bo/jstools-jqlite)
-[![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
+![](https://img.shields.io/npm/v/jqlite.svg)
+![](https://img.shields.io/bower/v/jengine-jqlite.svg)
+wercker: [![wercker status](https://app.wercker.com/status/f436d6c59cd7ef60ac2aa2ff49ed8f7b/s "wercker status")](https://app.wercker.com/project/bykey/f436d6c59cd7ef60ac2aa2ff49ed8f7b)
+travis: [![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
+
 > Tiny JavaScript DOM query library
 
 Installation
