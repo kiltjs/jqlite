@@ -17,7 +17,7 @@ require('nitro')(function (nitro) {
       .process('uglify')
       .each(function (f) {
         var now = new Date();
-        f.setSrc( '/* jqlite ' + now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + ' */\n' + f.getSrc() );
+        f.setSrc( '/* jqlite ' + now.getFullYear() + '-' + ( now.getMonth() + 1 )+ '-' + now.getDate() + ' */\n' + f.getSrc() );
       })
       .writeFile('jqlite.min.js');
   });
