@@ -33,7 +33,7 @@ require('nitro')(function (nitro) {
       return pkgActions[target]();
     }
 
-    var pkg = require('../package');
+    var pkg = require('./package');
     process.stdout.write(pkg[target]);
     process.exit(0);
   });
