@@ -63,6 +63,7 @@
 			_isFunction = _isType('function'),
 			_isString = _isType('string'),
 			_isNumber = _isType('number'),
+			_isBoolean = _isType('boolean'),
 			_isArray = Array.isArray || _instanceOf(Array),
 			_isDate = _instanceOf(Date),
 			_isRegExp = _instanceOf(RegExp),
@@ -90,6 +91,56 @@
           index: -1
         };
       };
+
+var arrayShift = Array.prototype.shift;
+
+  function _merge () {
+    var dest = arrayShift.call(arguments),
+        src = arrayShift.call(arguments),
+        key;
+
+    while( src ) {
+
+      if( typeof dest !== typeof src ) {
+        dest = _isArray(src) ? [] : ( _isObject(src) ? {} : src );
+      }
+
+      if( _isObject(src) ) {
+
+        for( key in src ) {
+          if( src[key] !== undefined ) {
+            if( typeof dest[key] !== typeof src[key] ) {
+                dest[key] = _merge(undefined, src[key]);
+            } else if( _isArray(dest[key]) ) {
+                [].push.apply(dest[key], src[key]);
+            } else if( _isObject(dest[key]) ) {
+                dest[key] = _merge(dest[key], src[key]);
+            } else {
+                dest[key] = src[key];
+            }
+          }
+        }
+      }
+      src = arrayShift.call(arguments);
+    }
+
+    return dest;
+  }
+
+  function _extend () {
+    var dest = arrayShift.call(arguments),
+        src = arrayShift.call(arguments),
+        key;
+
+    while( src ) {
+      for( key in src) {
+        dest[key] = src[key];
+      }
+      src = arrayShift.call(arguments);
+    }
+
+    return dest;
+  }
 
   if( !Element.prototype.matchesSelector ) {
     Element.prototype.matchesSelector = (
@@ -260,6 +311,30 @@
 
   jqlite.noop = noop;
 
+  jqlite.extend = function (deep) {
+    var args = [].slice.call(arguments);
+    if( _isBoolean(deep) ) {
+      args.shift();
+    } else {
+      deep = false;
+    }
+    if( deep ) {
+      _merge.apply(null, args );
+    } else {
+      _extend.apply(null, args );
+    }
+  };
+
+  jqlite.isObject = _isObject;
+  jqlite.isFunction = _isFunction;
+  jqlite.isString = _isString;
+  jqlite.isNumber = _isNumber;
+  jqlite.isBoolean = _isBoolean;
+  jqlite.isArray = _isArray;
+  jqlite.isDate = _isDate;
+  jqlite.isRegExp = _isRegExp;
+  jqlite.isElement = _isElement;
+
   // document ready
 
   var _onLoad = window.addEventListener ? function (listener) {
@@ -284,6 +359,19 @@
 
   ListDOM.prototype = [];
   ListDOM.prototype.ready = ready;
+  ListDOM.prototype.extend = function (deep) {
+    var args = [].slice.call(arguments);
+    if( _isBoolean(deep) ) {
+      args.shift();
+    } else {
+      deep = false;
+    }
+    if( deep ) {
+      _merge.apply(null, [ListDOM.prototype].concat(args) );
+    } else {
+      _extend.apply(null, [ListDOM.prototype].concat(args) );
+    }
+  };
 
   jqlite.fn = ListDOM.prototype;
 
