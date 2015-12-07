@@ -957,7 +957,7 @@ var arrayShift = Array.prototype.shift;
   ListDOM.prototype.replaceWith = function (content) {
       var jContent = $(content), jContent2, i, j, len, len2, element, parent, next;
 
-      jContent.remove();
+      // jContent.remove();
 
       for( i = 0, len = this.length; i < len; i++ ) {
         jContent2 = ( i ? jContent.clone(true) : jContent );
@@ -977,6 +977,32 @@ var arrayShift = Array.prototype.shift;
 
       return this;
     };
+
+  ListDOM.prototype.wrap = function (content) {
+    var getWrapper = isFunction(content) ? function (i) {
+      return $( content(i) );
+    } : function () {
+      var jContent = $(content),
+          jDolly = jContent.clone(true);
+
+      return function (i) {
+        return i ? jDolly.clone(true) : jContent;
+      }
+    }
+
+    this.each(function (i, elem) {
+      var wrapper = getWrapper(i)[0],
+          parent = this.parentElement || this.parentNode,
+          firstChild = wrapper.firstElementChild;
+
+      while( firstChild.firstElementChild ) {
+        firstChild = firstChild.firstElementChild;
+      }
+
+      parent.replaceChild(wrapper, this);
+      firstChild.appendChild(this);
+    });
+  }
 
   ListDOM.prototype.wrap = function (content) {
       var jContent = $(content), jContent2, i, j, len, len2, element, parent;
