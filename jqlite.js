@@ -335,6 +335,8 @@ var arrayShift = Array.prototype.shift;
   jqlite.isRegExp = _isRegExp;
   jqlite.isElement = _isElement;
 
+  var $ = jqlite;
+
   // document ready
 
   var _onLoad = window.addEventListener ? function (listener) {
@@ -571,6 +573,19 @@ var arrayShift = Array.prototype.shift;
       });
 
       return selector ? elems.filter(selector) : elems;
+    };
+
+  ListDOM.prototype.parent = function (selector) {
+      var list = new ListDOM(), n = 0;
+
+      for( var i = 0, len = this.length; i < len; i++ ) {
+        if( this[i].parentElement ) {
+          list[n++] = this[i].parentElement;
+        }
+      }
+        list.length = n;
+
+      return filterDuplicated( selector ? list.filter(selector): list );
     };
 
   ListDOM.prototype.contents = function (selector) {
@@ -957,124 +972,155 @@ var arrayShift = Array.prototype.shift;
   ListDOM.prototype.replaceWith = function (content) {
       var jContent = $(content), jContent2, i, j, len, len2, element, parent, next;
 
-      jContent.remove();
+      if( !jContent.length ) {
+        return this;
+      }
 
-      for( i = 0, len = this.length; i < len; i++ ) {
+      for( i = this.length - 1; i >= 0; i-- ) {
         jContent2 = ( i ? jContent.clone(true) : jContent );
         element = this[i];
-        parent = element.parentElement || parentNode;
+        parent = element.parentElement;
 
         parent.replaceChild(jContent2[0], element);
 
         if( jContent2[1] ) {
-          next = jContent2[0];
-          for( j = 1, len2 = jContent2.length; j < len2; j++ ) {
-            parent.insertBefore(jContent2[j], next);
+          next = jContent2[0].nextElementSibling;
+          if( next ) {
+            for( j = 1, len2 = jContent2.length; j < len2; j++ ) {
+              parent.insertBefore(jContent2[j], next);
+            }
+          } else {
+            for( j = 1, len2 = jContent2.length; j < len2; j++ ) {
+              parent.appendChild(jContent2[j]);
+            }
           }
         }
-
       }
 
       return this;
     };
 
   ListDOM.prototype.wrap = function (content) {
-      var jContent = $(content), jContent2, i, j, len, len2, element, parent;
+    var getWrapper = _isFunction(content) ? function (i) {
+      return $( content(i) );
+    } : (function () {
+      var jContent = $(content),
+          jDolly = jContent.clone(true);
 
-      jContent.remove();
+      return function (i) {
+        return i ? jDolly.clone(true) : jContent;
+      };
+    })();
 
-      for( i = 0, len = this.length; i < len; i++ ) {
-        jContent2 = ( i ? jContent.clone(true) : jContent );
-        parent = this[i].parentElement || this[i].parentNode;
-        element = this[i].nextElementSibling || this[i].nextSibling;
-        if( element ) {
-          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
-            parent.insertBefore(jContent2[j], element);
-            element = jContent2[j];
-          }
-        } else {
-          for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
-            parent.appendChild(jContent2[j]);
-          }
-        }
+    this.each(function (i, elem) {
+      var wrapper = getWrapper(i)[0],
+          parent = this.parentElement,
+          firstChild = wrapper;
 
-        if( jContent2[0] ) {
-          element = jContent2[0];
-          while( element.firstElementChild ) {
-            element = element.firstElementChild;
-          }
-          element.appendChild(this[i]);
-        }
+      while( firstChild.firstElementChild ) {
+        firstChild = firstChild.firstElementChild;
       }
 
-      return this;
-    };
+      parent.replaceChild(wrapper, this);
+      firstChild.appendChild(this);
+    });
+
+    return this;
+  };
+
+  ListDOM.prototype.wrapAll = function (content) {
+    var element = $( _isFunction(content) ? content() : content )[0],
+        parent = this[0].parentElement;
+
+    parent.replaceChild(element, this[0]);
+
+    if( element ) {
+      while( element.firstElementChild ) {
+        element = element.firstElementChild;
+      }
+    }
+
+    for( var i = 0, len = this.length; i < len ; i++ ) {
+      element.appendChild(this[i]);
+    }
+
+    return $(element);
+  };
+
+  ListDOM.prototype.unwrap = function () {
+
+    var parents = this.parent(), parent;
+
+    for( var i = 0, len = parents.length; i < len ; i++ ) {
+      parent = parents.eq(i);
+      parent.replaceWith( parent.children() );
+    }
+
+    return this;
+  };
 
   ListDOM.prototype.next = function (selector) {
-      var list = new ListDOM(), elem;
+      var list = new ListDOM(), elem, n = 0;
 
       for( var i = 0, len = this.length; i < len; i++ ) {
         elem = this[i].nextElementSibling;
         if( elem ) {
-          list.push(elem);
+          list[n++] = elem;
         }
       }
+      list.length = n;
 
       return ( typeof selector === 'string' ) ? list.filter(selector): list;
     };
 
   ListDOM.prototype.nextAll = function (selector) {
-      var list = new ListDOM(), elem;
+      var list = new ListDOM(), elem, n = 0;
 
       for( var i = 0, len = this.length; i < len; i++ ) {
         elem = this[i].nextElementSibling;
         while( elem ) {
-          list.push(elem);
+          list[n++] = elem;
           elem = elem.nextElementSibling;
         }
       }
+      list.length = n;
 
       return filterDuplicated( selector ? list.filter(selector): list );
     };
 
   ListDOM.prototype.prev = function (selector) {
-      var list = new ListDOM(), elem;
+      var list = new ListDOM(), elem, n = 0;
 
       for( var i = 0, len = this.length; i < len; i++ ) {
         elem = this[i].previousElementSibling;
         if( elem ) {
-          list.push(elem);
+          list[n++] = elem;
         }
       }
+      list.length = n;
 
       return selector ? list.filter(selector): list;
     };
+
+  function _prevAll (list, element, n) {
+    if( element ) {
+      if( element.previousElementSibling ) {
+        n = _prevAll(list, element.previousElementSibling, n);
+      }
+      list[n++] = element;
+    }
+    return n;
+  }
 
   ListDOM.prototype.prevAll = function (selector) {
-      var list = new ListDOM(), elem;
+      var list = new ListDOM(), elem, n = 0;
 
       for( var i = 0, len = this.length; i < len; i++ ) {
-        elem = this[i].previousElementSibling;
-        while( elem ) {
-          list.push(elem);
-          elem = elem.previousElementSibling;
-        }
+        n = _prevAll(list, this[i].previousElementSibling, n);
       }
+      list.length = n;
 
       return filterDuplicated( selector ? list.filter(selector): list );
-    };
-
-  ListDOM.prototype.parent = function (selector) {
-      var list = new ListDOM(), elem;
-
-      for( var i = 0, len = this.length; i < len; i++ ) {
-        elem = this.parentElement || this.parentNode;
-        if( elem ) {
-          list.push(this[i]);
-        }
-      }
-
-      return selector ? list.filter(selector): list;
     };
 
   ListDOM.prototype.remove = function (selector) {
