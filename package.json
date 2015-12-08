@@ -5,7 +5,7 @@
 	"main": "jqlite.js",
 	"scripts": {
 		"pretest": "node make jqlite.min.js",
-		"test": "node make test && $(npm bin)/karma start karma.conf.js"
+		"test": "node make test && $(npm bin)/karma start karma.conf.js && $(npm bin)/karma start karma.min.js"
 	},
 	"repository": {
 		"type": "git",
@@ -29,6 +29,6 @@
 		"karma-firefox-launcher": "^0.1.7",
 		"karma-jasmine": "^0.3.2",
 		"karma-story-reporter": "^0.3.1",
-		"nitro": "^1.5.31"
+		"nitro": "1.5.38"
 	}
 }

@@ -3,6 +3,7 @@
 test:
 	@node make test
 	@$(shell npm bin)/karma start karma.conf.js
+	@$(shell npm bin)/karma start karma.min.js
 
 dev:
 	@node make dev
