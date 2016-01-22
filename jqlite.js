@@ -1467,7 +1467,17 @@ var arrayShift = Array.prototype.shift;
       return this;
     }
 
-    if( typeof eventName !== 'string' || ( !_isFunction(listener) && listener !== undefined ) ) {
+    if( eventName === undefined ) {
+      var registeredEvents, registeredEvent;
+
+      for( i = 0, n = this.length; i < n; i++ ) {
+        registeredEvents = this[i].$$jqListeners || {};
+        for( registeredEvent in registeredEvents ) {
+          detachElementListener(this[i], registeredEvent);
+          delete registeredEvents[registeredEvent];
+        }
+      }
+    } else if( typeof eventName !== 'string' || ( !_isFunction(listener) && listener !== undefined ) ) {
       throw 'bad arguments';
     }
 
