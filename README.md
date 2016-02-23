@@ -16,6 +16,26 @@ bower install jengine-jqlite --save
 ```
 Methods
 -------
+
+> jqlite object ($)
+
+``` js
+
+  // starting by '<' returns a collection of DOM nodes from this code
+  // result: [<HTMLElement>]
+  $('<div class="foo">bar</div>');
+
+  // also accepts several objects at root level
+  // result: [<HTMLElement>, <HTMLElement>]
+  $('<div class="foo">bar</div><div class="bar">foo</div>');
+
+  // jqlite selectors returns collection by accepting pure css selectors
+  // jQuery uses sizzlejs to parse selectors
+  $('#some-id');
+  $('.some-class');
+  $('#wrapper .item');
+```
+
 > jQuery Methods provided by jn-jqlite (jEngine jqlite)
 
 - [x] [`get()`](http://api.jquery.com/get/)
