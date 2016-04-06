@@ -81,7 +81,7 @@ returns a [`collection`](#foot-notes) with only the last element
 ```
 returns a [`collection`](#foot-notes) with elements that matches the `selector` from the given [`collection`](#foot-notes)
 
-#### closest(selector) ~ [api.jquery.com/find](http://api.jquery.com/find/)
+#### closest(selector) ~ [api.jquery.com/find](http://api.jquery.com/closest/)
 
 ``` html
 <ul class="list-1 foo">
