@@ -1,6 +1,21 @@
 
 ## Relative Queries
 
+#### get(position) ~ [api.jquery.com/get](http://api.jquery.com/get/)
+
+``` html
+<div class="item-1"></div>
+<div class="item-2"></div>
+<div class="item-3"></div>
+<div class="item-4"></div>
+<div class="item-5"></div>
+```
+``` js
+  $('div').get(3)
+  // returns <div class="item-4"></div>
+```
+returns the HTMLElement in given `position`
+
 #### eq(position) ~ [api.jquery.com/eq](http://api.jquery.com/eq/)
 
 ``` html

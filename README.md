@@ -43,30 +43,14 @@ bower install jstools-jqlite --save
 
 - [x] [`ready()`](http://api.jquery.com/ready/)
 
-## Collection Methods
-
-#### get(position) ~ [api.jquery.com/get](http://api.jquery.com/get/)
-
-``` html
-<div class="item-1"></div>
-<div class="item-2"></div>
-<div class="item-3"></div>
-<div class="item-4"></div>
-<div class="item-5"></div>
-```
-``` js
-  $('div').get(3)
-  // returns <div class="item-4"></div>
-```
-returns the element in given `position`
-
 ## Relative Queries
 
+- [`get()`](docs/relative-queries.md#getposition---apijquerycomget)
 - [`eq()`](docs/relative-queries.md#eqposition---apijquerycomeq)
 - [`first()`](docs/relative-queries.md#first---apijquerycomfirst)
 - [`last()`](docs/relative-queries.md#last---apijquerycomlast)
-- [`find()`](docs/relative-queries.md#find---apijquerycomfind)
-- [`closest()`](docs/relative-queries.md#closest---apijquerycomclosest)
+- [`find()`](docs/relative-queries.md#findselector---apijquerycomfind)
+- [`closest()`](docs/relative-queries.md#closestselector---apijquerycomclosest)
 
 > missing docs:
 
@@ -80,9 +64,9 @@ returns the element in given `position`
 
 ### Handling Classes
 
-- [`addClass()`](docs/relative-queries.md#addclass---apijquerycomaddclass)
-- [`removeClass()`](docs/relative-queries.md#removeclass---apijquerycomremoveclass)
-- [`toggleClass()`](docs/relative-queries.md#toggleclass---apijquerycomtoggleclass)
+- [`addClass()`](docs/relative-queries.md#addclassclassname---apijquerycomaddclass)
+- [`removeClass()`](docs/relative-queries.md#removeclassclassname---apijquerycomremoveclass)
+- [`toggleClass()`](docs/relative-queries.md#toggleclassclassnamestate---apijquerycomtoggleclass)
 
 ## Moving DOM Elements
 
