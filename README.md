@@ -62,11 +62,11 @@ returns the element in given `position`
 
 ## Relative Queries
 
-- [`eq()`](docs/relative-queries#eqposition---apijquerycomeq)
-- [`first()`](docs/relative-queries#first---apijquerycomfirst)
-- [`last()`](docs/relative-queries#last---apijquerycomlast)
-- [`find()`](docs/relative-queries#find---apijquerycomfind)
-- [`closest()`](docs/relative-queries#closest---apijquerycomclosest)
+- [`eq()`](docs/relative-queries.md#eqposition---apijquerycomeq)
+- [`first()`](docs/relative-queries.md#first---apijquerycomfirst)
+- [`last()`](docs/relative-queries.md#last---apijquerycomlast)
+- [`find()`](docs/relative-queries.md#find---apijquerycomfind)
+- [`closest()`](docs/relative-queries.md#closest---apijquerycomclosest)
 
 - [x] [`prev()`](http://api.jquery.com/next/)
 - [x] [`prevAll()`](http://api.jquery.com/next/)
