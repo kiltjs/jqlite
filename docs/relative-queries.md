@@ -113,3 +113,6 @@ returns a [`collection`](#foot-notes) with elements that matches the `selector` 
 
 - [x] [`parent()`](http://api.jquery.com/parent/)
 - [x] [`children()`](http://api.jquery.com/children/)
+
+> <a name="foot-notes">
+> collection: jqlite object returned by a query and find/filter like functions

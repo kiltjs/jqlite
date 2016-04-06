@@ -68,7 +68,7 @@ bower install jstools-jqlite --save
 - [`removeClass()`](docs/relative-queries.md#removeclassclassname--apijquerycomremoveclass)
 - [`toggleClass()`](docs/relative-queries.md#toggleclassclassnamestate--apijquerycomtoggleclass)
 
-## Moving DOM Elements
+### Moving DOM Elements
 
 > missing docs:
 

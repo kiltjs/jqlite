@@ -51,3 +51,6 @@
   // <div class="item-2 foobar"></div>
   // <div class="item-3 foobar"></div>
 ```
+
+> <a name="foot-notes">
+> collection: jqlite object returned by a query and find/filter like functions
