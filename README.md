@@ -41,7 +41,7 @@ bower install jstools-jqlite --save
 
 ## Methods
 
-### [`get(position)`](http://api.jquery.com/get/) ( [api.jquery.com/get](http://api.jquery.com/get/) )
+### [get(position)](http://api.jquery.com/get/) ( [api.jquery.com/get](http://api.jquery.com/get/) )
 
 ``` html
 <div class="item-1"></div>
@@ -56,7 +56,7 @@ bower install jstools-jqlite --save
 ```
 returns the element in given `position`
 
-### [`eq(position)`](http://api.jquery.com/eq/) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
+### [eq(position)](http://api.jquery.com/eq/) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
 
 ``` html
 <div class="item-1"></div>
