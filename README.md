@@ -41,7 +41,7 @@ bower install jstools-jqlite --save
 
 ## Methods
 
-### [get(position)](http://api.jquery.com/get/) ( [api.jquery.com/get](http://api.jquery.com/get/) )
+### get(position) ( [api.jquery.com/get](http://api.jquery.com/get/) )
 
 ``` html
 <div class="item-1"></div>
@@ -56,7 +56,7 @@ bower install jstools-jqlite --save
 ```
 returns the element in given `position`
 
-### [eq(position)](http://api.jquery.com/eq/) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
+### eq(position) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
 
 ``` html
 <div class="item-1"></div>
@@ -71,7 +71,7 @@ returns the element in given `position`
 ```
 returns a collection with only one element, specified by `position`, if is lower than 0 it will count backwards from the last element
 
-### [`first()`](http://api.jquery.com/first/) ( [api.jquery.com/first](http://api.jquery.com/first/) )
+### first() ( [api.jquery.com/first](http://api.jquery.com/first/) )
 
 ``` html
 <div class="item-1"></div>
@@ -86,7 +86,7 @@ returns a collection with only one element, specified by `position`, if is lower
 ```
 returns a collection with only the last element
 
-### [`last()`](http://api.jquery.com/last/) ( [api.jquery.com/last](http://api.jquery.com/last/) )
+### last() ( [api.jquery.com/last](http://api.jquery.com/last/) )
 
 ``` html
 <div class="item-1"></div>
@@ -101,7 +101,7 @@ returns a collection with only the last element
 ```
 returns a collection with only the last element
 
-### [`find(selector)`](http://api.jquery.com/find/) ( [api.jquery.com/find](http://api.jquery.com/find/) )
+### find(selector) ( [api.jquery.com/find](http://api.jquery.com/find/) )
 
 ``` html
 <ul>
