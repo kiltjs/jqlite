@@ -45,7 +45,7 @@ bower install jstools-jqlite --save
 
 ## Collection Methods
 
-#### get(position) ( [api.jquery.com/get](http://api.jquery.com/get/) )
+#### get(position) ~ [api.jquery.com/get](http://api.jquery.com/get/)
 
 ``` html
 <div class="item-1"></div>
@@ -62,83 +62,23 @@ returns the element in given `position`
 
 ## Relative Queries
 
-#### eq(position) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
+#### [`eq()`](docs/relative-queries#eqposition---apijquerycomeq)
+#### [`first()`](docs/relative-queries#first---apijquerycomfirst)
+#### [`last()`](docs/relative-queries#last---apijquerycomlast)
+#### [`find()`](docs/relative-queries#find---apijquerycomfind)
+#### [`closest()`](docs/relative-queries#closest---apijquerycomclosest)
 
-``` html
-<div class="item-1"></div>
-<div class="item-2"></div>
-<div class="item-3"></div>
-<div class="item-4"></div>
-<div class="item-5"></div>
-```
-``` js
-  $('div').eq(3)
-  // returns [<div class="item-4"></div>]
-```
-returns a [`collection`](#foot-notes) with only one element, specified by `position`, if is lower than 0 it will count backwards from the last element
+- [x] [`prev()`](http://api.jquery.com/next/)
+- [x] [`prevAll()`](http://api.jquery.com/next/)
+- [x] [`next()`](http://api.jquery.com/next/)
+- [x] [`nextAll()`](http://api.jquery.com/next/)
 
-#### first() ( [api.jquery.com/first](http://api.jquery.com/first/) )
-
-``` html
-<div class="item-1"></div>
-<div class="item-2"></div>
-<div class="item-3"></div>
-<div class="item-4"></div>
-<div class="item-5"></div>
-```
-``` js
-  $('div').first()
-  // returns [<div class="item-1"></div>]
-```
-returns a [`collection`](#foot-notes) with only the last element
-
-#### last() ( [api.jquery.com/last](http://api.jquery.com/last/) )
-
-``` html
-<div class="item-1"></div>
-<div class="item-2"></div>
-<div class="item-3"></div>
-<div class="item-4"></div>
-<div class="item-5"></div>
-```
-``` js
-  $('div').last()
-  // returns [<div class="item-5"></div>]
-```
-returns a [`collection`](#foot-notes) with only the last element
-
-#### find(selector) ( [api.jquery.com/find](http://api.jquery.com/find/) )
-
-``` html
-<ul>
-  <li class="foo item-1"></li>
-  <li class="bar item-2"></li>
-  <li class="foo item-3"></li>
-  <li class="bar item-4"></li>
-  <li class="foo item-5"></li>
-</ul>
-```
-``` js
-  $('ul').find('.foo')
-  // returns [
-  //  <li class="foo item-1"></li>
-  //  <li class="foo item-3"></li>
-  //  <li class="foo item-5"></li>
-```
-returns a [`collection`](#foot-notes) with elements that matches the `selector` from the given [`collection`](#foot-notes)
-
-> <a name="foot-notes">
-> collection: jqlite object returned by a query and find/filter like functions
-
-- [x] [`closest()`](http://api.jquery.com/closest/)
-- [x] [`next()`](http://api.jquery.com/next/) - Does not support selectors
 - [x] [`parent()`](http://api.jquery.com/parent/)
 - [x] [`children()`](http://api.jquery.com/children/)
 
-
 ### Handling Classes
 
-#### addClass(className) [api.jquery.com/addClass](http://api.jquery.com/addClass/)
+#### addClass(className) ~ [api.jquery.com/addClass](http://api.jquery.com/addClass/)
 
 ``` html
 <div class="item-1"></div>
@@ -153,7 +93,7 @@ returns a [`collection`](#foot-notes) with elements that matches the `selector` 
   // <div class="item-3"></div>
 ```
 
-#### removeClass(className) [api.jquery.com/removeClass](http://api.jquery.com/removeClass/)
+#### removeClass(className) ~ [api.jquery.com/removeClass](http://api.jquery.com/removeClass/)
 
 ``` html
 <div class="item-1 foobar"></div>
@@ -168,7 +108,7 @@ returns a [`collection`](#foot-notes) with elements that matches the `selector` 
   // <div class="item-3 foobar"></div>
 ```
 
-#### toggleClass(className, state) [api.jquery.com/addClass](http://api.jquery.com/addClass/)
+#### toggleClass(className, state) ~ [api.jquery.com/addClass](http://api.jquery.com/addClass/)
 
 ``` html
 <div class="item-1 foobar"></div>
@@ -233,3 +173,6 @@ returns a [`collection`](#foot-notes) with elements that matches the `selector` 
 - [x] [`focus()`](http://api.jquery.com/focus/)
 - [x] [`blur()`](http://api.jquery.com/blur/)
 - [x] [`submit()`](http://api.jquery.com/submit/)
+
+> <a name="foot-notes">
+> collection: jqlite object returned by a query and find/filter like functions
