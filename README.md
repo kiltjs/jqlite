@@ -39,7 +39,11 @@ bower install jstools-jqlite --save
   $('#wrapper .item');
 ```
 
-## Methods
+## Main Methods
+
+- [x] [`ready()`](http://api.jquery.com/ready/)
+
+## Collection Methods
 
 #### get(position) ( [api.jquery.com/get](http://api.jquery.com/get/) )
 
@@ -54,7 +58,9 @@ bower install jstools-jqlite --save
   $('div').get(3)
   // returns <div class="item-4"></div>
 ```
-returns the element in given [`position`](#getposition--apijquerycomeq-)
+returns the element in given `position`
+
+## Relative Queries
 
 #### eq(position) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
 
@@ -69,7 +75,7 @@ returns the element in given [`position`](#getposition--apijquerycomeq-)
   $('div').eq(3)
   // returns [<div class="item-4"></div>]
 ```
-returns a [`collection`](#foot-notes) with only one element, specified by [`position`](#eqposition--apijquerycomeq-), if is lower than 0 it will count backwards from the last element
+returns a [`collection`](#foot-notes) with only one element, specified by `position`, if is lower than 0 it will count backwards from the last element
 
 #### first() ( [api.jquery.com/first](http://api.jquery.com/first/) )
 
@@ -119,47 +125,109 @@ returns a [`collection`](#foot-notes) with only the last element
   //  <li class="foo item-3"></li>
   //  <li class="foo item-5"></li>
 ```
-returns a [`collection`](#foot-notes) with elements that matches the [`selector`](#findselector--apijquerycomeq-) from the given [`collection`](#foot-notes)
+returns a [`collection`](#foot-notes) with elements that matches the `selector` from the given [`collection`](#foot-notes)
 
-
-<a name="foot-notes">
+> <a name="foot-notes">
 > collection: jqlite object returned by a query and find/filter like functions
 
-- [x] [`addClass()`](http://api.jquery.com/addClass/)
-- [x] [`removeClass()`](http://api.jquery.com/removeClass/)
-- [x] [`toggleClass()`](http://api.jquery.com/toggleClass/)
-
-- [x] [`after()`](http://api.jquery.com/after/)
-- [x] [`append()`](http://api.jquery.com/append/)
-- [x] [`attr()`](http://api.jquery.com/attr/)
-- [x] [`children()`](http://api.jquery.com/children/)
 - [x] [`closest()`](http://api.jquery.com/closest/)
-- [x] [`clone()`](http://api.jquery.com/clone/) - clone events not yet supported
-- [x] [`contents()`](http://api.jquery.com/contents/)
-- [x] [`css()`](http://api.jquery.com/css/)
-- [x] [`data()`](http://api.jquery.com/data/)
-- [x] [`detach()`](http://api.jquery.com/detach/)
-- [x] [`empty()`](http://api.jquery.com/empty/)
-- [x] [`find()`](http://api.jquery.com/find/)
-- [x] [`hasClass()`](http://api.jquery.com/hasClass/)
-- [x] [`html()`](http://api.jquery.com/html/)
 - [x] [`next()`](http://api.jquery.com/next/) - Does not support selectors
+- [x] [`parent()`](http://api.jquery.com/parent/)
+- [x] [`children()`](http://api.jquery.com/children/)
+
+
+### Handling Classes
+
+#### addClass(className) [api.jquery.com/addClass](http://api.jquery.com/addClass/)
+
+``` html
+<div class="item-1"></div>
+<div class="item-2"></div>
+<div class="item-3"></div>
+```
+``` js
+  $('.item-2').addClass('foobar')
+  // results:
+  // <div class="item-1"></div>
+  // <div class="item-2 foobar"></div>
+  // <div class="item-3"></div>
+```
+
+#### removeClass(className) [api.jquery.com/removeClass](http://api.jquery.com/removeClass/)
+
+``` html
+<div class="item-1 foobar"></div>
+<div class="item-2 foobar"></div>
+<div class="item-3 foobar"></div>
+```
+``` js
+  $('.item-2').removeClass('foobar')
+  // results:
+  // <div class="item-1 foobar"></div>
+  // <div class="item-2"></div>
+  // <div class="item-3 foobar"></div>
+```
+
+#### toggleClass(className, state) [api.jquery.com/addClass](http://api.jquery.com/addClass/)
+
+``` html
+<div class="item-1 foobar"></div>
+<div class="item-2"></div>
+<div class="item-3 foobar"></div>
+```
+``` js
+  $('div').toggleClass('foobar')
+  // results:
+  // <div class="item-1"></div>
+  // <div class="item-2 foobar"></div>
+  // <div class="item-3"></div>
+
+  $('div').toggleClass('foobar', true)
+  // results:
+  // <div class="item-1 foobar"></div>
+  // <div class="item-2 foobar"></div>
+  // <div class="item-3 foobar"></div>
+```
+----------
+
+## Moving DOM Elements
+
+- [x] [`append()`](http://api.jquery.com/append/)
+- [x] [`prepend()`](http://api.jquery.com/prepend/)
+- [x] [`after(content)`](http://api.jquery.com/after/)
+
+- [x] [`wrap()`](http://api.jquery.com/wrap/)
+
+- [x] [`replaceWith()`](http://api.jquery.com/replaceWith/)
+- [x] [`detach()`](http://api.jquery.com/detach/)
+- [x] [`remove()`](http://api.jquery.com/remove/)
+
+### Getters / Setters
+
+- [x] [`val()`](http://api.jquery.com/val/)
+- [x] [`html()`](http://api.jquery.com/html/)
+- [x] [`text()`](http://api.jquery.com/text/)
+- [x] [`contents()`](http://api.jquery.com/contents/)
+
+- [x] [`prop()`](http://api.jquery.com/prop/)
+- [x] [`attr()`](http://api.jquery.com/attr/)
+- [x] [`removeAttr()`](http://api.jquery.com/removeAttr/)
+- [x] [`data()`](http://api.jquery.com/data/)
+- [x] [`removeData()`](http://api.jquery.com/removeData/)
+
+- [x] [`empty()`](http://api.jquery.com/empty/)
+
+### Miscelanea
+
+- [x] [`clone()`](http://api.jquery.com/clone/) - clone events not yet supported
+- [x] [`css()`](http://api.jquery.com/css/)
+
+### Event Methods
+
 - [x] [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
 - [x] [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
 - [x] [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
-- [x] [`parent()`](http://api.jquery.com/parent/)
-- [x] [`prepend()`](http://api.jquery.com/prepend/)
-- [x] [`prop()`](http://api.jquery.com/prop/)
-- [x] [`ready()`](http://api.jquery.com/ready/)
-- [x] [`remove()`](http://api.jquery.com/remove/)
-- [x] [`removeAttr()`](http://api.jquery.com/removeAttr/)
-- [x] [`removeData()`](http://api.jquery.com/removeData/)
-- [x] [`replaceWith()`](http://api.jquery.com/replaceWith/)
-- [x] [`text()`](http://api.jquery.com/text/)
-
 - [x] [`trigger()`](http://api.jquery.com/trigger/) - Does not support selectors
-- [x] [`val()`](http://api.jquery.com/val/)
-- [x] [`wrap()`](http://api.jquery.com/wrap/)
 
 - [x] [`click()`](http://api.jquery.com/click/)
 - [x] [`focus()`](http://api.jquery.com/focus/)
