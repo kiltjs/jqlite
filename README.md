@@ -54,7 +54,7 @@ bower install jstools-jqlite --save
   $('div').get(3)
   // returns <div class="item-4"></div>
 ```
-returns the element in given `position`
+returns the element in given [`position`](#getposition--apijquerycomeq-)
 
 #### eq(position) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
 
@@ -69,7 +69,7 @@ returns the element in given `position`
   $('div').eq(3)
   // returns [<div class="item-4"></div>]
 ```
-returns a collection with only one element, specified by `position`, if is lower than 0 it will count backwards from the last element
+returns a [`collection`](#foot-notes) with only one element, specified by [`position`](#eqposition--apijquerycomeq-), if is lower than 0 it will count backwards from the last element
 
 #### first() ( [api.jquery.com/first](http://api.jquery.com/first/) )
 
@@ -84,7 +84,7 @@ returns a collection with only one element, specified by `position`, if is lower
   $('div').first()
   // returns [<div class="item-1"></div>]
 ```
-returns a collection with only the last element
+returns a [`collection`](#foot-notes) with only the last element
 
 #### last() ( [api.jquery.com/last](http://api.jquery.com/last/) )
 
@@ -99,7 +99,7 @@ returns a collection with only the last element
   $('div').last()
   // returns [<div class="item-5"></div>]
 ```
-returns a collection with only the last element
+returns a [`collection`](#foot-notes) with only the last element
 
 #### find(selector) ( [api.jquery.com/find](http://api.jquery.com/find/) )
 
@@ -119,7 +119,11 @@ returns a collection with only the last element
   //  <li class="foo item-3"></li>
   //  <li class="foo item-5"></li>
 ```
-returns a collection with elements that matches the `selector` from the given collection
+returns a [`collection`](#foot-notes) with elements that matches the [`selector`](#findselector--apijquerycomeq-) from the given [`collection`](#foot-notes)
+
+
+<a name="foot-notes">
+> collection: jqlite object returned by a query and find/filter like functions
 
 - [x] [`addClass()`](http://api.jquery.com/addClass/)
 - [x] [`removeClass()`](http://api.jquery.com/removeClass/)
