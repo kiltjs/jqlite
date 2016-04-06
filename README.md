@@ -45,12 +45,12 @@ bower install jstools-jqlite --save
 
 ## Relative Queries
 
-- [`get()`](docs/relative-queries.md#getposition---apijquerycomget)
-- [`eq()`](docs/relative-queries.md#eqposition---apijquerycomeq)
-- [`first()`](docs/relative-queries.md#first---apijquerycomfirst)
-- [`last()`](docs/relative-queries.md#last---apijquerycomlast)
-- [`find()`](docs/relative-queries.md#findselector---apijquerycomfind)
-- [`closest()`](docs/relative-queries.md#closestselector---apijquerycomclosest)
+- [`get()`](docs/relative-queries.md#getposition--apijquerycomget)
+- [`eq()`](docs/relative-queries.md#eqposition--apijquerycomeq)
+- [`first()`](docs/relative-queries.md#first--apijquerycomfirst)
+- [`last()`](docs/relative-queries.md#last--apijquerycomlast)
+- [`find()`](docs/relative-queries.md#findselector--apijquerycomfind)
+- [`closest()`](docs/relative-queries.md#closestselector--apijquerycomclosest)
 
 > missing docs:
 
@@ -64,9 +64,9 @@ bower install jstools-jqlite --save
 
 ### Handling Classes
 
-- [`addClass()`](docs/relative-queries.md#addclassclassname---apijquerycomaddclass)
-- [`removeClass()`](docs/relative-queries.md#removeclassclassname---apijquerycomremoveclass)
-- [`toggleClass()`](docs/relative-queries.md#toggleclassclassnamestate---apijquerycomtoggleclass)
+- [`addClass()`](docs/relative-queries.md#addclassclassname--apijquerycomaddclass)
+- [`removeClass()`](docs/relative-queries.md#removeclassclassname--apijquerycomremoveclass)
+- [`toggleClass()`](docs/relative-queries.md#toggleclassclassnamestate--apijquerycomtoggleclass)
 
 ## Moving DOM Elements
 
