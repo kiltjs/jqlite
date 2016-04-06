@@ -5,17 +5,20 @@ travis: [![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)
 
 > Tiny JavaScript DOM query library
 
-Installation
-------------
+-----------
+
+## Installation
+
 ```.sh
 npm install jqlite --save
 ```
   or
 ```.sh
-bower install jengine-jqlite --save
+bower install jstools-jqlite --save
 ```
-Methods
--------
+-----------
+
+## Main Object
 
 > jqlite object ($)
 
@@ -36,13 +39,93 @@ Methods
   $('#wrapper .item');
 ```
 
-> jQuery Methods provided by jn-jqlite (jEngine jqlite)
+## Methods
 
-- [x] [`get()`](http://api.jquery.com/get/)
-- [x] [`eq()`](http://api.jquery.com/eq/)
-- [x] [`first()`](http://api.jquery.com/first/)
-- [x] [`last()`](http://api.jquery.com/last/)
+
+> [`get(position)`](http://api.jquery.com/get/) ( [api.jquery.com/get](http://api.jquery.com/get/) )
+
+``` html
+<div class="item-1"></div>
+<div class="item-2"></div>
+<div class="item-3"></div>
+<div class="item-4"></div>
+<div class="item-5"></div>
+```
+``` js
+  $('div').get(3)
+  // returns <div class="item-4"></div>
+```
+returns the element in given `position`
+
+> [`eq(position)`](http://api.jquery.com/eq/) ( [api.jquery.com/eq](http://api.jquery.com/eq/) )
+
+``` html
+<div class="item-1"></div>
+<div class="item-2"></div>
+<div class="item-3"></div>
+<div class="item-4"></div>
+<div class="item-5"></div>
+```
+``` js
+  $('div').eq(3)
+  // returns [<div class="item-4"></div>]
+```
+returns a collection with only one element, specified by `position`, if is lower than 0 it will count backwards from the last element
+
+> [`first()`](http://api.jquery.com/first/) ( [api.jquery.com/first](http://api.jquery.com/first/) )
+
+``` html
+<div class="item-1"></div>
+<div class="item-2"></div>
+<div class="item-3"></div>
+<div class="item-4"></div>
+<div class="item-5"></div>
+```
+``` js
+  $('div').first()
+  // returns [<div class="item-1"></div>]
+```
+returns a collection with only the last element
+
+> [`last()`](http://api.jquery.com/last/) ( [api.jquery.com/last](http://api.jquery.com/last/) )
+
+``` html
+<div class="item-1"></div>
+<div class="item-2"></div>
+<div class="item-3"></div>
+<div class="item-4"></div>
+<div class="item-5"></div>
+```
+``` js
+  $('div').last()
+  // returns [<div class="item-5"></div>]
+```
+returns a collection with only the last element
+
+> [`find(selector)`](http://api.jquery.com/find/) ( [api.jquery.com/find](http://api.jquery.com/find/) )
+
+``` html
+<ul>
+  <li class="foo item-1"></li>
+  <li class="bar item-2"></li>
+  <li class="foo item-3"></li>
+  <li class="bar item-4"></li>
+  <li class="foo item-5"></li>
+</ul>
+```
+``` js
+  $('ul').find('.foo')
+  // returns [
+  //  <li class="foo item-1"></li>
+  //  <li class="foo item-3"></li>
+  //  <li class="foo item-5"></li>
+```
+returns a collection with elements that matches the `selector` from the given collection
+
 - [x] [`addClass()`](http://api.jquery.com/addClass/)
+- [x] [`removeClass()`](http://api.jquery.com/removeClass/)
+- [x] [`toggleClass()`](http://api.jquery.com/toggleClass/)
+
 - [x] [`after()`](http://api.jquery.com/after/)
 - [x] [`append()`](http://api.jquery.com/append/)
 - [x] [`attr()`](http://api.jquery.com/attr/)
@@ -67,11 +150,10 @@ Methods
 - [x] [`ready()`](http://api.jquery.com/ready/)
 - [x] [`remove()`](http://api.jquery.com/remove/)
 - [x] [`removeAttr()`](http://api.jquery.com/removeAttr/)
-- [x] [`removeClass()`](http://api.jquery.com/removeClass/)
 - [x] [`removeData()`](http://api.jquery.com/removeData/)
 - [x] [`replaceWith()`](http://api.jquery.com/replaceWith/)
 - [x] [`text()`](http://api.jquery.com/text/)
-- [x] [`toggleClass()`](http://api.jquery.com/toggleClass/)
+
 - [x] [`trigger()`](http://api.jquery.com/trigger/) - Does not support selectors
 - [x] [`val()`](http://api.jquery.com/val/)
 - [x] [`wrap()`](http://api.jquery.com/wrap/)
