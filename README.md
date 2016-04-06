@@ -1,4 +1,4 @@
-jEngine: jqlite [![](https://img.shields.io/npm/v/jqlite.svg)](https://www.npmjs.com/package/jqlite) [![](https://img.shields.io/bower/v/jengine-jqlite.svg)](http://bower.io/search/?q=jengine-jqlite) [![](https://img.shields.io/npm/dm/jqlite.svg)](https://www.npmjs.com/package/jqlite)
+jqLite [![](https://img.shields.io/npm/v/jqlite.svg)](https://www.npmjs.com/package/jqlite) [![](https://img.shields.io/bower/v/jengine-jqlite.svg)](http://bower.io/search/?q=jengine-jqlite) [![](https://img.shields.io/npm/dm/jqlite.svg)](https://www.npmjs.com/package/jqlite)
 ==============================
 wercker: [![wercker status](https://app.wercker.com/status/f436d6c59cd7ef60ac2aa2ff49ed8f7b/s "wercker status")](https://app.wercker.com/project/bykey/f436d6c59cd7ef60ac2aa2ff49ed8f7b)
 travis: [![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
