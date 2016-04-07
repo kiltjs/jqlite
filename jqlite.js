@@ -355,6 +355,8 @@ var arrayShift = Array.prototype.shift;
     }
   }
 
+  jqlite.ready = ready;
+
   // ListDOM
 
   function ListDOM(){}
