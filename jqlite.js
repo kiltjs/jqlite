@@ -947,6 +947,23 @@ var arrayShift = Array.prototype.shift;
       return this;
     };
 
+  ListDOM.prototype.before = function (content) {
+      var jContent = $(content), jContent2, i, j, len, len2, parent;
+
+      jContent.remove();
+
+      for( i = 0, len = this.length; i < len; i++ ) {
+        jContent2 = ( i ? jContent.clone(true) : jContent );
+        parent = this[i].parentElement || this[i].parentNode;
+
+        for( j = 0, len2 = jContent2.length; j < len2; j++ ) {
+          parent.insertBefore(jContent2[j], this[i]);
+        }
+      }
+
+      return this;
+    };
+
   ListDOM.prototype.after = function (content) {
       var jContent = $(content), jContent2, i, j, len, len2, element, parent;
 

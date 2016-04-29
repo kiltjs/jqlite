@@ -74,6 +74,7 @@ bower install jstools-jqlite --save
 
 - [`append()`](http://api.jquery.com/append/)
 - [`prepend()`](http://api.jquery.com/prepend/)
+- [`before(content)`](http://api.jquery.com/before/)
 - [`after(content)`](http://api.jquery.com/after/)
 
 - [`wrap()`](http://api.jquery.com/wrap/)
