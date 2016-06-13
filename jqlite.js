@@ -1040,8 +1040,11 @@ var arrayShift = Array.prototype.shift;
         firstChild = firstChild.firstElementChild;
       }
 
-      parent.replaceChild(wrapper, this);
-      firstChild.appendChild(this);
+      if( parent ) {
+        parent.replaceChild(wrapper, this);
+        firstChild.appendChild(this);
+      }
+
     });
 
     return this;
