@@ -794,111 +794,113 @@ var arrayShift = Array.prototype.shift;
       return this;
     };
 
-  ListDOM.prototype.addClass = classListEnabled ? function (className) {
-      if( className.indexOf(' ') >= 0 ) {
-        var _this = this;
-        className.split(' ').forEach(function (cn) {
-          _this.addClass(cn);
-        });
-      } else {
-        for( var i = 0, len = this.length; i < len ; i++ ) {
-            this[i].classList.add(className);
+  var REclassListFallback = {
+        has: {}, rm: {}
+      },
+      classListHas = classListEnabled ? function (el, className) {
+        return el.classList.contains(className);
+      } : function (el, className) {
+        if( !REclassListFallback.has[className] ) {
+          REclassListFallback.has[className] = new RegExp('\\b' + (className || '') + '\\b','');
         }
-      }
-
-      return this;
-    } : function (className) {
-      var RE_CLEANCLASS = new RegExp('\\b' + (className || '') + '\\b','');
-
-      for( var i = 0, len = this.length; i < len ; i++ ) {
-          this[i].className = this[i].className.replace(RE_CLEANCLASS,'') + ' ' + className;
-      }
-      return this;
-    };
-
-  ListDOM.prototype.removeClass = classListEnabled ? function (className) {
-      if( className.indexOf(' ') >= 0 ) {
-        var jThis = $(this);
-        className.split(' ').forEach(function (cn) {
-          jThis.removeClass(cn);
-        });
-      } else {
-        for( var i = 0, len = this.length; i < len ; i++ ) {
-            this[i].classList.remove(className);
+        return REclassListFallback.has[className].test(el.className);
+      },
+      classListAdd = classListEnabled ? function (el, className) {
+        el.classList.add(className);
+      } : function (el, className) {
+        if( !classListMethods.has(el, className) ) {
+          el.className += ' ' + className;
         }
-      }
-      return this;
-    } : function (className) {
-      var RE_REMOVECLASS = new RegExp('(\\b|\\s+)'+className+'\\b','g');
+      },
+      classListRemove = classListEnabled ? function (el, className) {
+        el.classList.remove(className);
+      } : function (el, className) {
+        if( !REclassListFallback.rm[className] ) {
+          REclassListFallback.rm[className] = new RegExp('\\s*' + className + '\\s*','g');
+        }
+        el.className = el.className.replace(REclassListFallback.rm[className], ' ');
+      };
 
-      for( var i = 0, len = this.length; i < len ; i++ ) {
-          this[i].className = this[i].className.replace(RE_REMOVECLASS,'');
-      }
-      return this;
-    };
-
-  ListDOM.prototype.hasClass = classListEnabled ? function (className) {
-      for( var i = 0, len = this.length; i < len ; i++ ) {
-          if( this[i].classList.contains(className) ) {
-              return true;
+  ListDOM.prototype.addClass = function (className) {
+      var i, n;
+      
+      if( className instanceof Function ) {
+        for( i = 0, n = this.length; i < n ; i++ ) {
+          classListAdd(this[i], className.call(this[i], i, this[i].className) );
+        }
+      } else if( className.indexOf(' ') >= 0 ) {
+        className.split(/\s+/).forEach(function (_className) {
+          for( var i = 0, n = this.length; i < n ; i++ ) {
+            classListAdd(this[i], _className);
           }
+        }.bind(this) );
+      } else {
+        for( i = 0, n = this.length; i < n ; i++ ) {
+          classListAdd(this[i], className);
+        }
+      }
+
+      return this;
+    };
+
+  ListDOM.prototype.removeClass = function (className) {
+      var i, n;      
+
+      if( className instanceof Function ) {
+        for( i = 0, n = this.length; i < n ; i++ ) {
+          classListRemove(this[i], className.call(this[i], i, this[i].className) );
+        }
+      } else if( className.indexOf(' ') >= 0 ) {
+        className.split(/\s+/).forEach(function (_className) {
+          for( var i = 0, n = this.length; i < n ; i++ ) {
+            classListRemove(this[i], _className);
+          }
+        }.bind(this) );
+      } else {
+        for( i = 0, n = this.length; i < n ; i++ ) {
+          classListRemove(this[i], className);
+        }
+      }
+      return this;
+    };
+
+  ListDOM.prototype.hasClass = function (className) {
+      for( var i = 0, n = this.length; i < n ; i++ ) {
+        if( classListHas(this[i], className) ) {
+          return true;
+        }
       }
       return false;
-    } : function (className) {
-      var RE_HASCLASS = new RegExp('\\b' + (className || '') + '\\b','');
-
-      for( var i = 0, len = this.length; i < len ; i++ ) {
-          if( RE_HASCLASS.test(this[i].className) ) {
-              return true;
-          }
-      }
-      return false;
     };
 
-  ListDOM.prototype.toggleClass = classListEnabled ? function (className, add) {
-      var i, len;
+  ListDOM.prototype.toggleClass = function (className, state) {
+      var i, n, _state, _className;
 
-      if( add === undefined ) {
-        for( i = 0, len = this.length; i < len ; i++ ) {
-          if ( this[i].classList.item(className) ) {
-            this[i].classList.remove(className);
-          } else {
-            this[i].classList.add(className);
+      if( className instanceof Function ) {
+
+        for( i = 0, n = this.length; i < n ; i++ ) {
+          _className = className.call(this[i], i, this[i].className, state);
+          _state = state === undefined ? !classListHas(this[i], _className) : state;
+          ( _state ? classListAdd : classListRemove )(this[i], _className);
+        }
+
+      } else if( className.indexOf(' ') >= 0 ) {
+
+        className.split(/\s+/).forEach(function (_className) {
+          for( i = 0, n = this.length; i < n ; i++ ) {
+            _state = state === undefined ? !classListHas(this[i], _className) : state;
+            ( _state ? classListAdd : classListRemove )(this[i], _className);
           }
-        }
-      } else if( add ) {
-        for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].classList.add(className);
-        }
+        }.bind(this) );
+
       } else {
-        for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].classList.remove(className);
+        for( i = 0, n = this.length; i < n ; i++ ) {
+          _state = state === undefined ? !classListHas(this[i], className) : state;
+          ( _state ? classListAdd : classListRemove )(this[i], className);
         }
       }
-      return this;
-    } : function (className, add) {
-      var i, len,
-          RE_HASCLASS = new RegExp('\\b' + (className || '') + '\\b',''),
-          RE_CLEANCLASS = new RegExp('\\b' + (className || '') + '\\b',''),
-          RE_REMOVECLASS = new RegExp('(\\b|\\s+)'+className+'\\b','g');
 
-      if( className === undefined ) {
-        for( i = 0, len = this.length; i < len ; i++ ) {
-          if ( RE_HASCLASS.test(this[i].className) ) {
-            this[i].className = this[i].className.replace(RE_REMOVECLASS, '');
-          } else {
-            this[i].className = this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
-          }
-        }
-      } else if( add ) {
-        for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].className = this[i].className.replace(RE_CLEANCLASS, '') + ' ' + className;
-        }
-      } else {
-        for( i = 0, len = this.length; i < len ; i++ ) {
-          this[i].className = this[i].className.replace(RE_REMOVECLASS, '');
-        }
-      }
+      
       return this;
     };
 
