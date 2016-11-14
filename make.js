@@ -1,26 +1,6 @@
 
 require('nitro')(function (nitro) {
 
-  nitro.task('eslint', function () {
-
-    nitro.load('jqlite.js').process('eslint');
-
-  });
-
-  nitro.task('jshint', function () {
-
-    nitro.load('jqlite.js').process('jshint', {
-      // jshintrc: nitro.file.readJSON('.jshintrc'),
-      onError: function () {
-        console.log('bye!!!!');
-        process.exit(1);
-      }
-    });
-
-  });
-
-  nitro.task('test', ['jshint', 'eslint']);
-
   nitro.task('jqlite.min.js', function () {
     nitro
       .load('jqlite.js')

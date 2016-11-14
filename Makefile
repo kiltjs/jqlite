@@ -1,7 +1,9 @@
 # --- jqlite
 
-test:
-	@node make test
+lint:
+	$(shell npm bin)/eslint jqlite.js
+
+test: lint
 	@$(shell npm bin)/karma start karma.conf.js
 	@$(shell npm bin)/karma start karma.min.js
 
