@@ -1,4 +1,4 @@
-box: emmenko/wercker-nodejs-karma@0.3.0
+box: pull nitrojs/node-karma:0.4.3
 # Build definition
 build:
   # The steps that will be executed on build
