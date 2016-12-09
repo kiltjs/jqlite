@@ -2,7 +2,7 @@ jqLite [![](https://img.shields.io/npm/v/jqlite.svg)](https://www.npmjs.com/pack
 ==============================
 travis: [![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
 
-> Tiny JavaScript DOM query library
+> Tiny JavaScript DOM query library that used pure CSS selectors
 
 -----------
 

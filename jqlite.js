@@ -1542,6 +1542,26 @@
     return jqlite;
   };
 
+
+  function containsFallback( container, contained ) {
+    contained = contained.parentnode || contained.parentElement;
+
+    while( contained ) {
+      if( contained === container ) {
+        return true;
+      }
+      contained = contained.parentnode || contained.parentElement;
+    }
+    return false;
+  }
+  // compatible with: https://api.jquery.com/jQuery.contains/
+  jqlite.contains = function (container, contained) {
+    if( arguments.length < 2 ) {
+      throw new Error('2 arguments required');
+    }
+    return container.contains ? container.contains(contained) : containsFallback(container, contained);
+  };
+
   return jqlite;
 
 });

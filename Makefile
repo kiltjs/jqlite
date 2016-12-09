@@ -4,6 +4,7 @@ lint:
 	$(shell npm bin)/eslint jqlite.js
 
 test: lint
+	node make jqlite.min.js
 	@$(shell npm bin)/karma start karma.conf.js
 	@$(shell npm bin)/karma start karma.min.js
 

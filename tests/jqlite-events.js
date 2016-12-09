@@ -1,3 +1,4 @@
+/* global $, describe, beforeEach, expect, it */
 
 describe('DOM Events', function () {
 

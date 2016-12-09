@@ -1,3 +1,4 @@
+/* global $, describe, beforeEach, expect, it */
 
 describe('data (set)', function () {
 
@@ -73,7 +74,7 @@ describe('data (set)', function () {
 
     expect( jUL.length ).toBe(2);
 
-    jUL.each(function (index) {
+    jUL.each(function () {
       expect( this.getAttribute('data-fooset') ).toBe('foobar');
     });
 

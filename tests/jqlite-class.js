@@ -1,3 +1,4 @@
+/* global $, describe, beforeEach, expect, it */
 
 describe('class manipulation', function () {
 
@@ -54,7 +55,7 @@ describe('class manipulation', function () {
       } else {
         return 'ulfoo2';
       }
-    }
+    };
 
     expect( ul1.hasClass('ulfoo') ).toBe(true);
     expect( ul1.hasClass('ulfoo2') ).toBe(false);
@@ -136,7 +137,7 @@ describe('class manipulation', function () {
     var i = 0;
     var removeFoo = function () {
       return i++ ? 'ulfoo' : 'no-foo';
-    }
+    };
 
     expect( ul1.hasClass('ulfoo') ).toBe(true);
 
@@ -211,7 +212,7 @@ describe('class manipulation', function () {
       } else {
         return 'ulfoo2';
       }
-    }
+    };
 
     expect( ul1.hasClass('ulfoo') ).toBe(true);
 
