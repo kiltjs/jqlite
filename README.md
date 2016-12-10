@@ -1,6 +1,6 @@
 # jqLite
 
-Tiny JavaScript DOM query library that used pure CSS selectors
+Tiny JavaScript DOM query library that uses pure CSS selectors
 
 [![](https://img.shields.io/npm/v/jqlite.svg)](https://www.npmjs.com/package/jqlite) [![](https://img.shields.io/bower/v/jstools-jqlite.svg)](http://bower.io/search/?q=kiltjs-jqlite) [![Build Status](https://travis-ci.org/kiltjs/jqlite.svg?branch=master)](https://travis-ci.org/kiltjs/jqlite) [![](https://img.shields.io/npm/dm/jqlite.svg)](https://www.npmjs.com/package/jqlite)
 
