@@ -1,8 +1,9 @@
-jqLite [![](https://img.shields.io/npm/v/jqlite.svg)](https://www.npmjs.com/package/jqlite) [![](https://img.shields.io/bower/v/jstools-jqlite.svg)](http://bower.io/search/?q=jstools-jqlite) [![](https://img.shields.io/npm/dm/jqlite.svg)](https://www.npmjs.com/package/jqlite)
-==============================
-travis: [![Build Status](https://travis-ci.org/jstools/jqlite.svg?branch=master)](https://travis-ci.org/jstools/jqlite)
+# jqLite
 
-> Tiny JavaScript DOM query library that used pure CSS selectors
+Tiny JavaScript DOM query library that used pure CSS selectors
+
+[![](https://img.shields.io/npm/v/jqlite.svg)](https://www.npmjs.com/package/jqlite) [![](https://img.shields.io/bower/v/jstools-jqlite.svg)](http://bower.io/search/?q=kiltjs-jqlite) [![Build Status](https://travis-ci.org/kiltjs/jqlite.svg?branch=master)](https://travis-ci.org/kiltjs/jqlite) [![](https://img.shields.io/npm/dm/jqlite.svg)](https://www.npmjs.com/package/jqlite)
+
 
 -----------
 
@@ -13,7 +14,7 @@ npm install jqlite --save
 ```
   or
 ```.sh
-bower install jstools-jqlite --save
+bower install kilt-jqlite --save
 ```
 -----------
 
