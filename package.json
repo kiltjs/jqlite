@@ -4,8 +4,7 @@
 	"description": "Tiny JavaScript DOM query library",
 	"main": "jqlite.js",
 	"scripts": {
-		"pretest": "node make jqlite.min.js",
-		"test": "make test && $(npm bin)/karma start karma.conf.js && $(npm bin)/karma start karma.min.js"
+		"test": "make test"
 	},
 	"repository": {
 		"type": "git",

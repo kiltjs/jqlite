@@ -1,3 +1,5 @@
+/* global require, process */
+/* eslint-env es6 */
 
 require('nitro')(function (nitro) {
 

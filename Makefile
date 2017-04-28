@@ -7,10 +7,8 @@ git_branch := $(shell git rev-parse --abbrev-ref HEAD)
 install:
 	npm install
 
-lint:
+test: install
 	$(shell npm bin)/eslint jqlite.js
-
-test: lint
 	node make jqlite.min.js
 	@$(shell npm bin)/karma start karma.conf.js
 	@$(shell npm bin)/karma start karma.min.js
@@ -36,7 +34,7 @@ github.release:
 	@echo ${RELEASE_URL}
 	@true
 
-release: build npm.publish github.release
+release: test npm.publish github.release
 
 # DEFAULT TASKS
 
