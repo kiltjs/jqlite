@@ -1,34 +1,34 @@
 {
-	"name": "jqlite",
-	"version": "0.2.41",
-	"description": "Tiny JavaScript DOM query library",
-	"main": "jqlite.js",
-	"scripts": {
-		"test": "make test"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/jstools/jqlite.git"
-	},
-	"keywords": [
-		"javascript",
-		"query",
-		"dom"
-	],
-	"author": "Jesús Germade <jesus@germade.es>",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/jstools/jqlite/issues"
-	},
-	"homepage": "https://github.com/jstools/jqlite",
-	"devDependencies": {
-		"eslint": "^3.10.2",
-		"jasmine-core": "^2.5.2",
-		"karma": "^1.3.0",
-		"karma-chrome-launcher": "^2.0.0",
-		"karma-firefox-launcher": "^1.0.0",
-		"karma-jasmine": "^1.0.2",
-		"karma-story-reporter": "^0.3.1",
-		"nitro": "1.10.7"
-	}
+  "name": "jqlite",
+  "version": "0.2.42",
+  "description": "Tiny JavaScript DOM query library",
+  "main": "jqlite.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jstools/jqlite.git"
+  },
+  "keywords": [
+    "javascript",
+    "query",
+    "dom"
+  ],
+  "author": "Jesús Germade <jesus@germade.es>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jstools/jqlite/issues"
+  },
+  "homepage": "https://github.com/jstools/jqlite",
+  "devDependencies": {
+    "eslint": "^3.10.2",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-story-reporter": "^0.3.1",
+    "nitro": "1.10.7"
+  }
 }
