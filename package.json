@@ -2,33 +2,57 @@
   "name": "jqlite",
   "version": "0.2.42",
   "description": "Tiny JavaScript DOM query library",
-  "main": "jqlite.js",
+  "main": "src/lib/jqlite.js",
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "start": "cross-env NODE_ENV=development node tools/dev-server.js",
+    "dist": "cross-env NODE_ENV=production webpack --config tools/webpack.config.js --mode production --progress --color",
+    "dist:lib": "npm run clean && cross-env NODE_ENV=production webpack --config tools/lib.config.js --mode production --progress --color",
+    "dist:example": "npm run clean && webpack --config tools/example-main.config.js --mode production --progress --color",
+    "build": "npm install && npm run dist"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jstools/jqlite.git"
+    "url": "https://github.com/shijinyu/jqlite.git"
   },
   "keywords": [
     "javascript",
     "query",
     "dom"
   ],
-  "author": "Jesús Germade <jesus@germade.es>",
+  "author": "shijinyu <sjym90@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jstools/jqlite/issues"
+    "url": "https://github.com/shijinyu/jqlite/issues"
   },
-  "homepage": "https://github.com/jstools/jqlite",
+  "homepage": "https://github.com/shijinyu/jqlite",
   "devDependencies": {
-    "eslint": "^3.10.2",
-    "jasmine-core": "^2.5.2",
-    "karma": "^1.3.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-firefox-launcher": "^1.0.0",
-    "karma-jasmine": "^1.0.2",
+    "art-template": "^4.12.2",
+    "art-template-loader": "^1.4.3",
+    "autoprefixer": "^8.1.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "cross-env": "^5.1.4",
+    "eslint": "^4.8.12",
+    "eslint-loader": "^2.0.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "html-webpack-plugin": "^3.0.6",
+    "i": "^0.3.6",
+    "jasmine-core": "^3.1.0",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^1.1.1",
     "karma-story-reporter": "^0.3.1",
-    "nitro": "1.10.7"
+    "nitro": "2.2.5",
+    "npm": "^5.7.1",
+    "uglifyjs-webpack-plugin": "^1.2.3",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12",
+    "webpack-dev-server": "^3.0.0-alpha6",
+    "webpack-merge": "^4.1.2"
   }
 }

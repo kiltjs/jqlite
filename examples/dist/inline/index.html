@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Example for Dellar</title>
+    <style>
+    section{
+        margin:20px;
+        height: 100px;
+        width: 100px;
+        background-color: #98e872;
+    }
+    ul li{
+        margin:10px;
+        background-color: #17A2FF;
+    }
+    </style>
+</head>
+<body>
+<section id="test">Selector by Id : test</section>
+<section class="test1">
+    Selector by Class : test1
+    <button disabled="disabled">Disabled Button</button>
+    <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+        <li>Item 4</li>
+    </ul>
+</section>
+<section class="test2">
+    Selector by Class : test2
+    <button type="submit" name="button-1">Name : button-1</button>
+</section>
+<script src="./jqlite.dist.js"></script>
+<script>
+$(function(){
+    console.log("dom ready!")
+})
+
+var test = $('#test');
+var test1 = $('.test1');
+
+var buttonDisabled = test1.find('[disabled]');
+var items = $('.test1 li');
+// var button1 = $('=button-1');
+
+console.log("id",test);
+console.log("test1 by  class:",test1);
+console.log("buttonDisabled",buttonDisabled);
+// console.log("button-1 by name",button1);
+console.log("items by find tagName",items);
+</script>
+</body>
+</html>

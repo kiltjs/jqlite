@@ -12,10 +12,7 @@ Tiny JavaScript DOM query library that uses pure CSS selectors
 ```.sh
 npm install jqlite --save
 ```
-  or
-```.sh
-bower install kilt-jqlite --save
-```
+
 -----------
 
 ## Main Object
