@@ -2,7 +2,8 @@
   "name": "jqlite",
   "version": "0.2.42",
   "description": "Tiny JavaScript DOM query library",
-  "main": "src/lib/jqlite.js",
+  "main": "dist/jqlite.umd.js",
+  "module": "src/lib/jqlite.js",
   "scripts": {
     "test": "make test",
     "start": "cross-env NODE_ENV=development node tools/dev-server.js",
