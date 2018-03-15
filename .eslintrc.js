@@ -1,32 +1,21 @@
 module.exports = {
+    "parser": "babel-eslint",
+    "parserOptions" : {
+        "ecmaVersion": 7,
+        "sourceType" : "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+
     "env": {
-      "browser": true
-    },
-    "globals": {
-      "module": true,
-      "define": true,
-      "angular": true
-    },
-    "extends": "eslint:recommended",
-    "rules": {
-      "linebreak-style": [
-          "error",
-          "unix"
-      ],
-      "quotes": [
-          "error",
-          "single"
-      ],
-      "semi": [
-          "error",
-          "always"
-      ],
-      "no-unused-vars": [
-          "error",
-          {
-              "args": "after-used",
-              "argsIgnorePattern": "^_\\w+"
-          }
-      ]
+        "amd": false,
+        "jasmine": false,
+        "node": false,
+        "mocha": true,
+        "browser": true,
+        "builtin": true,
+        "es6": true
     }
 };
+
