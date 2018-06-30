@@ -32,8 +32,8 @@
   if( typeof module === 'object' && typeof exports === 'object' ) {
     module.exports = jqlite;
   } else {
-    if ( typeof define === 'function' ) {
-      define('jqlite', function () { return jqlite; } );
+    if ( typeof root.define === 'function' && root.define.amd ) {
+      root.define('jqlite', function () { return jqlite; } );
     } else if( typeof angular === 'function' ) {
       angular.module('jqlite', []).constant('jqlite', jqlite );
     } else {
@@ -1169,7 +1169,7 @@
         var i, len;
         value = ( value instanceof Function ) ? value() : ( value instanceof Number ? (value + 'px') : value );
 
-        if( typeof value === 'string' && /^\+=|\-=/.test(value) ) {
+        if( typeof value === 'string' && /^\+=|-=/.test(value) ) {
           value = ( value.charAt(0) === '-' ) ? -parseFloat(value.substr(2)) : parseFloat(value.substr(2));
 
           for( i = 0, len = this.length; i < len; i++ ) {

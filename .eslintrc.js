@@ -1,6 +1,7 @@
 module.exports = {
     "env": {
-      "browser": true
+      "browser": true,
+      "es6": true,
     },
     "globals": {
       "module": true,
@@ -8,6 +9,9 @@ module.exports = {
       "angular": true
     },
     "extends": "eslint:recommended",
+    "parserOptions": {
+      "sourceType": "module",
+    },
     "rules": {
       "linebreak-style": [
           "error",
